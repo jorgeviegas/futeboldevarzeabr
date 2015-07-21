@@ -9,14 +9,13 @@ import br.com.sharkweb.fbv.model.Usuario;
 
 /**
  * @author Tiago Klein
- *         <p/>
- *         Classe respons�vel somente pelas regras de neg�cio dos objetos do tipo Login.
- *         Intera��es com o usu�rio ou com a tela do dispositivo devem ser implementadas na respectiva View.
+ *
+ * Classe respons�vel somente pelas regras de neg�cio dos objetos do tipo Login.
+ * Intera��es com o usu�rio ou com a tela do dispositivo devem ser implementadas na respectiva View.
  */
 public class UsuarioController {
 
     private UsuarioDAO usuarioDAO;
-
     public UsuarioController(Context context) {
         usuarioDAO = new UsuarioDAO(context);
     }

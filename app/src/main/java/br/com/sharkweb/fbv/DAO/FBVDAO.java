@@ -3,16 +3,16 @@ package br.com.sharkweb.fbv.DAO;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
 /**
  * @author Tiago Klein
- *         <p/>
- *         Classe singleton que cria a conexï¿½o com banco de dados. Todas as alteraï¿½ï¿½es devem ser feitas usando esta classe no respectivo DAO.
- *         <p/>
- *         Ao executar o aplicativo estï¿½ classe ï¿½ executada.
- *         Caso o banco de dados ainda nï¿½o exista, ï¿½ criado no mï¿½todo onCreate.
- *         Caso deseje que o aplicativo atualize o banco de dados jï¿½ criado, use o mï¿½todo onUpgrade, assim nï¿½o precisarï¿½ desinstalar o App do dispositivo.
- *         Para isso deve-se incrementar o nï¿½mero da VERSAO_SCHEMA.
+ *
+ * Classe singleton que cria a conexão com banco de dados. Todas as alterações devem ser feitas usando esta classe no respectivo DAO.
+ *
+ * Ao executar o aplicativo está classe é executada.
+ * Caso o banco de dados ainda não exista, é criado no método onCreate.
+ * Caso deseje que o aplicativo atualize o banco de dados já criado, use o método onUpgrade, assim não precisará desinstalar o App do dispositivo.
+ * Para isso deve-se incrementar o número da VERSAO_SCHEMA.
+ *
  */
 public class FBVDAO extends SQLiteOpenHelper {
 
@@ -35,7 +35,7 @@ public class FBVDAO extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE usuario 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, codigo TEXT, email TEXT, senha TEXT, id_tipo INTEGER, id_posicao INTEGER, id_time INTEGER );");
         db.execSQL("CREATE TABLE tipo_usuario 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, tipo TEXT);");
         db.execSQL("CREATE TABLE posicao 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT);");
-        db.execSQL("CREATE TABLE times 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT);");
+        db.execSQL("CREATE TABLE login 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, id_usuario INTEGER);");
     }
 
     @Override

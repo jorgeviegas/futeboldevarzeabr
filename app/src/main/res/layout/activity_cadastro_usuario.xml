@@ -64,7 +64,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/cadastro_usuario_edtSenha"
-        android:spinnerMode="dropdown" />
+        android:spinnerMode="dialog" />
 
     <Spinner
         android:id="@+id/cadastro_usuario_spinner_posicao"
@@ -74,5 +74,14 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/cadastro_usuario_spinner"
         android:spinnerMode="dropdown" />
+
+    <Button
+        android:id="@+id/cadastro_usuario_btnCancelar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/cadastroUsuario_btnRegistrar"
+        android:layout_toLeftOf="@+id/cadastroUsuario_btnRegistrar"
+        android:layout_toStartOf="@+id/cadastroUsuario_btnRegistrar"
+        android:text="Cancelar" />
 
 </RelativeLayout>

@@ -30,6 +30,8 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     private Spinner spnPosicao;
 
     private Button btnCadastrar;
+    private Button btnCancelar;
+
     private UsuarioController usuarioControl = new UsuarioController(this);
     private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
     private PosicaoController posicaoControl = new PosicaoController(this);
@@ -69,6 +71,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         for (int i = 0; i < posicao.size(); i++) {
             posicoes.add(posicao.get(i).getNome().trim());
         }
+        //abc_list_menu_item_checkbox
         ArrayAdapter<String> arrayAdapterPosicao = new ArrayAdapter<String>(this, R.layout.abc_list_menu_item_checkbox,
                 posicoes);
         spnPosicao.setAdapter(arrayAdapterPosicao);
@@ -85,6 +88,14 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
                     mudarTela(LoginActivity.class);
                 }
 
+            }
+        });
+
+        btnCancelar = (Button) findViewById(R.id.cadastro_usuario_btnCancelar);
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                mudarTela(LoginActivity.class);
+                // onBackPressed();
             }
         });
     }

@@ -9,14 +9,13 @@ import br.com.sharkweb.fbv.model.Posicao;
 
 /**
  * @author Tiago Klein
- *         <p/>
- *         Classe responsável somente pelas regras de negócio dos objetos do tipo Login.
- *         Interações com o usuário ou com a tela do dispositivo devem ser implementadas na respectiva View.
+ *
+ * Classe responsï¿½vel somente pelas regras de negï¿½cio dos objetos do tipo Login.
+ * Interaï¿½ï¿½es com o usuï¿½rio ou com a tela do dispositivo devem ser implementadas na respectiva View.
  */
 public class PosicaoController {
 
     private PosicaoDAO posicaoDAO;
-
     public PosicaoController(Context context) {
         posicaoDAO = new PosicaoDAO(context);
     }

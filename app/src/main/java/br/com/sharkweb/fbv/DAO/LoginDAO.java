@@ -20,6 +20,7 @@ public class LoginDAO {
         fbvdao = FBVDAO.getInstance(context);
     }
 
+    //TESTE PUSH
     public long inserir(int id_usuario) {
         ContentValues valores = new ContentValues();
         valores.put(ID_USUARIO, id_usuario);
@@ -29,6 +30,7 @@ public class LoginDAO {
         return retorno;
     }
 
+    //TESTEsss
     public long inserirComId(int id, int id_usuario) {
         ContentValues valores = new ContentValues();
         valores.put(ID, id);

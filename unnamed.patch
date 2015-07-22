@@ -1,0 +1,947 @@
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/strings.xml	(revision )
++++ app/src/main/res/values/strings.xml	(revision )
+@@ -0,0 +1,17 @@
++<resources>
++    <string name="app_name">FBV</string>
++
++    <string name="title_section1">Section 1</string>
++    <string name="ausahusah">Section 2</string>
++    <string name="title_section3">Section 3</string>
++
++    <string name="navigation_drawer_open">Open navigation drawer</string>
++    <string name="navigation_drawer_close">Close navigation drawer</string>
++
++    <string name="action_example">Example action</string>
++
++    <string name="action_settings">Settings</string>
++    <string name="title_activity_team">TeamActivity</string>
++
++    <string name="hello_world">Hello world!</string>
++</resources>
+Index: app/src/androidTest/java/br/com/sharkweb/fbv/ApplicationTest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- app/src/androidTest/java/br/com/sharkweb/fbv/ApplicationTest.java	(revision )
++++ app/src/androidTest/java/br/com/sharkweb/fbv/ApplicationTest.java	(revision )
+@@ -0,0 +1,13 @@
++package br.com.sharkweb.fbv;
++
++import android.app.Application;
++import android.test.ApplicationTestCase;
++
++/**
++ * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
++ */
++public class ApplicationTest extends ApplicationTestCase<Application> {
++    public ApplicationTest() {
++        super(Application.class);
++    }
++}
+\ No newline at end of file
+Index: app/src/main/java/br/com/sharkweb/fbv/TeamActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- app/src/main/java/br/com/sharkweb/fbv/TeamActivity.java	(revision )
++++ app/src/main/java/br/com/sharkweb/fbv/TeamActivity.java	(revision )
+@@ -0,0 +1,38 @@
++package br.com.sharkweb.fbv;
++
++import android.support.v7.app.ActionBarActivity;
++import android.os.Bundle;
++import android.view.Menu;
++import android.view.MenuItem;
++
++
++public class TeamActivity extends ActionBarActivity {
++
++    @Override
++    protected void onCreate(Bundle savedInstanceState) {
++        super.onCreate(savedInstanceState);
++        setContentView(R.layout.activity_team);
++    }
++
++    @Override
++    public boolean onCreateOptionsMenu(Menu menu) {
++        // Inflate the menu; this adds items to the action bar if it is present.
++        getMenuInflater().inflate(R.menu.menu_team, menu);
++        return true;
++    }
++
++    @Override
++    public boolean onOptionsItemSelected(MenuItem item) {
++        // Handle action bar item clicks here. The action bar will
++        // automatically handle clicks on the Home/Up button, so long
++        // as you specify a parent activity in AndroidManifest.xml.
++        int id = item.getItemId();
++
++        //noinspection SimplifiableIfStatement
++        if (id == R.id.action_settings) {
++            return true;
++        }
++
++        return super.onOptionsItemSelected(item);
++    }
++}
+Index: app/src/main/res/menu/menu_team.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/menu/menu_team.xml	(revision )
++++ app/src/main/res/menu/menu_team.xml	(revision )
+@@ -0,0 +1,6 @@
++<menu xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools" tools:context="br.com.sharkweb.fbv.TeamActivity">
++    <item android:id="@+id/action_settings" android:title="@string/action_settings"
++        android:orderInCategory="100" app:showAsAction="never" />
++</menu>
+Index: app/app.iml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/app.iml	(revision )
++++ app/app.iml	(revision )
+@@ -0,0 +1,95 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<module external.linked.project.id=":app" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="FBV" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
++  <component name="FacetManager">
++    <facet type="android-gradle" name="Android-Gradle">
++      <configuration>
++        <option name="GRADLE_PROJECT_PATH" value=":app" />
++      </configuration>
++    </facet>
++    <facet type="android" name="Android">
++      <configuration>
++        <option name="SELECTED_BUILD_VARIANT" value="debug" />
++        <option name="SELECTED_TEST_ARTIFACT" value="_android_test_" />
++        <option name="ASSEMBLE_TASK_NAME" value="assembleDebug" />
++        <option name="COMPILE_JAVA_TASK_NAME" value="compileDebugSources" />
++        <option name="SOURCE_GEN_TASK_NAME" value="generateDebugSources" />
++        <option name="ASSEMBLE_TEST_TASK_NAME" value="assembleDebugAndroidTest" />
++        <option name="COMPILE_JAVA_TEST_TASK_NAME" value="compileDebugAndroidTestSources" />
++        <option name="TEST_SOURCE_GEN_TASK_NAME" value="generateDebugAndroidTestSources" />
++        <option name="ALLOW_USER_CONFIGURATION" value="false" />
++        <option name="MANIFEST_FILE_RELATIVE_PATH" value="/src/main/AndroidManifest.xml" />
++        <option name="RES_FOLDER_RELATIVE_PATH" value="/src/main/res" />
++        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/src/main/res" />
++        <option name="ASSETS_FOLDER_RELATIVE_PATH" value="/src/main/assets" />
++      </configuration>
++    </facet>
++  </component>
++  <component name="NewModuleRootManager" inherit-compiler-output="false">
++    <output url="file://$MODULE_DIR$/build/intermediates/classes/debug" />
++    <output-test url="file://$MODULE_DIR$/build/intermediates/classes/androidTest/debug" />
++    <exclude-output />
++    <content url="file://$MODULE_DIR$">
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/debug" isTestSource="false" generated="true" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/debug" isTestSource="false" generated="true" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/debug" isTestSource="false" generated="true" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/debug" isTestSource="false" generated="true" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/debug" type="java-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/generated/debug" type="java-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/debug" isTestSource="true" generated="true" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/debug" isTestSource="true" generated="true" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/debug" isTestSource="true" generated="true" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/debug" isTestSource="true" generated="true" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/debug" type="java-test-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/generated/androidTest/debug" type="java-test-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/src/debug/aidl" isTestSource="false" />
++      <sourceFolder url="file://$MODULE_DIR$/src/debug/java" isTestSource="false" />
++      <sourceFolder url="file://$MODULE_DIR$/src/debug/jni" isTestSource="false" />
++      <sourceFolder url="file://$MODULE_DIR$/src/debug/rs" isTestSource="false" />
++      <sourceFolder url="file://$MODULE_DIR$/src/main/res" type="java-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/src/main/assets" type="java-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/src/main/aidl" isTestSource="false" />
++      <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
++      <sourceFolder url="file://$MODULE_DIR$/src/main/jni" isTestSource="false" />
++      <sourceFolder url="file://$MODULE_DIR$/src/main/rs" isTestSource="false" />
++      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
++      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/aidl" isTestSource="true" />
++      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
++      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/jni" isTestSource="true" />
++      <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/bundles" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/classes" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/coverage-instrumented-classes" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dependency-cache" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dex" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/dex-cache" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/appcompat-v7/22.2.0/jars" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.0/jars" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jacoco" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/javaResources" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/libs" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/lint" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/ndk" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/pre-dexed" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/proguard" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
++      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
++      <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
++      <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
++    </content>
++    <orderEntry type="jdk" jdkName="Android API 22 Platform" jdkType="Android SDK" />
++    <orderEntry type="sourceFolder" forTests="false" />
++    <orderEntry type="library" exported="" name="support-v4-22.2.0" level="project" />
++    <orderEntry type="library" exported="" name="support-annotations-22.2.0" level="project" />
++    <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
++  </component>
++</module>
+\ No newline at end of file
+Index: app/src/main/res/values/styles.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/styles.xml	(revision )
++++ app/src/main/res/values/styles.xml	(revision )
+@@ -0,0 +1,8 @@
++<resources>
++
++    <!-- Base application theme. -->
++    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
++        <!-- Customize your theme here. -->
++    </style>
++
++</resources>
+Index: app/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- app/.gitignore	(revision )
++++ app/.gitignore	(revision )
+@@ -0,0 +1,1 @@
++/build
+Index: app/src/main/res/layout/activity_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_main.xml	(revision )
++++ app/src/main/res/layout/activity_main.xml	(revision )
+@@ -0,0 +1,24 @@
++<!-- A DrawerLayout is intended to be used as the top-level content view using match_parent for both width and height to consume the full space available. -->
++<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools" android:id="@+id/drawer_layout"
++    android:layout_width="match_parent" android:layout_height="match_parent"
++    tools:context=".MainActivity">
++
++    <!-- As the main content view, the view below consumes the entire
++         space available using match_parent in both dimensions. -->
++    <FrameLayout android:id="@+id/container" android:layout_width="match_parent"
++        android:layout_height="match_parent" />
++
++    <!-- android:layout_gravity="start" tells DrawerLayout to treat
++         this as a sliding drawer on the left side for left-to-right
++         languages and on the right side for right-to-left languages.
++         If you're not building against API 17 or higher, use
++         android:layout_gravity="left" instead. -->
++    <!-- The drawer is given a fixed width in dp and extends the full height of
++         the container. -->
++    <fragment android:id="@+id/navigation_drawer"
++        android:layout_width="@dimen/navigation_drawer_width" android:layout_height="match_parent"
++        android:layout_gravity="start" android:name="br.com.sharkweb.fbv.NavigationDrawerFragment"
++        tools:layout="@layout/fragment_navigation_drawer" />
++
++</android.support.v4.widget.DrawerLayout>
+Index: app/src/main/res/values-w820dp/dimens.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values-w820dp/dimens.xml	(revision )
++++ app/src/main/res/values-w820dp/dimens.xml	(revision )
+@@ -0,0 +1,6 @@
++<resources>
++    <!-- Example customization of dimensions originally defined in res/values/dimens.xml
++         (such as screen margins) for screens with more than 820dp of available width. This
++         would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively). -->
++    <dimen name="activity_horizontal_margin">64dp</dimen>
++</resources>
+Index: app/src/main/res/layout/fragment_main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/fragment_main.xml	(revision )
++++ app/src/main/res/layout/fragment_main.xml	(revision )
+@@ -0,0 +1,26 @@
++<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
++    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
++    android:paddingRight="@dimen/activity_horizontal_margin"
++    android:paddingTop="@dimen/activity_vertical_margin"
++    android:background="#fff"
++    android:paddingBottom="@dimen/activity_vertical_margin"
++    tools:context=".MainActivity$PlaceholderFragment">
++
++    <TextView android:id="@+id/section_label" android:layout_width="wrap_content"
++        android:layout_height="wrap_content" />
++
++    <ImageView
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:id="@+id/imageView"
++        android:layout_alignParentLeft="true"
++        android:layout_alignParentStart="true"
++        android:layout_alignParentRight="true"
++        android:layout_alignParentEnd="true"
++        android:layout_alignParentBottom="true"
++        android:layout_gravity="center"
++        android:src="@drawable/fvb"
++        android:contentDescription="logo" />
++
++</RelativeLayout>
+Index: app/build.gradle
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- app/build.gradle	(revision )
++++ app/build.gradle	(revision )
+@@ -0,0 +1,25 @@
++apply plugin: 'com.android.application'
++
++android {
++    compileSdkVersion 22
++    buildToolsVersion "22.0.1"
++
++    defaultConfig {
++        applicationId "br.com.sharkweb.fbv"
++        minSdkVersion 9
++        targetSdkVersion 22
++        versionCode 1
++        versionName "1.0"
++    }
++    buildTypes {
++        release {
++            minifyEnabled false
++            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
++        }
++    }
++}
++
++dependencies {
++    compile fileTree(dir: 'libs', include: ['*.jar'])
++    compile 'com.android.support:appcompat-v7:22.2.0'
++}
+Index: app/src/main/res/menu/main.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/menu/main.xml	(revision )
++++ app/src/main/res/menu/main.xml	(revision )
+@@ -0,0 +1,8 @@
++<menu xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto"
++    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
++    <item android:id="@+id/action_example" android:title="@string/action_example"
++        app:showAsAction="withText|ifRoom" />
++    <item android:id="@+id/action_settings" android:title="@string/action_settings"
++        android:orderInCategory="100" app:showAsAction="never" />
++</menu>
+Index: app/src/main/java/br/com/sharkweb/fbv/MainActivity.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- app/src/main/java/br/com/sharkweb/fbv/MainActivity.java	(revision )
++++ app/src/main/java/br/com/sharkweb/fbv/MainActivity.java	(revision )
+@@ -0,0 +1,161 @@
++package br.com.sharkweb.fbv;
++
++import android.app.Activity;
++import android.support.v7.app.ActionBarActivity;
++import android.support.v7.app.ActionBar;
++import android.support.v4.app.Fragment;
++import android.support.v4.app.FragmentManager;
++import android.content.Context;
++import android.os.Build;
++import android.os.Bundle;
++import android.view.Gravity;
++import android.view.LayoutInflater;
++import android.view.Menu;
++import android.view.MenuItem;
++import android.view.View;
++import android.view.ViewGroup;
++import android.support.v4.widget.DrawerLayout;
++import android.widget.ArrayAdapter;
++import android.widget.TextView;
++import android.content.Intent;
++
++public class MainActivity extends ActionBarActivity
++        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
++
++    /**
++     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
++     */
++    private NavigationDrawerFragment mNavigationDrawerFragment;
++
++    /**
++     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
++     */
++    private CharSequence mTitle;
++
++    @Override
++    protected void onCreate(Bundle savedInstanceState) {
++        super.onCreate(savedInstanceState);
++        setContentView(R.layout.activity_main);
++
++        mNavigationDrawerFragment = (NavigationDrawerFragment)
++                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
++        mTitle = getTitle();
++
++        // Set up the drawer.
++        mNavigationDrawerFragment.setUp(
++                R.id.navigation_drawer,
++                (DrawerLayout) findViewById(R.id.drawer_layout));
++    }
++
++    @Override
++    public void onNavigationDrawerItemSelected(int position) {
++        // update the main content by replacing fragments
++        FragmentManager fragmentManager = getSupportFragmentManager();
++        fragmentManager.beginTransaction()
++                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
++                .commit();
++    }
++
++    public void onSectionAttached(int number) {
++        switch (number) {
++            case 1:
++                mTitle = "Inicial";
++                break;
++            case 2:
++                mTitle = "Meu time";
++                mudarTela(TeamActivity.class);
++                break;
++            case 3:
++                mTitle = "Calendario";
++                break;
++        }
++    }
++
++    public void restoreActionBar() {
++        ActionBar actionBar = getSupportActionBar();
++        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
++        actionBar.setDisplayShowTitleEnabled(true);
++        actionBar.setTitle(mTitle);
++    }
++
++
++    @Override
++    public boolean onCreateOptionsMenu(Menu menu) {
++        if (!mNavigationDrawerFragment.isDrawerOpen()) {
++            // Only show items in the action bar relevant to this screen
++            // if the drawer is not showing. Otherwise, let the drawer
++            // decide what to show in the action bar.
++            getMenuInflater().inflate(R.menu.main, menu);
++            restoreActionBar();
++            return true;
++        }
++        return super.onCreateOptionsMenu(menu);
++    }
++
++    @SuppressWarnings({ "rawtypes", "unused" })
++    private void mudarTela(Class cls, Bundle parametros){
++        Intent intent = new Intent(this,cls);
++        intent.putExtras(parametros);
++        startActivity(intent);
++    }
++    @SuppressWarnings("rawtypes")
++    private void mudarTela(Class cls){
++        startActivity(new Intent(this,cls));
++    }
++
++    @Override
++    public boolean onOptionsItemSelected(MenuItem item) {
++        // Handle action bar item clicks here. The action bar will
++        // automatically handle clicks on the Home/Up button, so long
++        // as you specify a parent activity in AndroidManifest.xml.
++        int id = item.getItemId();
++
++        //noinspection SimplifiableIfStatement
++        if (id == R.id.action_settings) {
++            return true;
++        }
++
++        return super.onOptionsItemSelected(item);
++    }
++
++    /**
++     * A placeholder fragment containing a simple view.
++     */
++    public static class PlaceholderFragment extends Fragment {
++        /**
++         * The fragment argument representing the section number for this
++         * fragment.
++         */
++        private static final String ARG_SECTION_NUMBER = "section_number";
++
++        /**
++         * Returns a new instance of this fragment for the given section
++         * number.
++         */
++        public static PlaceholderFragment newInstance(int sectionNumber) {
++            PlaceholderFragment fragment = new PlaceholderFragment();
++            Bundle args = new Bundle();
++            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
++            fragment.setArguments(args);
++            return fragment;
++        }
++
++        public PlaceholderFragment() {
++        }
++
++        @Override
++        public View onCreateView(LayoutInflater inflater, ViewGroup container,
++                                 Bundle savedInstanceState) {
++            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
++            return rootView;
++        }
++
++        @Override
++        public void onAttach(Activity activity) {
++            super.onAttach(activity);
++            ((MainActivity) activity).onSectionAttached(
++                    getArguments().getInt(ARG_SECTION_NUMBER));
++        }
++    }
++
++}
+Index: app/src/main/res/layout/activity_team.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/activity_team.xml	(revision )
++++ app/src/main/res/layout/activity_team.xml	(revision )
+@@ -0,0 +1,15 @@
++<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
++    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
++    android:paddingRight="@dimen/activity_horizontal_margin"
++    android:paddingTop="@dimen/activity_vertical_margin"
++    android:paddingBottom="@dimen/activity_vertical_margin"
++    tools:context="br.com.sharkweb.fbv.TeamActivity">
++
++    <ListView
++        android:layout_width="wrap_content"
++        android:layout_height="wrap_content"
++        android:id="@+id/listView"
++        android:layout_alignParentLeft="true"
++        android:layout_alignParentStart="true" />
++</RelativeLayout>
+Index: app/src/main/res/menu/global.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/menu/global.xml	(revision )
++++ app/src/main/res/menu/global.xml	(revision )
+@@ -0,0 +1,5 @@
++<menu xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:app="http://schemas.android.com/apk/res-auto">
++    <item android:id="@+id/action_settings" android:title="@string/action_settings"
++        android:orderInCategory="100" app:showAsAction="never" />
++</menu>
+Index: app/src/main/res/values/dimens.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/values/dimens.xml	(revision )
++++ app/src/main/res/values/dimens.xml	(revision )
+@@ -0,0 +1,9 @@
++<resources>
++    <!-- Default screen margins, per the Android Design guidelines. -->
++    <dimen name="activity_horizontal_margin">16dp</dimen>
++    <dimen name="activity_vertical_margin">16dp</dimen>
++
++    <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:
++         https://developer.android.com/design/patterns/navigation-drawer.html -->
++    <dimen name="navigation_drawer_width">240dp</dimen>
++</resources>
+Index: app/proguard-rules.pro
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- app/proguard-rules.pro	(revision )
++++ app/proguard-rules.pro	(revision )
+@@ -0,0 +1,17 @@
++# Add project specific ProGuard rules here.
++# By default, the flags in this file are appended to flags specified
++# in C:\Users\Tiago\AppData\Local\Android\sdk/tools/proguard/proguard-android.txt
++# You can edit the include path and order by changing the proguardFiles
++# directive in build.gradle.
++#
++# For more details, see
++#   http://developer.android.com/guide/developing/tools/proguard.html
++
++# Add any project specific keep options here:
++
++# If your project uses WebView with JS, uncomment the following
++# and specify the fully qualified class name to the JavaScript interface
++# class:
++#-keepclassmembers class fqcn.of.javascript.interface.for.webview {
++#   public *;
++#}
+Index: app/src/main/res/layout/fragment_navigation_drawer.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/res/layout/fragment_navigation_drawer.xml	(revision )
++++ app/src/main/res/layout/fragment_navigation_drawer.xml	(revision )
+@@ -0,0 +1,5 @@
++<ListView xmlns:android="http://schemas.android.com/apk/res/android"
++    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
++    android:layout_height="match_parent" android:choiceMode="singleChoice"
++    android:divider="@android:color/transparent" android:dividerHeight="0dp"
++    android:background="#cccc" tools:context=".NavigationDrawerFragment" />
+Index: app/src/main/java/br/com/sharkweb/fbv/NavigationDrawerFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- app/src/main/java/br/com/sharkweb/fbv/NavigationDrawerFragment.java	(revision )
++++ app/src/main/java/br/com/sharkweb/fbv/NavigationDrawerFragment.java	(revision )
+@@ -0,0 +1,282 @@
++package br.com.sharkweb.fbv;
++
++import android.support.v7.app.ActionBarActivity;
++import android.app.Activity;
++import android.support.v7.app.ActionBar;
++import android.support.v4.app.Fragment;
++import android.support.v4.app.ActionBarDrawerToggle;
++import android.support.v4.view.GravityCompat;
++import android.support.v4.widget.DrawerLayout;
++import android.content.SharedPreferences;
++import android.content.res.Configuration;
++import android.os.Bundle;
++import android.preference.PreferenceManager;
++import android.view.LayoutInflater;
++import android.view.Menu;
++import android.view.MenuInflater;
++import android.view.MenuItem;
++import android.view.View;
++import android.view.ViewGroup;
++import android.widget.AdapterView;
++import android.widget.ArrayAdapter;
++import android.widget.ListView;
++import android.widget.Toast;
++
++/**
++ * Fragment used for managing interactions for and presentation of a navigation drawer.
++ * See the <a href="https://developer.android.com/design/patterns/navigation-drawer.html#Interaction">
++ * design guidelines</a> for a complete explanation of the behaviors implemented here.
++ */
++public class NavigationDrawerFragment extends Fragment {
++
++    /**
++     * Remember the position of the selected item.
++     */
++    private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
++
++    /**
++     * Per the design guidelines, you should show the drawer on launch until the user manually
++     * expands it. This shared preference tracks this.
++     */
++    private static final String PREF_USER_LEARNED_DRAWER = "navigation_drawer_learned";
++
++    /**
++     * A pointer to the current callbacks instance (the Activity).
++     */
++    private NavigationDrawerCallbacks mCallbacks;
++
++    /**
++     * Helper component that ties the action bar to the navigation drawer.
++     */
++    private ActionBarDrawerToggle mDrawerToggle;
++
++    private DrawerLayout mDrawerLayout;
++    private ListView mDrawerListView;
++    private View mFragmentContainerView;
++
++    private int mCurrentSelectedPosition = 0;
++    private boolean mFromSavedInstanceState;
++    private boolean mUserLearnedDrawer;
++
++    public NavigationDrawerFragment() {
++    }
++
++    @Override
++    public void onCreate(Bundle savedInstanceState) {
++        super.onCreate(savedInstanceState);
++
++        // Read in the flag indicating whether or not the user has demonstrated awareness of the
++        // drawer. See PREF_USER_LEARNED_DRAWER for details.
++        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getActivity());
++        mUserLearnedDrawer = sp.getBoolean(PREF_USER_LEARNED_DRAWER, false);
++
++        if (savedInstanceState != null) {
++            mCurrentSelectedPosition = savedInstanceState.getInt(STATE_SELECTED_POSITION);
++            mFromSavedInstanceState = true;
++        }
++
++        // Select either the default item (0) or the last selected item.
++        selectItem(mCurrentSelectedPosition);
++    }
++
++    @Override
++    public void onActivityCreated(Bundle savedInstanceState) {
++        super.onActivityCreated(savedInstanceState);
++        // Indicate that this fragment would like to influence the set of actions in the action bar.
++        setHasOptionsMenu(true);
++    }
++
++    @Override
++    public View onCreateView(LayoutInflater inflater, ViewGroup container,
++                             Bundle savedInstanceState) {
++        mDrawerListView = (ListView) inflater.inflate(
++                R.layout.fragment_navigation_drawer, container, false);
++        mDrawerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
++            @Override
++            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
++                selectItem(position);
++            }
++        });
++        mDrawerListView.setAdapter(new ArrayAdapter<String>(
++                getActionBar().getThemedContext(),
++                android.R.layout.simple_list_item_1,
++                android.R.id.text1,
++                new String[]{
++                        "Inicial",
++                        "Meu time",
++                        "Calendario",
++                }));
++        mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
++        return mDrawerListView;
++    }
++
++    public boolean isDrawerOpen() {
++        return mDrawerLayout != null && mDrawerLayout.isDrawerOpen(mFragmentContainerView);
++    }
++
++    /**
++     * Users of this fragment must call this method to set up the navigation drawer interactions.
++     *
++     * @param fragmentId   The android:id of this fragment in its activity's layout.
++     * @param drawerLayout The DrawerLayout containing this fragment's UI.
++     */
++    public void setUp(int fragmentId, DrawerLayout drawerLayout) {
++        mFragmentContainerView = getActivity().findViewById(fragmentId);
++        mDrawerLayout = drawerLayout;
++
++        // set a custom shadow that overlays the main content when the drawer opens
++        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
++        // set up the drawer's list view with items and click listener
++
++        ActionBar actionBar = getActionBar();
++        actionBar.setDisplayHomeAsUpEnabled(true);
++        actionBar.setHomeButtonEnabled(true);
++
++        // ActionBarDrawerToggle ties together the the proper interactions
++        // between the navigation drawer and the action bar app icon.
++        mDrawerToggle = new ActionBarDrawerToggle(
++                getActivity(),                    /* host Activity */
++                mDrawerLayout,                    /* DrawerLayout object */
++                R.drawable.ic_drawer,             /* nav drawer image to replace 'Up' caret */
++                R.string.navigation_drawer_open,  /* "open drawer" description for accessibility */
++                R.string.navigation_drawer_close  /* "close drawer" description for accessibility */
++        ) {
++            @Override
++            public void onDrawerClosed(View drawerView) {
++                super.onDrawerClosed(drawerView);
++                if (!isAdded()) {
++                    return;
++                }
++
++                getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
++            }
++
++            @Override
++            public void onDrawerOpened(View drawerView) {
++                super.onDrawerOpened(drawerView);
++                if (!isAdded()) {
++                    return;
++                }
++
++                if (!mUserLearnedDrawer) {
++                    // The user manually opened the drawer; store this flag to prevent auto-showing
++                    // the navigation drawer automatically in the future.
++                    mUserLearnedDrawer = true;
++                    SharedPreferences sp = PreferenceManager
++                            .getDefaultSharedPreferences(getActivity());
++                    sp.edit().putBoolean(PREF_USER_LEARNED_DRAWER, true).apply();
++                }
++
++                getActivity().supportInvalidateOptionsMenu(); // calls onPrepareOptionsMenu()
++            }
++        };
++
++        // If the user hasn't 'learned' about the drawer, open it to introduce them to the drawer,
++        // per the navigation drawer design guidelines.
++        if (!mUserLearnedDrawer && !mFromSavedInstanceState) {
++            mDrawerLayout.openDrawer(mFragmentContainerView);
++        }
++
++        // Defer code dependent on restoration of previous instance state.
++        mDrawerLayout.post(new Runnable() {
++            @Override
++            public void run() {
++                mDrawerToggle.syncState();
++            }
++        });
++
++        mDrawerLayout.setDrawerListener(mDrawerToggle);
++    }
++
++    private void selectItem(int position) {
++        mCurrentSelectedPosition = position;
++        if (mDrawerListView != null) {
++            mDrawerListView.setItemChecked(position, true);
++        }
++        if (mDrawerLayout != null) {
++            mDrawerLayout.closeDrawer(mFragmentContainerView);
++        }
++        if (mCallbacks != null) {
++            mCallbacks.onNavigationDrawerItemSelected(position);
++        }
++    }
++
++    @Override
++    public void onAttach(Activity activity) {
++        super.onAttach(activity);
++        try {
++            mCallbacks = (NavigationDrawerCallbacks) activity;
++        } catch (ClassCastException e) {
++            throw new ClassCastException("Activity must implement NavigationDrawerCallbacks.");
++        }
++    }
++
++    @Override
++    public void onDetach() {
++        super.onDetach();
++        mCallbacks = null;
++    }
++
++    @Override
++    public void onSaveInstanceState(Bundle outState) {
++        super.onSaveInstanceState(outState);
++        outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
++    }
++
++    @Override
++    public void onConfigurationChanged(Configuration newConfig) {
++        super.onConfigurationChanged(newConfig);
++        // Forward the new configuration the drawer toggle component.
++        mDrawerToggle.onConfigurationChanged(newConfig);
++    }
++
++    @Override
++    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
++        // If the drawer is open, show the global app actions in the action bar. See also
++        // showGlobalContextActionBar, which controls the top-left area of the action bar.
++        if (mDrawerLayout != null && isDrawerOpen()) {
++            inflater.inflate(R.menu.global, menu);
++            showGlobalContextActionBar();
++        }
++        super.onCreateOptionsMenu(menu, inflater);
++    }
++
++    @Override
++    public boolean onOptionsItemSelected(MenuItem item) {
++        if (mDrawerToggle.onOptionsItemSelected(item)) {
++            return true;
++        }
++
++        if (item.getItemId() == R.id.action_example) {
++            Toast.makeText(getActivity(), "Example action.", Toast.LENGTH_SHORT).show();
++            return true;
++        }
++
++        return super.onOptionsItemSelected(item);
++    }
++
++    /**
++     * Per the navigation drawer design guidelines, updates the action bar to show the global app
++     * 'context', rather than just what's in the current screen.
++     */
++    private void showGlobalContextActionBar() {
++        ActionBar actionBar = getActionBar();
++        actionBar.setDisplayShowTitleEnabled(true);
++        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
++        actionBar.setTitle(R.string.app_name);
++    }
++
++    private ActionBar getActionBar() {
++        return ((ActionBarActivity) getActivity()).getSupportActionBar();
++    }
++
++    /**
++     * Callbacks interface that all activities using this fragment must implement.
++     */
++    public static interface NavigationDrawerCallbacks {
++        /**
++         * Called when an item in the navigation drawer is selected.
++         */
++        void onNavigationDrawerItemSelected(int position);
++    }
++}
+Index: app/src/main/AndroidManifest.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/AndroidManifest.xml	(revision )
++++ app/src/main/AndroidManifest.xml	(revision )
+@@ -0,0 +1,24 @@
++<?xml version="1.0" encoding="utf-8"?>
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++    package="br.com.sharkweb.fbv" >
++
++    <application
++        android:allowBackup="true"
++        android:icon="@mipmap/ic_launcher"
++        android:label="@string/app_name"
++        android:theme="@style/AppTheme" >
++        <activity
++            android:name=".MainActivity"
++            android:label="@string/app_name" >
++            <intent-filter>
++                <action android:name="android.intent.action.MAIN" />
++                <category android:name="android.intent.category.LAUNCHER" />
++            </intent-filter>
++        </activity>
++        <activity
++            android:name=".TeamActivity"
++            android:label="Meu time" >
++        </activity>
++    </application>
++
++</manifest>

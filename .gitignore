@@ -7,3 +7,4 @@
 /captures
 settings.gradle
 /.idea/
+.gradle/

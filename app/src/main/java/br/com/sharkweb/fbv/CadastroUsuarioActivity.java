@@ -18,8 +18,7 @@ import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Posicao;
-import br.com.sharkweb.fbv.model.Tipo_usuario;
-
+import br.com.sharkweb.fbv.model.TipoUsuario;
 
 public class CadastroUsuarioActivity extends ActionBarActivity {
 
@@ -51,7 +50,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         txtSenha.setVisibility(EditText.VISIBLE);
 
         spnTipoUsuario = (Spinner) findViewById((R.id.cadastro_usuario_spinner));
-        ArrayList<Tipo_usuario> tipo_usuario = tipoUsuarioControl.selectTiposUsuarios();
+        ArrayList<TipoUsuario> tipo_usuario = tipoUsuarioControl.selectTiposUsuarios();
         ArrayList<String> tipo_usuarios = new ArrayList<>();
 
         for (int i = 0; i < tipo_usuario.size(); i++) {
@@ -139,7 +138,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     private String validarCampos() {
         String retorno = "";
         if (txtNome.getText().toString().isEmpty()) {
-            retorno = retorno + "Nome nao informado \n";
+            retorno = retorno + "Nome nao informado TESTE \n";
         }
         return retorno;
     }

@@ -6,7 +6,7 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 
-import br.com.sharkweb.fbv.model.Tipo_usuario;
+import br.com.sharkweb.fbv.model.TipoUsuario;
 
 public class TipoUsuarioDAO {
 
@@ -50,14 +50,14 @@ public class TipoUsuarioDAO {
         return retorno;
     }
 
-    public ArrayList<Tipo_usuario> selectTiposUsuarios() {
-        ArrayList<Tipo_usuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " ORDER BY " + TIPO, null));
+    public ArrayList<TipoUsuario> selectTiposUsuarios() {
+        ArrayList<TipoUsuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " ORDER BY " + TIPO, null));
         fbvdao.close();
         return c;
     }
 
-    public ArrayList<Tipo_usuario> selectTipoUsuarioPorId(int id_tipo) {
-        ArrayList<Tipo_usuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID + " = " + id_tipo + " ORDER BY " + TIPO, null));
+    public ArrayList<TipoUsuario> selectTipoUsuarioPorId(int id_tipo) {
+        ArrayList<TipoUsuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID + " = " + id_tipo + " ORDER BY " + TIPO, null));
         fbvdao.close();
         return c;
     }
@@ -66,10 +66,10 @@ public class TipoUsuarioDAO {
         fbvdao.getReadableDatabase().delete(NOME_TABELA, null, null);
     }
 
-    private ArrayList<Tipo_usuario> cursorToArray(Cursor c) {
-        ArrayList<Tipo_usuario> tipo_usuario = new ArrayList<Tipo_usuario>();
+    private ArrayList<TipoUsuario> cursorToArray(Cursor c) {
+        ArrayList<TipoUsuario> tipo_usuario = new ArrayList<TipoUsuario>();
         while (c.moveToNext()) {
-            tipo_usuario.add(new Tipo_usuario(c.getInt(0), c.getString(1)));
+            tipo_usuario.add(new TipoUsuario(c.getInt(0), c.getString(1)));
         }
         return tipo_usuario;
     }

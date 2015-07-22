@@ -5,8 +5,7 @@ import android.content.Context;
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.DAO.TipoUsuarioDAO;
-import br.com.sharkweb.fbv.model.Tipo_usuario;
-
+import br.com.sharkweb.fbv.model.TipoUsuario;
 /**
  * @author Tiago Klein
  *
@@ -32,11 +31,11 @@ public class TipoUsuarioController {
         return TipousuarioDAO.alterar(id, tipo);
     }
 
-    public ArrayList<Tipo_usuario> selectTiposUsuarios() {
+    public ArrayList<TipoUsuario> selectTiposUsuarios() {
         return TipousuarioDAO.selectTiposUsuarios();
     }
 
-    public ArrayList<Tipo_usuario> selectTiposUsuariosPorId(int id_tipo) {
+    public ArrayList<TipoUsuario> selectTiposUsuariosPorId(int id_tipo) {
         return TipousuarioDAO.selectTipoUsuarioPorId(id_tipo);
     }
 
@@ -45,7 +44,7 @@ public class TipoUsuarioController {
     }
 
     public void IniciarTiposUsuarios() {
-        ArrayList<Tipo_usuario> tipo_usario = this.selectTiposUsuarios();
+        ArrayList<TipoUsuario> tipo_usario = this.selectTiposUsuarios();
         if (tipo_usario.isEmpty()) {
             this.inserir("Administrador");
             this.inserir("Jogador");

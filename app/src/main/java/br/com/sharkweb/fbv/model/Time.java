@@ -13,6 +13,10 @@ public class Time {
         this.id = id;
     }
 
+    public Time(String nome) {
+        this.nome = nome;
+    }
+
     public int getId() {
         return id;
     }

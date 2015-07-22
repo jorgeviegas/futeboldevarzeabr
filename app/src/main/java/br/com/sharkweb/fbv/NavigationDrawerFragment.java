@@ -105,6 +105,7 @@ public class NavigationDrawerFragment extends Fragment {
                         "Inicial",
                         "Meu time",
                         "Calendario",
+                        "Cadastrar time"
                 }));
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return mDrawerListView;

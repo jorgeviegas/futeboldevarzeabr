@@ -90,6 +90,10 @@ public class MainActivity extends ActionBarActivity
             case 3:
                 mTitle = "Calendario";
                 break;
+            case 4:
+                mTitle = "Cadastrar Time";
+                mudarTela(CadastroTimeActivity.class);
+                break;
         }
     }
 

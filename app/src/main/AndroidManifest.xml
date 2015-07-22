@@ -19,6 +19,9 @@
             android:name=".TeamActivity"
             android:label="Meu time" />
         <activity
+            android:name=".CadastroTimeActivity"
+            android:label="Cadastro do time" />
+        <activity
             android:name=".LoginActivity"
             android:label="Login"></activity>
         <activity

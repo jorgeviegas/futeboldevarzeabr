@@ -14,11 +14,13 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Posicao;
 import br.com.sharkweb.fbv.model.TipoUsuario;
+import br.com.sharkweb.fbv.model.Usuario;
 
 public class CadastroUsuarioActivity extends ActionBarActivity {
 
@@ -31,9 +33,14 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     private Button btnCadastrar;
     private Button btnCancelar;
 
+    private String tipoAcesso;
+
     private UsuarioController usuarioControl = new UsuarioController(this);
     private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
     private PosicaoController posicaoControl = new PosicaoController(this);
+
+    private Funcoes funcoes = new Funcoes(this);
+    Usuario user = new Usuario();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,27 +83,54 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         spnPosicao.setAdapter(arrayAdapterPosicao);
         spnPosicao.setVisibility(View.VISIBLE);
 
-
         //final String spinVal = String.valueOf(spin.getSelectedItem());
 
         btnCadastrar = (Button) findViewById(R.id.cadastroUsuario_btnRegistrar);
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (inserir()) {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
-                    mudarTela(LoginActivity.class);
+                    if (tipoAcesso.equals("edit")){
+                        Toast toast = Toast.makeText(getApplicationContext(), "Cadastro atualizado com sucesso!", Toast.LENGTH_LONG);
+                        mudarTela(MainActivity.class);
+                    }else {
+                        Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
+                        mudarTela(LoginActivity.class);
+                    }
                 }
-
             }
         });
 
         btnCancelar = (Button) findViewById(R.id.cadastro_usuario_btnCancelar);
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mudarTela(LoginActivity.class);
-                // onBackPressed();
+                //mudarTela(LoginActivity.class);
+                //funcoes.mostrarDialogAlert(0,"TESTE MAROTAO",String.valueOf(user.getId_tipo()));
+                onBackPressed();
             }
         });
+
+        Bundle params = getIntent().getExtras();
+        if (params != null) {
+            //Aqui tratamos parametros enviados para a tela de cadastro de usuario
+            tipoAcesso = params.getString("tipoAcesso");
+
+            if (params.getInt("id_usuario") > 0) {
+                carregarRegistro(params.getInt("id_usuario"));
+            }
+        }
+    }
+
+    private void carregarRegistro (int id_usuario){
+        this.user = usuarioControl.selectUsuarioPorId(id_usuario).get(0);
+        txtNome.setText(user.getNome());
+        txtSenha.setText(user.getSenha());
+        txtEmail.setText(user.getEmail());
+        spnPosicao.setSelection(this.user.getId_posicao()-1);
+        spnTipoUsuario.setSelection(this.user.getId_tipo() - 1);
+
+        if (tipoAcesso.equals("edit")){
+            btnCadastrar.setText("Atualizar");
+        }
     }
 
     @Override
@@ -128,7 +162,11 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             int id_posicao = spnTipoUsuario.getSelectedItemPosition() + 1;
             int id_time = 0;
 
-            usuarioControl.inserir(nome, codigo, email, senha, id_tipo, id_posicao, id_time);
+            if (tipoAcesso.equals("edit")){
+                usuarioControl.alterar(this.user.getId(), nome, codigo, email, senha, id_tipo, id_posicao, id_time);
+            }else {
+                usuarioControl.inserir(nome, codigo, email, senha, id_tipo, id_posicao, id_time);
+            }
             return true;
         } else {
             return false;
@@ -138,7 +176,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     private String validarCampos() {
         String retorno = "";
         if (txtNome.getText().toString().isEmpty()) {
-            retorno = retorno + "Nome nao informado TESTE \n";
+            retorno = retorno + "Nome nao informado \n";
         }
         return retorno;
     }

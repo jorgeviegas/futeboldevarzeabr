@@ -42,7 +42,8 @@ public class MainActivity extends ActionBarActivity
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+
+        mTitle = "FBV";
 
         // Set up the drawer.
         mNavigationDrawerFragment.setUp(
@@ -93,6 +94,13 @@ public class MainActivity extends ActionBarActivity
             case 4:
                 mTitle = "Cadastrar Time";
                 mudarTela(CadastroTimeActivity.class);
+                break;
+            case 5:
+                mTitle = "Meu usuario";
+                Bundle parametros = new Bundle();
+                parametros.putString("tipoAcesso", "edit");
+                parametros.putInt("id_usuario",loginControl.selecLogin().get(0).getId());
+                mudarTela(CadastroUsuarioActivity.class, parametros);
                 break;
         }
     }

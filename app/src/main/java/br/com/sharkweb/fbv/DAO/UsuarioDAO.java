@@ -57,9 +57,15 @@ public class UsuarioDAO {
         return retorno;
     }
 
-    public long alterar(int id, String nome) {
+    public long alterar(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time) {
         ContentValues valores = new ContentValues();
         valores.put(NOME, nome);
+        valores.put(CODIGO, codigo);
+        valores.put(EMAIL, email);
+        valores.put(SENHA, senha);
+        valores.put(ID_TIPO, id_tipo);
+        valores.put(ID_POSICAO, id_posicao);
+        valores.put(ID_TIME, id_time);
 
         String[] whereAgrs = {Integer.toString(id)};
         int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID + " = ?", whereAgrs);

@@ -29,8 +29,8 @@ public class UsuarioController {
         return usuarioDAO.inserirComId(id, nome, codigo, email, senha, id_tipo, id_posicao, id_time);
     }
 
-    public long alterar(int id, String nome) {
-        return usuarioDAO.alterar(id, nome);
+    public long alterar(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time) {
+        return usuarioDAO.alterar(id, nome, codigo, email, senha, id_tipo, id_posicao, id_time);
     }
 
     public ArrayList<Usuario> selectUsuarios() {
@@ -39,6 +39,10 @@ public class UsuarioController {
 
     public ArrayList<Usuario> selectUsuarioPorEmail(String email) {
         return usuarioDAO.selectUsuarioPorEmail(email);
+    }
+
+    public ArrayList<Usuario> selectUsuarioPorId(int id_usuario) {
+        return usuarioDAO.selectUsuarioPorId(id_usuario);
     }
 
     public void excluirTodosJogadores() {

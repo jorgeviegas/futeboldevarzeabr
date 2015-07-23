@@ -86,7 +86,7 @@ public class UsuarioDAO {
     }
 
     public ArrayList<Usuario> selectUsuarioPorId(int id_usuario) {
-        ArrayList<Usuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID + " = " + id_usuario + " ORDER BY " + NOME, null));
+        ArrayList<Usuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID + " = " + id_usuario, null));
         fbvdao.close();
         return c;
     }

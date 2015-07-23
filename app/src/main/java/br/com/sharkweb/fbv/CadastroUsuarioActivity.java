@@ -83,6 +83,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         spnPosicao.setAdapter(arrayAdapterPosicao);
         spnPosicao.setVisibility(View.VISIBLE);
 
+
         //final String spinVal = String.valueOf(spin.getSelectedItem());
 
         btnCadastrar = (Button) findViewById(R.id.cadastroUsuario_btnRegistrar);
@@ -91,9 +92,11 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
                 if (inserir()) {
                     if (tipoAcesso.equals("edit")){
                         Toast toast = Toast.makeText(getApplicationContext(), "Cadastro atualizado com sucesso!", Toast.LENGTH_LONG);
+                        toast.show();
                         mudarTela(MainActivity.class);
                     }else {
                         Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
+                        toast.show();
                         mudarTela(LoginActivity.class);
                     }
                 }
@@ -121,10 +124,12 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     }
 
     private void carregarRegistro (int id_usuario){
+       // ArrayList<Usuario> teste = usuarioControl.selectUsuarioPorId(id_usuario);
         this.user = usuarioControl.selectUsuarioPorId(id_usuario).get(0);
-        txtNome.setText(user.getNome());
-        txtSenha.setText(user.getSenha());
-        txtEmail.setText(user.getEmail());
+
+        txtNome.setText(this.user.getNome());
+        txtSenha.setText(this.user.getSenha());
+        txtEmail.setText(this.user.getEmail());
         spnPosicao.setSelection(this.user.getId_posicao()-1);
         spnTipoUsuario.setSelection(this.user.getId_tipo() - 1);
 
@@ -153,13 +158,14 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     }
 
     private Boolean inserir() {
-        if (validarCampos().isEmpty()) {
+        String ret = validarCampos();
+        if (ret.isEmpty()) {
             String nome = txtNome.getText().toString();
             String email = txtEmail.getText().toString();
             String senha = txtSenha.getText().toString();
             String codigo = "";
             int id_tipo = spnTipoUsuario.getSelectedItemPosition() + 1;
-            int id_posicao = spnTipoUsuario.getSelectedItemPosition() + 1;
+            int id_posicao = spnPosicao.getSelectedItemPosition() + 1;
             int id_time = 0;
 
             if (tipoAcesso.equals("edit")){
@@ -169,6 +175,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             }
             return true;
         } else {
+            funcoes.mostrarDialogAlert(0,"Informativo",ret);
             return false;
         }
     }
@@ -177,6 +184,13 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         String retorno = "";
         if (txtNome.getText().toString().isEmpty()) {
             retorno = retorno + "Nome nao informado \n";
+        }
+        if (txtEmail.getText().toString().isEmpty()) {
+            retorno = retorno + "E-mail nao informado \n";
+        }
+        if (!usuarioControl.selectUsuarioPorEmail(txtEmail.getText().
+                toString()).isEmpty() && !tipoAcesso.equals("edit")){
+            retorno = retorno + "Ja existe um usuario cadastrado com este endereco de e-mail. \n";
         }
         return retorno;
     }

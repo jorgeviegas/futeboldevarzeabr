@@ -9,7 +9,7 @@ import android.content.Context;
  */
 public class Funcoes {
 
-    private static Context context = null;
+    private Context context = null;
 
     public Funcoes(Context contex) {
         context = contex;

@@ -1,6 +1,7 @@
 package br.com.sharkweb.fbv;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,12 +9,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.controller.LoginController;
 import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
@@ -29,11 +32,13 @@ public class MainActivity extends ActionBarActivity
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
      */
+
     private CharSequence mTitle;
     private boolean loginFeito;
     private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
     private PosicaoController posicaoControl = new PosicaoController(this);
     private LoginController loginControl = new LoginController(this);
+    private Funcoes funcoes = new Funcoes(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,7 +151,14 @@ public class MainActivity extends ActionBarActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logoff) {
+            loginControl.excluirTodosLogins();
+            mudarTela(LoginActivity.class);
+            return true;
+        }
+
+        if (id == R.id.action_sair) {
+            finish();
             return true;
         }
 

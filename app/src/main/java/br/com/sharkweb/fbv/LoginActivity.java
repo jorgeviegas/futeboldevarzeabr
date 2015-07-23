@@ -58,7 +58,11 @@ public class LoginActivity extends ActionBarActivity {
                         toast.show();
 
                         Usuario user = usuarioControl.selectUsuarioPorEmail(txtemail.getText().toString()).get(0);
-                        loginControl.inserir(user.getId());
+                        if (loginControl.selecLogin().isEmpty()) {
+                            loginControl.inserir(user.getId());
+                        }else{
+                            loginControl.alterar(1,user.getId());
+                        }
 
                         Bundle parametros = new Bundle();
                         parametros.putBoolean("login", true);
@@ -88,7 +92,9 @@ public class LoginActivity extends ActionBarActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();
                         finish();
-                        mudarTela(CadastroUsuarioActivity.class);
+                        Bundle parametros = new Bundle();
+                        parametros.putString("tipoAcesso", "write");
+                        mudarTela(CadastroUsuarioActivity.class, parametros);
                     }
 
                 });

@@ -63,6 +63,13 @@ public class UsuarioController {
 
         return false;
     }
+
+    public String validarSenha(String senha,String confirmarSenha){
+        if (!senha.equals(confirmarSenha)){
+            return "Senha e Confirmar senha devem ser iguais.";
+        }
+        return "";
+    }
     /*public String validarEAlterarNovaSenha(Login loginAtual, String senhaAntiga, String novaSenha, String repetirNovaSenha){
 
         if(!novaSenha.equals(repetirNovaSenha))

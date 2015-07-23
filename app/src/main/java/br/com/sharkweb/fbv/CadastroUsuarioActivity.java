@@ -1,5 +1,8 @@
 package br.com.sharkweb.fbv;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -24,9 +27,13 @@ import br.com.sharkweb.fbv.model.Usuario;
 
 public class CadastroUsuarioActivity extends ActionBarActivity {
 
+    final Context context = this;
+
     private EditText txtNome;
     private EditText txtEmail;
     private EditText txtSenha;
+    private EditText txtConfirmarSenha;
+
     private Spinner spnTipoUsuario;
     private Spinner spnPosicao;
 
@@ -55,6 +62,9 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
         txtSenha = (EditText) findViewById(R.id.cadastro_usuario_edtSenha);
         txtSenha.setVisibility(EditText.VISIBLE);
+
+        txtConfirmarSenha = (EditText) findViewById(R.id.cadastro_usuario_edtConfirmarSenha);
+        txtConfirmarSenha.setVisibility(EditText.VISIBLE);
 
         spnTipoUsuario = (Spinner) findViewById((R.id.cadastro_usuario_spinner));
         ArrayList<TipoUsuario> tipo_usuario = tipoUsuarioControl.selectTiposUsuarios();
@@ -111,6 +121,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
                 onBackPressed();
             }
         });
+        btnCancelar.setVisibility(View.GONE);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -129,6 +140,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
         txtNome.setText(this.user.getNome());
         txtSenha.setText(this.user.getSenha());
+        txtConfirmarSenha.setText(this.user.getSenha());
         txtEmail.setText(this.user.getEmail());
         spnPosicao.setSelection(this.user.getId_posicao()-1);
         spnTipoUsuario.setSelection(this.user.getId_tipo() - 1);
@@ -188,6 +200,15 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         if (txtEmail.getText().toString().isEmpty()) {
             retorno = retorno + "E-mail nao informado \n";
         }
+
+        //VERIFICA SE AS SENHAS DIGITADAS SÃO IGUAIS.
+        String validacaoSenhas = usuarioControl.validarSenha(txtSenha.getText().toString(),
+                txtConfirmarSenha.getText().toString());
+
+        if (!validacaoSenhas.isEmpty()){
+            retorno = retorno + validacaoSenhas.trim()+" \n";
+        }
+
         if (!usuarioControl.selectUsuarioPorEmail(txtEmail.getText().
                 toString()).isEmpty() && !tipoAcesso.equals("edit")){
             retorno = retorno + "Ja existe um usuario cadastrado com este endereco de e-mail. \n";
@@ -203,7 +224,26 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.cadastro_usuario_action_cancelar) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+            builder.setTitle("Pergunta");
+            builder.setMessage("Tem certeza que deseja cancelar?");
+
+            builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    onBackPressed();
+                }
+
+            });
+            builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            builder.create().show();
             return true;
         }
 

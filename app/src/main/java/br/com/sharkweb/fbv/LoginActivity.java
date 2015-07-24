@@ -57,7 +57,7 @@ public class LoginActivity extends ActionBarActivity {
                         Toast toast = Toast.makeText(getApplicationContext(), "Login feito com sucesso!", Toast.LENGTH_LONG);
                         toast.show();
 
-                        Usuario user = usuarioControl.selectUsuarioPorEmail(txtemail.getText().toString()).get(0);
+                        Usuario user = usuarioControl.selectUsuarioPorEmailouApelido(txtemail.getText().toString()).get(0);
 
                         if (loginControl.selecLogin().isEmpty()) {
                             loginControl.inserir(user.getId());

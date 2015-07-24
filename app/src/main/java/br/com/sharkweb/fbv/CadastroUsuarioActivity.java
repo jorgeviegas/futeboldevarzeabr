@@ -33,6 +33,8 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     private EditText txtEmail;
     private EditText txtSenha;
     private EditText txtConfirmarSenha;
+    private EditText txtCelular;
+    private EditText txtApelido;
 
     private Spinner spnTipoUsuario;
     private Spinner spnPosicao;
@@ -65,6 +67,12 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
         txtConfirmarSenha = (EditText) findViewById(R.id.cadastro_usuario_edtConfirmarSenha);
         txtConfirmarSenha.setVisibility(EditText.VISIBLE);
+
+        txtApelido = (EditText) findViewById(R.id.cadastro_usuario_edtApelido);
+        txtApelido.setVisibility(EditText.VISIBLE);
+
+        txtCelular = (EditText) findViewById(R.id.cadastro_usuario_edtCelular);
+        txtCelular.setVisibility(EditText.VISIBLE);
 
         spnTipoUsuario = (Spinner) findViewById((R.id.cadastro_usuario_spinner));
         ArrayList<TipoUsuario> tipo_usuario = tipoUsuarioControl.selectTiposUsuarios();
@@ -143,8 +151,10 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         txtSenha.setText(this.user.getSenha());
         txtConfirmarSenha.setText(this.user.getSenha());
         txtEmail.setText(this.user.getEmail());
-        spnPosicao.setSelection(this.user.getId_posicao()-1);
+        spnPosicao.setSelection(this.user.getId_posicao() - 1);
         spnTipoUsuario.setSelection(this.user.getId_tipo() - 1);
+        txtApelido.setText(this.user.getApelido());
+        txtCelular.setText(this.user.getCelular());
 
         if (tipoAcesso.equals("edit")){
             btnCadastrar.setText("Atualizar");
@@ -180,11 +190,13 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             int id_tipo = spnTipoUsuario.getSelectedItemPosition() + 1;
             int id_posicao = spnPosicao.getSelectedItemPosition() + 1;
             int id_time = 0;
+            String celular = txtCelular.getText().toString();
+            String apelido = txtApelido.getText().toString();
 
             if (tipoAcesso.equals("edit")){
-                usuarioControl.alterar(this.user.getId(), nome, codigo, email, senha, id_tipo, id_posicao, id_time);
+                usuarioControl.alterar(this.user.getId(), nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
             }else {
-                usuarioControl.inserir(nome, codigo, email, senha, id_tipo, id_posicao, id_time);
+                usuarioControl.inserir(nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
             }
             return true;
         } else {
@@ -194,16 +206,19 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     }
 
     private String validarCampos() {
-        String retorno = "";
+
         if (txtNome.getText().toString().isEmpty()) {
-            retorno = retorno + "Nome nao informado. \n";
+            return "Nome nao informado.";
         }
         if (txtEmail.getText().toString().isEmpty()) {
-            retorno = retorno + "E-mail nao informado. \n";
+            return "E-mail nao informado.";
         }else{
             if (!usuarioControl.validarEmail(txtEmail.getText().toString().trim())){
-                retorno = retorno + "Endereço de e-mail invalido. \n";
+                return "Endereço de e-mail invalido.";
             }
+        }
+        if (txtApelido.getText().toString().isEmpty()) {
+            return "Nome de usuario nao informado.";
         }
 
         //VERIFICA SE AS SENHAS DIGITADAS SÃO IGUAIS.
@@ -211,14 +226,14 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
                 txtConfirmarSenha.getText().toString());
 
         if (!validacaoSenhas.isEmpty()){
-            retorno = retorno + validacaoSenhas.trim()+" \n";
+            return validacaoSenhas.trim();
         }
 
         if (!usuarioControl.selectUsuarioPorEmail(txtEmail.getText().
                 toString()).isEmpty() && !tipoAcesso.equals("edit")){
-            retorno = retorno + "Ja existe um usuario cadastrado com este endereco de e-mail. \n";
+            return "Ja existe um usuario cadastrado com este endereco de e-mail.";
         }
-        return retorno;
+        return "";
     }
 
     @Override

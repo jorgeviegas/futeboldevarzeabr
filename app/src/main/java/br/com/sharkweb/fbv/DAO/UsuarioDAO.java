@@ -20,13 +20,16 @@ public class UsuarioDAO {
     private static final String ID_POSICAO = "id_posicao";
     private static final String ID_TIME = "id_time";
     private static final String ID_TIPO = "id_tipo";
+    private static final String CELULAR = "celular";
+    private static final String APELIDO = "apelido";
+
     private FBVDAO fbvdao;
 
     public UsuarioDAO(Context context) {
         fbvdao = FBVDAO.getInstance(context);
     }
 
-    public long inserir(String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time) {
+    public long inserir(String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
         ContentValues valores = new ContentValues();
         valores.put(NOME, nome);
         valores.put(CODIGO, codigo);
@@ -35,13 +38,15 @@ public class UsuarioDAO {
         valores.put(ID_TIPO, id_tipo);
         valores.put(ID_POSICAO, id_posicao);
         valores.put(ID_TIME, id_time);
+        valores.put(CELULAR, celular);
+        valores.put(APELIDO, apelido);
 
         long retorno = fbvdao.getWritableDatabase().insert(NOME_TABELA, null, valores);
         fbvdao.close();
         return retorno;
     }
 
-    public long inserirComId(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time) {
+    public long inserirComId(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
         ContentValues valores = new ContentValues();
         valores.put(ID, id);
         valores.put(NOME, nome);
@@ -51,13 +56,15 @@ public class UsuarioDAO {
         valores.put(ID_TIPO, id_tipo);
         valores.put(ID_POSICAO, id_posicao);
         valores.put(ID_TIME, id_time);
+        valores.put(CELULAR, celular);
+        valores.put(APELIDO, apelido);
 
         long retorno = fbvdao.getWritableDatabase().insert(NOME_TABELA, null, valores);
         fbvdao.close();
         return retorno;
     }
 
-    public long alterar(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time) {
+    public long alterar(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
         ContentValues valores = new ContentValues();
         valores.put(NOME, nome);
         valores.put(CODIGO, codigo);
@@ -66,6 +73,8 @@ public class UsuarioDAO {
         valores.put(ID_TIPO, id_tipo);
         valores.put(ID_POSICAO, id_posicao);
         valores.put(ID_TIME, id_time);
+        valores.put(CELULAR, celular);
+        valores.put(APELIDO, apelido);
 
         String[] whereAgrs = {Integer.toString(id)};
         int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID + " = ?", whereAgrs);
@@ -85,6 +94,12 @@ public class UsuarioDAO {
         return c;
     }
 
+    public ArrayList<Usuario> selectUsuarioPorApelido(String apelido) {
+        ArrayList<Usuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + APELIDO + " =  '" + apelido + "' ORDER BY " + NOME, null));
+        fbvdao.close();
+        return c;
+    }
+
     public ArrayList<Usuario> selectUsuarioPorId(int id_usuario) {
         ArrayList<Usuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID + " = " + id_usuario, null));
         fbvdao.close();
@@ -99,7 +114,7 @@ public class UsuarioDAO {
     private ArrayList<Usuario> cursorToArray(Cursor c) {
         ArrayList<Usuario> usuario = new ArrayList<Usuario>();
         while (c.moveToNext()) {
-            usuario.add(new Usuario(c.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getInt(5), c.getInt(6), c.getInt(7)));
+            usuario.add(new Usuario(c.getInt(0), c.getString(1), c.getString(2), c.getString(3), c.getString(4), c.getInt(5), c.getInt(6), c.getInt(7), c.getString(8), c.getString(9)));
         }
         return usuario;
     }

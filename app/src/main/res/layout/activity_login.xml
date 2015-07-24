@@ -19,7 +19,7 @@
         android:layout_alignParentTop="true"
         android:ems="10"
         android:focusable="true"
-        android:hint="E-mail:"
+        android:hint="Nome de usuario ou E-mail:"
         android:inputType="textEmailAddress" />
 
     <EditText

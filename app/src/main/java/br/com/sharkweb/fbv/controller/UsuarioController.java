@@ -23,16 +23,16 @@ public class UsuarioController {
     }
 
 
-    public long inserir(String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time) {
-        return usuarioDAO.inserir(nome, codigo, email, senha, id_tipo, id_posicao, id_time);
+    public long inserir(String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
+        return usuarioDAO.inserir(nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
     }
 
-    public long inserirComId(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time) {
-        return usuarioDAO.inserirComId(id, nome, codigo, email, senha, id_tipo, id_posicao, id_time);
+    public long inserirComId(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
+        return usuarioDAO.inserirComId(id, nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
     }
 
-    public long alterar(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time) {
-        return usuarioDAO.alterar(id, nome, codigo, email, senha, id_tipo, id_posicao, id_time);
+    public long alterar(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
+        return usuarioDAO.alterar(id, nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
     }
 
     public ArrayList<Usuario> selectUsuarios() {
@@ -41,6 +41,18 @@ public class UsuarioController {
 
     public ArrayList<Usuario> selectUsuarioPorEmail(String email) {
         return usuarioDAO.selectUsuarioPorEmail(email);
+    }
+
+    public ArrayList<Usuario> selectUsuarioPorEmailouApelido(String email) {
+        if (validarEmail(email)){
+            return usuarioDAO.selectUsuarioPorEmail(email);
+        }else{
+            return usuarioDAO.selectUsuarioPorApelido(email);
+        }
+    }
+
+    public ArrayList<Usuario> selectUsuarioPorApelido(String apelido) {
+        return usuarioDAO.selectUsuarioPorApelido(apelido);
     }
 
     public ArrayList<Usuario> selectUsuarioPorId(int id_usuario) {
@@ -53,8 +65,15 @@ public class UsuarioController {
 
     public boolean validarLogin(String email, String senha) {
 
-        ArrayList<Usuario> logins = selectUsuarioPorEmail(email);
-        ArrayList<Usuario> login2 = selectUsuarios();
+        ArrayList<Usuario> logins2 = selectUsuarios();
+
+        ArrayList<Usuario> logins = new ArrayList<>();
+
+        if (validarEmail(email)){
+           logins = selectUsuarioPorEmail(email);
+        }else{
+            logins = selectUsuarioPorApelido(email);
+        }
 
         if (logins.size() > 0) {
             Usuario login = logins.get(0);

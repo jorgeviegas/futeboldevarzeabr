@@ -18,9 +18,11 @@ public class Usuario {
     public int id_tipo;
     public int id_posicao;
     public int id_time;
+    public String celular;
+    public String apelido;
     public Time time;
 
-    public Usuario(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time) {
+    public Usuario(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
         this.id = id;
         this.nome = nome;
         this.codigo = codigo;
@@ -29,6 +31,8 @@ public class Usuario {
         this.email = email;
         this.senha = senha;
         this.id_tipo = id_tipo;
+        this.celular = celular;
+        this.apelido = apelido;
     }
 
     public Usuario() {
@@ -104,5 +108,21 @@ public class Usuario {
 
     public void setCodigo(String codigo) {
         this.codigo = codigo;
+    }
+
+    public String getCelular() {
+        return celular;
+    }
+
+    public void setCelular(String celular) {
+        this.celular = celular;
+    }
+
+    public String getApelido() {
+        return apelido;
+    }
+
+    public void setApelido(String apelido) {
+        this.apelido = apelido;
     }
 }

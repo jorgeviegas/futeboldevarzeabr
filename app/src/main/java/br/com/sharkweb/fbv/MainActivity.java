@@ -15,11 +15,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.controller.LoginController;
 import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
+import br.com.sharkweb.fbv.controller.UsuarioController;
+import br.com.sharkweb.fbv.model.Usuario;
 
 public class MainActivity extends ActionBarActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
@@ -39,6 +44,7 @@ public class MainActivity extends ActionBarActivity
     private PosicaoController posicaoControl = new PosicaoController(this);
     private LoginController loginControl = new LoginController(this);
     private Funcoes funcoes = new Funcoes(this);
+    private UsuarioController usuarioControl = new UsuarioController(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +74,13 @@ public class MainActivity extends ActionBarActivity
         tipoUsuarioControl.IniciarTiposUsuarios();
         posicaoControl.IniciarPosicoes();
 
+        //DEFININDO O USUARIO LOGADO NO SISTEMA.
+        if (!loginControl.selecLogin().isEmpty()){
+            Usuario user = usuarioControl.selectUsuarioPorId(loginControl.selecLogin()
+                    .get(0).getId_usuario()).get(0);
+            Constantes.setUsuarioLogado(user);
+        }
+
     }
 
     @Override
@@ -90,7 +103,7 @@ public class MainActivity extends ActionBarActivity
                 }
                 break;
             case 2:
-                mTitle = "Meu time";
+                mTitle = "Meus times";
                 mudarTela(TeamActivity.class);
                 break;
             case 3:
@@ -104,7 +117,7 @@ public class MainActivity extends ActionBarActivity
                 mTitle = "Meu usuario";
                 Bundle parametros = new Bundle();
                 parametros.putString("tipoAcesso", "edit");
-                parametros.putInt("id_usuario",loginControl.selecLogin().get(0).getId());
+                parametros.putInt("id_usuario",loginControl.selecLogin().get(0).getId_usuario());
                 mudarTela(CadastroUsuarioActivity.class, parametros);
                 break;
         }

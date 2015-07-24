@@ -3,8 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="br.com.sharkweb.fbv.TeamActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/time_action_cadastrar"
+        android:title="Cadastrar"
+        app:showAsAction="withText|ifRoom" />
+    <item
+        android:id="@+id/time_action_cancelar"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
+        android:title="Cancelar"
         app:showAsAction="never" />
 </menu>

@@ -1,8 +1,13 @@
 package br.com.sharkweb.fbv.model;
 
+import android.content.Context;
+
+import br.com.sharkweb.fbv.controller.TipoUsuarioController;
+
 /**
  * Created by Tiago on 19/07/2015.
  */
+
 public class Usuario {
 
     public int id;

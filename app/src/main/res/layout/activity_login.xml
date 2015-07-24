@@ -42,7 +42,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/login_txtsenha"
-        android:text="Login" />
+        android:text="Entrar" />
 
     <Button
         android:id="@+id/login_btnCadastrar"

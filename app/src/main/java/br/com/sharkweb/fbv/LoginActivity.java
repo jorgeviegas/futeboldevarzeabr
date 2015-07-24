@@ -58,6 +58,7 @@ public class LoginActivity extends ActionBarActivity {
                         toast.show();
 
                         Usuario user = usuarioControl.selectUsuarioPorEmail(txtemail.getText().toString()).get(0);
+
                         if (loginControl.selecLogin().isEmpty()) {
                             loginControl.inserir(user.getId());
                         }else{
@@ -79,33 +80,10 @@ public class LoginActivity extends ActionBarActivity {
         });
 
         btnCadastrar = (Button) findViewById(R.id.login_btnCadastrar);
+        btnCadastrar.setVisibility(View.GONE);
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-                builder.setTitle("Pergunta");
-                builder.setMessage("Tem certeza que deseja cadastrar um novo Usuario?");
-
-                builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        finish();
-                        Bundle parametros = new Bundle();
-                        parametros.putString("tipoAcesso", "write");
-                        mudarTela(CadastroUsuarioActivity.class, parametros);
-                    }
-
-                });
-                builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-
-                builder.create().show();
             }
         });
     }
@@ -158,6 +136,33 @@ public class LoginActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (item.getItemId() == R.id.login_action_cadastrar) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+            builder.setTitle("Pergunta");
+            builder.setMessage("Tem certeza que deseja cadastrar um novo Usuario?");
+
+            builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    //finish();
+                    Bundle parametros = new Bundle();
+                    parametros.putString("tipoAcesso", "write");
+                    mudarTela(CadastroUsuarioActivity.class, parametros);
+                }
+
+            });
+            builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            builder.create().show();
             return true;
         }
 

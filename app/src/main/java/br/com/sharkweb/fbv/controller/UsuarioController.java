@@ -3,6 +3,8 @@ package br.com.sharkweb.fbv.controller;
 import android.content.Context;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import br.com.sharkweb.fbv.DAO.UsuarioDAO;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -69,6 +71,17 @@ public class UsuarioController {
             return "Senha e Confirmar senha devem ser iguais.";
         }
         return "";
+    }
+
+    public boolean validarEmail(String email) {
+        if ((email == null) || (email.trim().length() == 0))
+            return false;
+
+        String emailPattern = "\\b(^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@([A-Za-z0-9-])+(\\.[A-Za-z0-9-]+)*((\\.[A-Za-z0-9]{2,})|(\\.[A-Za-z0-9]{2,}\\.[A-Za-z0-9]{2,}))$)\\b";
+        Pattern pattern = Pattern.compile(emailPattern, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(email);
+
+        return matcher.matches();
     }
     /*public String validarEAlterarNovaSenha(Login loginAtual, String senhaAntiga, String novaSenha, String repetirNovaSenha){
 

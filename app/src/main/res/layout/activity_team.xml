@@ -9,7 +9,7 @@
     tools:context="br.com.sharkweb.fbv.TeamActivity">
 
     <ListView
-        android:id="@+id/listView"
+        android:id="@+id/timelist_listviewTimes"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"

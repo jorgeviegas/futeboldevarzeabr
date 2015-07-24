@@ -135,7 +135,8 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     }
 
     private void carregarRegistro (int id_usuario){
-       // ArrayList<Usuario> teste = usuarioControl.selectUsuarioPorId(id_usuario);
+       // ArrayList<Usuario> teste = usuarioControl.selectUsuarios();
+
         this.user = usuarioControl.selectUsuarioPorId(id_usuario).get(0);
 
         txtNome.setText(this.user.getNome());
@@ -195,10 +196,14 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     private String validarCampos() {
         String retorno = "";
         if (txtNome.getText().toString().isEmpty()) {
-            retorno = retorno + "Nome nao informado \n";
+            retorno = retorno + "Nome nao informado. \n";
         }
         if (txtEmail.getText().toString().isEmpty()) {
-            retorno = retorno + "E-mail nao informado \n";
+            retorno = retorno + "E-mail nao informado. \n";
+        }else{
+            if (!usuarioControl.validarEmail(txtEmail.getText().toString().trim())){
+                retorno = retorno + "Endereço de e-mail invalido. \n";
+            }
         }
 
         //VERIFICA SE AS SENHAS DIGITADAS SÃO IGUAIS.

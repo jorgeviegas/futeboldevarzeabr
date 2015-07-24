@@ -8,6 +8,8 @@ public class TipoUsuario {
     private int id;
     private String tipo;
 
+    public TipoUsuario() {
+    }
 
     public TipoUsuario(int id, String tipo) {
         this.id = id;

@@ -1,5 +1,8 @@
 package br.com.sharkweb.fbv;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -15,9 +18,10 @@ import br.com.sharkweb.fbv.model.Time;
 
 public class CadastroTimeActivity extends ActionBarActivity {
 
+    final Context context = this;
     private EditText txtNome;
     private EditText txtEmail;
-    private EditText txtSenha;
+    //private EditText txtSenha;
 
     private Button btnCadastrar;
     private Button btnCancelar;
@@ -33,25 +37,16 @@ public class CadastroTimeActivity extends ActionBarActivity {
         txtNome = (EditText) findViewById(R.id.cadastro_time_edtNome);
         txtNome.setVisibility(EditText.VISIBLE);
 
-        txtEmail = (EditText) findViewById(R.id.cadastro_time_edtEmail);
-        txtEmail.setVisibility(EditText.VISIBLE);
+        //txtEmail = (EditText) findViewById(R.id.cadastro_time_edtEmail);
+        //txtEmail.setVisibility(EditText.VISIBLE);
 
         btnCadastrar = (Button) findViewById(R.id.cadastroTime_btnRegistrar);
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (inserir()) {
                     Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
-                    mudarTela(LoginActivity.class);
+                    mudarTela(MainActivity.class);
                 }
-
-            }
-        });
-
-        btnCancelar = (Button) findViewById(R.id.cadastroTime_btnCancelar);
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mudarTela(LoginActivity.class);
-                // onBackPressed();
             }
         });
     }
@@ -78,7 +73,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
     private Boolean inserir() {
         if (validarCampos().isEmpty()) {
             String nome = txtNome.getText().toString();
-            String email = txtEmail.getText().toString();
+
             Time time = new Time(nome);
             timeControl.inserir(time);
             return true;
@@ -103,7 +98,28 @@ public class CadastroTimeActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.time_action_cancelar) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+            builder.setTitle("Pergunta");
+            builder.setMessage("Tem certeza que deseja cancelar?");
+
+            builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    onBackPressed();
+                }
+
+            });
+            builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
+
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+
+            builder.create().show();
             return true;
         }
 

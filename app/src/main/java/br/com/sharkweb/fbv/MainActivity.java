@@ -88,7 +88,11 @@ public class MainActivity extends ActionBarActivity
 
         tvNomeUser = (TextView) findViewById(R.id.nagivation_edtNomeUsuario);
         tvNomeUser.setVisibility(TextView.VISIBLE);
-        String nomeUser = Constantes.getUsuarioLogado().getNome();
+        String nomeUser = "";
+        if (Constantes.getUsuarioLogado() != null){
+             nomeUser = Constantes.getUsuarioLogado().getNome();
+        }
+
         tvNomeUser.setText(nomeUser.toUpperCase());
         tvNomeUser.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

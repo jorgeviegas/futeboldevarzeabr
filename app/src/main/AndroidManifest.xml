@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.com.sharkweb.fbv">
+    package="br.com.sharkweb.fbv" >
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/fbv"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -23,10 +24,14 @@
             android:label="Cadastro do time" />
         <activity
             android:name=".LoginActivity"
-            android:label="Login"></activity>
+            android:label="Login" />
         <activity
             android:name=".CadastroUsuarioActivity"
-            android:label="Novo Cadastro"></activity>
+            android:label="Novo Cadastro" />
+        <activity
+            android:name=".TimeDetalhe"
+            android:label="Time" >
+        </activity>
     </application>
 
 </manifest>

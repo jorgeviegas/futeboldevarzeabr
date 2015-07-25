@@ -36,7 +36,6 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team);
 
-
         times = (ListView) findViewById(R.id.timelist_listviewTimes);
         times.setOnItemClickListener(this);
 
@@ -138,7 +137,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         if(time.getId() != 0){
             Bundle parametros = new Bundle();
             parametros.putInt("id_time", time.getId());
-            //mudarTela(EscolhaClientes.class, parametros);
+            mudarTela(TimeDetalhe.class, parametros);
         }
     }
 }

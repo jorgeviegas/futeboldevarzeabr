@@ -11,7 +11,7 @@ import br.com.sharkweb.fbv.model.Time;
 public class TimeDAO {
 
     /*Dados da tabela*/
-    private static final String NOME_TABELA = "times";
+    private static final String NOME_TABELA = "time";
     private static final String ID = "_id";
     private static final String NOME = "nome";
     private FBVDAO fbvdao;

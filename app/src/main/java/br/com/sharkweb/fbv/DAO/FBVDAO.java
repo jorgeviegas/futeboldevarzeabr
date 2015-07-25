@@ -35,8 +35,9 @@ public class FBVDAO extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE usuario 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, codigo TEXT, email TEXT, senha TEXT, id_tipo INTEGER, id_posicao INTEGER, id_time INTEGER, celular TEXT, apelido TEXT);");
         db.execSQL("CREATE TABLE tipo_usuario 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, tipo TEXT);");
         db.execSQL("CREATE TABLE posicao 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT);");
-        db.execSQL("CREATE TABLE times 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT);");
+        db.execSQL("CREATE TABLE time 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT);");
         db.execSQL("CREATE TABLE login 		(_id INTEGER PRIMARY KEY AUTOINCREMENT, id_usuario INTEGER);");
+        db.execSQL("CREATE TABLE time_usuario (_id INTEGER PRIMARY KEY AUTOINCREMENT, id_time INTEGER, id_usuario INTEGER);");
     }
 
     @Override

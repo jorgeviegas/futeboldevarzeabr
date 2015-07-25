@@ -28,7 +28,6 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private TimeListAdapter adapterTimes;
     private TimeController timesControl = new TimeController(this);
     private TipoUsuarioController tipouserControl = new TipoUsuarioController(this);
-    private MenuItem menuCadastrar;
 
     final Context context = this;
 
@@ -47,14 +46,23 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem m1 = menu.findItem(R.id.time_action_cadastrar);
 
         //Somente usuarios administradores podem usar o menu cadastrar
         if (tipouserControl.selectTiposUsuariosPorId(Constantes.getUsuarioLogado().
-                getId_tipo()).get(0).getTipo().equals("Administrador")){
+                getId_tipo()).get(0).getTipo().equals("Administrador"))
+            m1.setVisible(true);
+        else
+            m1.setVisible(false);
+
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
             getMenuInflater().inflate(R.menu.menu_team, menu);
-        }
         return true;
     }
 
@@ -66,7 +74,8 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.time_action_cancelar) {
+            onBackPressed();
             return true;
         }
         if (item.getItemId() == R.id.time_action_cadastrar) {

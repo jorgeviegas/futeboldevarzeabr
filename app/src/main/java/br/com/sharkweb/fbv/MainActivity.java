@@ -3,12 +3,14 @@ package br.com.sharkweb.fbv;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import br.com.sharkweb.fbv.Util.Constantes;
@@ -40,6 +43,8 @@ public class MainActivity extends ActionBarActivity
 
     private CharSequence mTitle;
     private boolean loginFeito;
+    private TextView tvNomeUser;
+
     private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
     private PosicaoController posicaoControl = new PosicaoController(this);
     private LoginController loginControl = new LoginController(this);
@@ -81,6 +86,18 @@ public class MainActivity extends ActionBarActivity
             Constantes.setUsuarioLogado(user);
         }
 
+        tvNomeUser = (TextView) findViewById(R.id.nagivation_edtNomeUsuario);
+        tvNomeUser.setVisibility(TextView.VISIBLE);
+        String nomeUser = Constantes.getUsuarioLogado().getNome();
+        tvNomeUser.setText(nomeUser.toUpperCase());
+        tvNomeUser.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Bundle parametros = new Bundle();
+                parametros.putString("tipoAcesso", "edit");
+                parametros.putInt("id_usuario",loginControl.selecLogin().get(0).getId_usuario());
+                mudarTela(CadastroUsuarioActivity.class, parametros);
+            }
+        });
     }
 
     @Override
@@ -95,7 +112,7 @@ public class MainActivity extends ActionBarActivity
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                mTitle = "Inicial";
+               // mTitle = "Inicial";
                 if (loginControl.selecLogin().isEmpty()) {
                     Bundle parametros = new Bundle();
                     parametros.putBoolean("salvo", true);
@@ -103,22 +120,15 @@ public class MainActivity extends ActionBarActivity
                 }
                 break;
             case 2:
-                mTitle = "Meus times";
+                // mTitle = "Meus times";
                 mudarTela(TeamActivity.class);
                 break;
             case 3:
-                mTitle = "Calendario";
+                //mTitle = "Calendario";
                 break;
             case 4:
-                mTitle = "Cadastrar Time";
-                mudarTela(CadastroTimeActivity.class);
-                break;
-            case 5:
-                mTitle = "Meu usuario";
-                Bundle parametros = new Bundle();
-                parametros.putString("tipoAcesso", "edit");
-                parametros.putInt("id_usuario",loginControl.selecLogin().get(0).getId_usuario());
-                mudarTela(CadastroUsuarioActivity.class, parametros);
+                //mTitle = "Meu usuario";
+
                 break;
         }
     }
@@ -129,7 +139,6 @@ public class MainActivity extends ActionBarActivity
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

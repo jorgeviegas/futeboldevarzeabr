@@ -219,6 +219,11 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         }
         if (txtApelido.getText().toString().isEmpty()) {
             return "Nome de usuario nao informado.";
+        }else{
+            if (!usuarioControl.selectUsuarioPorApelido(txtApelido.getText().toString()).isEmpty()
+                    && !tipoAcesso.equals("edit")){
+                return "Ops... Esse nome de usuario ja esta em uso.";
+            }
         }
 
         //VERIFICA SE AS SENHAS DIGITADAS SÃO IGUAIS.
@@ -231,7 +236,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
         if (!usuarioControl.selectUsuarioPorEmail(txtEmail.getText().
                 toString()).isEmpty() && !tipoAcesso.equals("edit")){
-            return "Ja existe um usuario cadastrado com este endereco de e-mail.";
+            return "Ops... Ja existe um usuario cadastrado com este endereco de e-mail.";
         }
         return "";
     }

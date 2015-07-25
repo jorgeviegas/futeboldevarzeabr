@@ -10,6 +10,6 @@
         android:text="New Text"
         android:id="@+id/timelist_nomeTime"
         android:layout_margin="3dp"
-        android:textSize="@dimen/abc_text_size_body_2_material"
-        android:layout_weight="0.04" />
+        android:textSize="@dimen/edt_size"
+        android:layout_weight="0.18" />
 </LinearLayout>

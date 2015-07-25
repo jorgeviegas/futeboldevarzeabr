@@ -65,6 +65,7 @@ public class LoginActivity extends ActionBarActivity {
                             loginControl.alterar(1,user.getId());
                         }
 
+
                         Bundle parametros = new Bundle();
                         parametros.putBoolean("login", true);
                         mudarTela(MainActivity.class, parametros);
@@ -97,6 +98,7 @@ public class LoginActivity extends ActionBarActivity {
     @SuppressWarnings({"rawtypes", "unused"})
     private void mudarTela(Class cls, Bundle parametros) {
         Intent intent = new Intent(this, cls);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtras(parametros);
         startActivity(intent);
     }

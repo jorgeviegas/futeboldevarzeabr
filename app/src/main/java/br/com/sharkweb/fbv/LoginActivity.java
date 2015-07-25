@@ -19,6 +19,7 @@ import br.com.sharkweb.fbv.model.Usuario;
 
 public class LoginActivity extends ActionBarActivity {
 
+    //TESTE
     final Context context = this;
     private EditText txtemail;
     private EditText txtSenha;

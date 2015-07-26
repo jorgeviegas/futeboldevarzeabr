@@ -4,6 +4,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="edt_size">25sp</dimen>
     <dimen name="nomeUsuario_size">18sp</dimen>
+    <dimen name="nomePosicao_size">15sp</dimen>
 
     <dimen name="tv_nomeAppMenu">17sp</dimen>
     <!-- Per the design guidelines, navigation drawers should be between 240dp and 320dp:

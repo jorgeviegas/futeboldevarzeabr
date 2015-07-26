@@ -68,13 +68,14 @@ public class TimeDetalhe extends ActionBarActivity {
         tvNomeTime = (TextView) findViewById(R.id.timeDetalhe_tvNomeTime);
         tvNomeTime.setVisibility(TextView.VISIBLE);
 
-        tvNomeTime.setText(this.time.getNome());
+        tvNomeTime.setText(" "+this.time.getNome());
         listaJogadores = (ListView) findViewById(R.id.timeDetalhe_listJogadores);
         //listaJogadores.setOnItemClickListener((AdapterView.OnItemClickListener) this);
+        listaJogadores.setBackgroundColor(Color.WHITE);
+        //listaJogadores.setCacheColorHint(Color.TRANSPARENT);
 
         atualizarLista();
 
-        listaJogadores.setCacheColorHint(Color.TRANSPARENT);
     }
 
     public void atualizarLista(){
@@ -123,7 +124,6 @@ public class TimeDetalhe extends ActionBarActivity {
         return true;
     }
 
-
     public String PedirEmailApelido(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Informe o E-mail ou Nome de usuario do jogador");
@@ -159,6 +159,12 @@ public class TimeDetalhe extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == R.id.timedetalhe_action_voltar) {
+            onBackPressed();
+            return true;
+        }
+
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.timedetalhe_action_cadastrarJogador) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -171,16 +177,16 @@ public class TimeDetalhe extends ActionBarActivity {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                     //ISSO AQUI É TESTE MAROTAO
-                    //ArrayList<Usuario> users = usuarioControl.selectUsuarios();
-                    /*for (int i = 0; i < users.size(); i++) {
+                    ArrayList<Usuario> users = usuarioControl.selectUsuarios();
+                    for (int i = 0; i < users.size(); i++) {
                         TimeUsuario timeUser = new TimeUsuario(time.getId(), users.get(i).getId());
                         timeusuarioControl.inserir(timeUser);
                     }
-                    atualizarLista();*/
+                    atualizarLista();
 
-                    String ret = PedirEmailApelido();
-                    if (!ret.isEmpty())
-                    funcoes.mostrarDialogAlert(0,"alo",ret);
+                    //String ret = PedirEmailApelido();
+                   // if (!ret.isEmpty())
+                    //funcoes.mostrarDialogAlert(0,"alo",ret);
                 }
 
             });

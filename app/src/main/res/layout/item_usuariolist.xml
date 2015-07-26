@@ -1,15 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="1">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    android:background="#ffffffff"
+    >
+
+    <ImageView
+        android:id="@+id/usuariolist_imagemUsuario"
+        android:layout_width="60dp"
+        android:layout_height="52dp"
+        android:background="#ffffff"
+        android:scaleType="centerCrop"
+        />
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="New Text"
         android:id="@+id/usuariolist_nomeTime"
-        android:layout_margin="3dp"
-        android:textSize="@dimen/nomeUsuario_size"
-        android:layout_weight="0.18" />
-</LinearLayout>
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/usuariolist_imagemUsuario"
+        android:layout_alignTop="@+id/usuariolist_imagemUsuario"
+        android:text="Nome Usuario"
+        android:textSize="20sp"
+        android:textColor="#333333"
+        android:paddingLeft="5dp"
+        />
+
+    <TextView
+        android:id="@+id/usuariolist_posicao"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/usuariolist_nomeTime"
+        android:layout_toRightOf="@+id/usuariolist_imagemUsuario"
+        android:text="Posicao"
+        android:textColor="#333333"
+        android:paddingLeft="5dp"
+        />
+
+    <TextView
+        android:id="@+id/usuariolist_tipoUsuario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/usuariolist_nomeTime"
+        android:layout_alignParentRight="true"
+        android:text="TipoUsuario"
+        android:textColor="#333333"
+        />
+</RelativeLayout>

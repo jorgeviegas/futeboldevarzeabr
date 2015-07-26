@@ -5,17 +5,22 @@ package br.com.sharkweb.fbv.adapter;
  */
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.R;
+import br.com.sharkweb.fbv.controller.PosicaoController;
+import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
+import android.content.Intent;
 
 /**
  * @author Tiago Klein
@@ -25,10 +30,14 @@ public class UsuarioListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
     private ArrayList<Usuario> usuarios;
+    private PosicaoController posicaoControl;
+    private TipoUsuarioController tipousuarioControl;
 
     public UsuarioListAdapter(Context context, ArrayList<Usuario> listaUsuarios) {
         this.usuarios = listaUsuarios;
         mInflater = LayoutInflater.from(context);
+        posicaoControl = new PosicaoController(context);
+        tipousuarioControl = new TipoUsuarioController(context);
     }
 
     public int getCount() {
@@ -50,6 +59,9 @@ public class UsuarioListAdapter extends BaseAdapter {
 
             itemHolder = new ItemSuporte();
             itemHolder.tvUsuarioNome = ((TextView) view.findViewById(R.id.usuariolist_nomeTime));
+            itemHolder.tvUsuarioPosicao = ((TextView) view.findViewById(R.id.usuariolist_posicao));
+            itemHolder.tvTipoUsuario = ((TextView) view.findViewById(R.id.usuariolist_tipoUsuario));
+            itemHolder.ivImagemUsuario = ((ImageView) view.findViewById(R.id.usuariolist_imagemUsuario));
 
             view.setTag(itemHolder);
         }
@@ -59,11 +71,17 @@ public class UsuarioListAdapter extends BaseAdapter {
 
         Usuario user = usuarios.get(position);
         itemHolder.tvUsuarioNome.setText(user.getNome());
-
+        itemHolder.tvUsuarioPosicao.setText(posicaoControl.selectPosicaoPorId(user.getId_posicao()).get(0).getNome());
+        itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(user.getId_tipo()).get(0).getTipo());
+        itemHolder.ivImagemUsuario.setImageResource(R.drawable.parson);
         return view;
     }
 
     private class ItemSuporte {
         public TextView tvUsuarioNome;
+        public TextView tvUsuarioPosicao;
+        public TextView tvTipoUsuario;
+        public ImageView ivImagemUsuario;
+
     }
 }

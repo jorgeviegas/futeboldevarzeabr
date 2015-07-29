@@ -82,10 +82,11 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             tipo_usuarios.add(tipo_usuario.get(i).getTipo().trim());
         }
 
-        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(this, R.layout.abc_list_menu_item_checkbox,
+        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1,
                 tipo_usuarios);
 
         spnTipoUsuario.setAdapter(arrayAdapter2);
+        spnTipoUsuario.setSelection(1);
         spnTipoUsuario.setVisibility(View.VISIBLE);
 
         spnPosicao = (Spinner) findViewById((R.id.cadastro_usuario_spinner_posicao));
@@ -96,11 +97,10 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             posicoes.add(posicao.get(i).getNome().trim());
         }
         //abc_list_menu_item_checkbox
-        ArrayAdapter<String> arrayAdapterPosicao = new ArrayAdapter<String>(this, R.layout.abc_list_menu_item_checkbox,
+        ArrayAdapter<String> arrayAdapterPosicao = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1,
                 posicoes);
         spnPosicao.setAdapter(arrayAdapterPosicao);
         spnPosicao.setVisibility(View.VISIBLE);
-
 
         //final String spinVal = String.valueOf(spin.getSelectedItem());
 
@@ -158,6 +158,20 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
         if (tipoAcesso.equals("edit")){
             btnCadastrar.setText("Atualizar");
+        }
+
+        if (tipoAcesso.equals("read")){
+            txtNome.setEnabled(false);
+            txtApelido.setEnabled(false);
+            txtEmail.setEnabled(false);
+            txtCelular.setEnabled(false);
+            spnPosicao.setEnabled(false);
+            spnTipoUsuario.setEnabled(false);
+            txtSenha.setEnabled(false);
+            txtSenha.setText("auhaushausausaushaushaushaushaush");
+            txtConfirmarSenha.setText("auhaushausausaushaushaushaushaush");
+            txtConfirmarSenha.setEnabled(false);
+            btnCadastrar.setEnabled(false);
         }
     }
 

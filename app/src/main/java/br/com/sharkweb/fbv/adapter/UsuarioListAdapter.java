@@ -71,9 +71,14 @@ public class UsuarioListAdapter extends BaseAdapter {
 
         Usuario user = usuarios.get(position);
         itemHolder.tvUsuarioNome.setText(user.getNome());
-        itemHolder.tvUsuarioPosicao.setText(posicaoControl.selectPosicaoPorId(user.getId_posicao()).get(0).getNome());
-        itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(user.getId_tipo()).get(0).getTipo());
-        itemHolder.ivImagemUsuario.setImageResource(R.drawable.parson);
+        if (user.getId() > 0) {
+            itemHolder.tvUsuarioPosicao.setText(posicaoControl.selectPosicaoPorId(user.getId_posicao()).get(0).getNome());
+            itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(user.getId_tipo()).get(0).getTipo());
+            itemHolder.ivImagemUsuario.setImageResource(R.drawable.parson);
+        }else{
+            itemHolder.tvUsuarioPosicao.setText("");
+            itemHolder.tvTipoUsuario.setText("");
+        }
         return view;
     }
 

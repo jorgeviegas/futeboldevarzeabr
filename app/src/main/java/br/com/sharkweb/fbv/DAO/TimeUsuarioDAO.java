@@ -76,6 +76,14 @@ public class TimeUsuarioDAO {
         return retorno;
     }
 
+    public long excluirTimeUsuarioPorIdUsuario(int id_usuario, int id_time) {
+        String[] whereArgs = {Integer.toString(id_usuario),Integer.toString(id_time)};
+        long retorno;
+        retorno = fbvdao.getReadableDatabase().delete(NOME_TABELA, ID_USUARIO + " = ? AND "+ID_TIME+" = ? ", whereArgs);
+        fbvdao.close();
+        return retorno;
+    }
+
     private ArrayList<TimeUsuario> cursorToArray(Cursor c) {
         ArrayList<TimeUsuario> timeUsuario = new ArrayList<TimeUsuario>();
         while (c.moveToNext()) {

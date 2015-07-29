@@ -27,10 +27,10 @@
             android:label="Login" />
         <activity
             android:name=".CadastroUsuarioActivity"
-            android:label="Novo Cadastro" />
+            android:label="Cadastro de usuario" />
         <activity
             android:name=".TimeDetalhe"
-            android:label="Time" >
+            android:label="Time">
         </activity>
     </application>
 

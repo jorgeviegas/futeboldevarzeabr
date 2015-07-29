@@ -9,6 +9,6 @@
     <item
         android:id="@+id/time_action_cancelar"
         android:orderInCategory="100"
-        android:title="Cancelar"
+        android:title="Voltar"
         app:showAsAction="never" />
 </menu>

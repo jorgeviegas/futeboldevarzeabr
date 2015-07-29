@@ -29,6 +29,11 @@ public class TimeUsuarioController {
         return timeUsuarioDAO.excluirTimeUsuarioPorId(id);
     }
 
+    public long excluirTimeUsuarioPorIdUsuario(int id_usuario, int id_time) {
+        return timeUsuarioDAO.excluirTimeUsuarioPorIdUsuario(id_usuario, id_time);
+    }
+
+
     public ArrayList<TimeUsuario> selectTimeUsuario() {
         return timeUsuarioDAO.selectTimeUsuario();
     }

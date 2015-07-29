@@ -56,7 +56,7 @@ public class TimeListAdapter extends BaseAdapter {
         }
 
         Time time = times.get(position);
-        itemHolder.tvEscolhaTimeNome.setText(time.getNome());
+        itemHolder.tvEscolhaTimeNome.setText(time.getNome().toUpperCase());
 
         return view;
     }

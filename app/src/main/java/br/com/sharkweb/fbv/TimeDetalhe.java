@@ -35,7 +35,7 @@ import br.com.sharkweb.fbv.model.TimeUsuario;
 import br.com.sharkweb.fbv.model.Usuario;
 
 
-public class TimeDetalhe extends ActionBarActivity {
+public class TimeDetalhe extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     private TextView tvNomeTime;
     private Funcoes funcoes = new Funcoes(this);
@@ -72,7 +72,10 @@ public class TimeDetalhe extends ActionBarActivity {
         listaJogadores = (ListView) findViewById(R.id.timeDetalhe_listJogadores);
         //listaJogadores.setOnItemClickListener((AdapterView.OnItemClickListener) this);
         listaJogadores.setBackgroundColor(Color.WHITE);
+        listaJogadores.setOnItemClickListener(this);
+        listaJogadores.setOnItemLongClickListener(this);
         //listaJogadores.setCacheColorHint(Color.TRANSPARENT);
+
 
         atualizarLista();
 
@@ -152,6 +155,8 @@ public class TimeDetalhe extends ActionBarActivity {
 
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -202,5 +207,51 @@ public class TimeDetalhe extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+
+        //Menu de opções que o usuário pode fazer com os usuarios.
+        String[] arrayOpcoes = new String[2];
+        arrayOpcoes[0] = "Visualizar";
+        arrayOpcoes[1] = "Excluir";
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("O que deseja fazer?");
+        builder.setCancelable(true);
+        builder.setItems(arrayOpcoes, new DialogInterface.OnClickListener() {
+            Usuario user = adapterUsuarios.getItem(position);
+
+            @Override
+            public void onClick(DialogInterface dialog, int arg1) {
+                if (arg1 == 0) {
+                    Bundle parametros = new Bundle();
+                    parametros.putString("tipoAcesso", "read");
+                    parametros.putInt("id_usuario",user.getId());
+                    mudarTela(CadastroUsuarioActivity.class, parametros);
+                } else {
+                    timeusuarioControl.excluirTimeUsuarioPorIdUsuario(user.getId(),time.getId());
+                    atualizarLista();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int arg1) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialogExportar = builder.create();
+        dialogExportar.show();
+
+        return true;
+    }
+
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
     }
 }

@@ -62,8 +62,10 @@
         android:layout_height="wrap_content"
         android:spinnerMode="dropdown"
         android:layout_below="@+id/cadastro_usuario_edtConfirmarSenha"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignRight="@+id/cadastro_usuario_edtConfirmarSenha"
+        android:layout_alignEnd="@+id/cadastro_usuario_edtConfirmarSenha"
+        android:layout_alignLeft="@+id/cadastro_usuario_spinner_posicao"
+        android:layout_alignStart="@+id/cadastro_usuario_spinner_posicao" />
 
     <Spinner
         android:id="@+id/cadastro_usuario_spinner_posicao"
@@ -71,8 +73,10 @@
         android:layout_height="wrap_content"
         android:spinnerMode="dropdown"
         android:layout_below="@+id/cadastro_usuario_spinner"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignRight="@+id/cadastroUsuario_btnRegistrar"
+        android:layout_alignEnd="@+id/cadastroUsuario_btnRegistrar"
+        android:layout_alignLeft="@+id/cadastro_usuario_btnCancelar"
+        android:layout_alignStart="@+id/cadastro_usuario_btnCancelar" />
 
     <Button
         android:id="@+id/cadastro_usuario_btnCancelar"
@@ -102,12 +106,12 @@
         android:inputType="phone"
         android:ems="10"
         android:id="@+id/cadastro_usuario_edtCelular"
-        android:layout_below="@+id/cadastro_usuario_edtApelido"
+        android:hint="Celular:"
+        android:layout_above="@+id/cadastro_usuario_edtSenha"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:hint="Celular:"
-        android:layout_alignRight="@+id/cadastro_usuario_edtApelido"
-        android:layout_alignEnd="@+id/cadastro_usuario_edtApelido" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -119,5 +123,35 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tipo de usuario: "
+        android:paddingTop="12sp"
+        android:textSize="17sp"
+        android:textColor="@android:color/black"
+        android:id="@+id/cadastro_usuario_tvlabelTipoUsuario"
+        android:layout_below="@+id/cadastro_usuario_edtConfirmarSenha"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignBottom="@+id/cadastro_usuario_spinner"
+        android:layout_toLeftOf="@+id/cadastro_usuario_spinner"
+        android:layout_toStartOf="@+id/cadastro_usuario_spinner" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Posição: "
+        android:textSize="17sp"
+        android:paddingTop="12sp"
+        android:textColor="@android:color/black"
+        android:id="@+id/cadastro_usuario_tvlabelPosicao"
+        android:layout_above="@+id/cadastroUsuario_btnRegistrar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/cadastro_usuario_spinner_posicao"
+        android:layout_toLeftOf="@+id/cadastro_usuario_spinner_posicao"
+        android:layout_toStartOf="@+id/cadastro_usuario_spinner_posicao" />
 
 </RelativeLayout>

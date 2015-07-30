@@ -21,7 +21,13 @@ public class CadastroTimeActivity extends ActionBarActivity {
     final Context context = this;
     private EditText txtNome;
     private EditText txtEmail;
+    private EditText txtCidade;
+    private EditText txtUF;
     //private EditText txtSenha;
+
+    private Time time;
+
+    private String tipoAcesso;
 
     private Button btnCadastrar;
     private Button btnCancelar;
@@ -37,6 +43,12 @@ public class CadastroTimeActivity extends ActionBarActivity {
         txtNome = (EditText) findViewById(R.id.cadastro_time_edtNome);
         txtNome.setVisibility(EditText.VISIBLE);
 
+        txtCidade = (EditText) findViewById(R.id.cadastro_time_edtCidade);
+        txtCidade.setVisibility(EditText.VISIBLE);
+
+        txtUF = (EditText) findViewById(R.id.cadastro_time_edtUF);
+        txtUF.setVisibility(EditText.VISIBLE);
+
         //txtEmail = (EditText) findViewById(R.id.cadastro_time_edtEmail);
         //txtEmail.setVisibility(EditText.VISIBLE);
 
@@ -45,10 +57,25 @@ public class CadastroTimeActivity extends ActionBarActivity {
             public void onClick(View v) {
                 if (inserir()) {
                     Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
-                    mudarTela(MainActivity.class);
+                    toast.show();
+                    Bundle parametros = new Bundle();
+                    parametros.putInt("id_time", time.getId());
+                    mudarTela(TimeDetalheActivity.class, parametros);
                 }
             }
         });
+
+        Bundle params = getIntent().getExtras();
+        if (params != null) {
+            tipoAcesso = params.getString("tipoAcesso");
+            this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
+        }else{
+            this.time = null;
+        }
+
+        if (this.time != null) {
+            carregarRegistro();
+        }
     }
 
     @Override
@@ -62,6 +89,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
     private void mudarTela(Class cls, Bundle parametros) {
         Intent intent = new Intent(this, cls);
         intent.putExtras(parametros);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
@@ -72,10 +100,17 @@ public class CadastroTimeActivity extends ActionBarActivity {
 
     private Boolean inserir() {
         if (validarCampos().isEmpty()) {
-            String nome = txtNome.getText().toString();
+            String nome = txtNome.getText().toString().trim();
+            String cidade = txtCidade.getText().toString().trim().toUpperCase();
+            String uf = txtUF.getText().toString().trim().toUpperCase();
+            Time time = new Time(this.time.getId(),nome, cidade, uf);
 
-            Time time = new Time(nome);
-            timeControl.inserir(time);
+            if (tipoAcesso.equals("edit")){
+                timeControl.alterar(time);
+            }else {
+                timeControl.inserir(time);
+            }
+
             return true;
         } else {
             return false;
@@ -83,14 +118,35 @@ public class CadastroTimeActivity extends ActionBarActivity {
     }
 
     private String validarCampos() {
-        String retorno = "";
         if (txtNome.getText().toString().isEmpty()) {
-            retorno = retorno + "Nome nao informado \n";
+            return "Nome nao informado";
         }
-        return retorno;
+        if (txtCidade.getText().toString().isEmpty()) {
+            return "Cidade nao informado";
+        }
+        if (txtUF.getText().toString().isEmpty()) {
+            return "UF nao informado";
+        }
+        return "";
     }
 
-    @Override
+    private void carregarRegistro () {
+        txtNome.setText(this.time.getNome());
+        txtCidade.setText(this.time.getCidade());
+        txtUF.setText(this.time.getUf());
+
+        if (this.tipoAcesso.equals("read")){
+            txtNome.setEnabled(false);
+            txtCidade.setEnabled(false);
+            txtUF.setEnabled(false);
+        }
+
+        if (this.tipoAcesso.equals("edit")){
+            btnCadastrar.setText("Atualizar");
+        }
+    }
+
+        @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long

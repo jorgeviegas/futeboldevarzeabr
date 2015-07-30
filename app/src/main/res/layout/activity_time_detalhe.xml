@@ -1,7 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="br.com.sharkweb.fbv.TimeDetalhe">
+    tools:context="br.com.sharkweb.fbv.TimeDetalheActivity">
 
     <TextView
         android:id="@+id/timeDetalhe_tvNomeTime"
@@ -45,7 +45,19 @@
         android:layout_alignLeft="@+id/timeDetalhe_tvNomeTime"
         android:layout_alignStart="@+id/timeDetalhe_tvNomeTime"
         android:layout_below="@+id/timeDetalhe_tvNomeTime"
-        android:layout_alignRight="@+id/timeDetalhe_tvNomeTime"
-        android:layout_alignEnd="@+id/timeDetalhe_tvNomeTime" />
+        android:layout_toStartOf="@+id/time_detalhe_chkInativo" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mostrar inativos"
+        android:id="@+id/time_detalhe_chkInativo"
+        android:layout_above="@+id/timeDetalhe_listJogadores"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/timeDetalhe_labelJogadores"
+        android:checked="false"
+        android:background="@android:color/white"
+        android:textColor="@android:color/black" />
 
 </RelativeLayout>

@@ -1,11 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" tools:context="br.com.sharkweb.fbv.TimeDetalhe">
+    xmlns:tools="http://schemas.android.com/tools" tools:context="br.com.sharkweb.fbv.TimeDetalheActivity">
     <item
         android:id="@+id/timedetalhe_action_cadastrarJogador"
         android:title="Inserir Jogador"
         app:showAsAction="withText|ifRoom" />
 
+    <item android:id="@+id/timedetalhe_action_editar"
+        android:title="Editar"
+        android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/timedetalhe_action_voltar"
         android:title="Voltar"
         android:orderInCategory="100" app:showAsAction="never" />

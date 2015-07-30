@@ -19,8 +19,8 @@ public class TimeController {
         return timeDAO.inserir(time);
     }
 
-    public long alterar(int id, Time time) {
-        return timeDAO.alterar(id, time);
+    public long alterar(Time time) {
+        return timeDAO.alterar(time);
     }
 
     public long excluirTimePorId(int id) {

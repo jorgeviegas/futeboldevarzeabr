@@ -8,16 +8,22 @@ public class TimeUsuario {
     private int id;
     private int id_time;
     private int id_usuario;
+    private int inativo;
+    private String posicao;
 
-    public TimeUsuario(int id, int id_time, int id_usuario) {
+    public TimeUsuario(int id, int id_time, int id_usuario, int inativo, String posicao) {
         this.id = id;
         this.id_time = id_time;
         this.id_usuario = id_usuario;
+        this.inativo = inativo;
+        this.posicao = posicao;
     }
 
-    public TimeUsuario(int id_time, int id_usuario) {
+    public TimeUsuario(int id_time, int id_usuario, int inativo, String posicao) {
         this.id_time = id_time;
         this.id_usuario = id_usuario;
+        this.inativo = inativo;
+        this.posicao = posicao;
     }
 
 
@@ -43,5 +49,21 @@ public class TimeUsuario {
 
     public void setId_usuario(int id_usuario) {
         this.id_usuario = id_usuario;
+    }
+
+    public int getInativo() {
+        return inativo;
+    }
+
+    public void setInativo(int inativo) {
+        this.inativo = inativo;
+    }
+
+    public String getPosicao() {
+        return posicao;
+    }
+
+    public void setPosicao(String posicao) {
+        this.posicao = posicao;
     }
 }

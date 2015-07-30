@@ -27,7 +27,30 @@
         android:layout_height="wrap_content"
         android:text="Cadastrar"
         android:layout_below="@+id/cadastro_time_edtNome"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignRight="@+id/cadastro_time_edtNome"
+        android:layout_alignEnd="@+id/cadastro_time_edtNome"
+        android:layout_marginTop="61dp" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cadastro_time_edtCidade"
+        android:layout_below="@+id/cadastro_time_edtNome"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/cadastroTime_btnRegistrar"
+        android:layout_toStartOf="@+id/cadastroTime_btnRegistrar"
+        android:hint="Cidade:" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cadastro_time_edtUF"
+        android:layout_alignBottom="@+id/cadastro_time_edtCidade"
+        android:layout_alignRight="@+id/cadastro_time_edtNome"
+        android:layout_alignEnd="@+id/cadastro_time_edtNome"
+        android:layout_toRightOf="@+id/cadastro_time_edtCidade"
+        android:layout_toEndOf="@+id/cadastro_time_edtCidade"
+        android:hint="UF:"/>
 
 </RelativeLayout>

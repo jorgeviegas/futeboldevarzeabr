@@ -112,7 +112,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         listaTimes = timesControl.selectTimes();
         if(listaTimes.size() == 0){
             ArrayList<Time> listaVazia = new ArrayList<Time>();
-            listaVazia.add(new Time(0, "Nenhum time encontrado."));
+            listaVazia.add(new Time(0, "Nenhum time encontrado.", "",""));
             adapterTimes = new TimeListAdapter(this, listaVazia);
         }
         else
@@ -137,7 +137,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         if(time.getId() != 0){
             Bundle parametros = new Bundle();
             parametros.putInt("id_time", time.getId());
-            mudarTela(TimeDetalhe.class, parametros);
+            mudarTela(TimeDetalheActivity.class, parametros);
         }
     }
 }

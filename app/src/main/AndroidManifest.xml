@@ -29,7 +29,7 @@
             android:name=".CadastroUsuarioActivity"
             android:label="Cadastro de usuario" />
         <activity
-            android:name=".TimeDetalhe"
+            android:name=".TimeDetalheActivity"
             android:label="Time">
         </activity>
     </application>

@@ -89,7 +89,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         spnTipoUsuario.setSelection(1);
         spnTipoUsuario.setVisibility(View.VISIBLE);
 
-        spnPosicao = (Spinner) findViewById((R.id.cadastro_usuario_spinner_posicao));
+       /* spnPosicao = (Spinner) findViewById((R.id.cadastro_usuario_spinner_posicao));
         ArrayList<Posicao> posicao = posicaoControl.selectPosicoes();
         ArrayList<String> posicoes = new ArrayList<>();
 
@@ -100,7 +100,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         ArrayAdapter<String> arrayAdapterPosicao = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1,
                 posicoes);
         spnPosicao.setAdapter(arrayAdapterPosicao);
-        spnPosicao.setVisibility(View.VISIBLE);
+        spnPosicao.setVisibility(View.VISIBLE);*/
 
         //final String spinVal = String.valueOf(spin.getSelectedItem());
 
@@ -151,7 +151,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         txtSenha.setText(this.user.getSenha());
         txtConfirmarSenha.setText(this.user.getSenha());
         txtEmail.setText(this.user.getEmail());
-        spnPosicao.setSelection(this.user.getId_posicao() - 1);
+        //spnPosicao.setSelection(this.user.getId_posicao() - 1);
         spnTipoUsuario.setSelection(this.user.getId_tipo() - 1);
         txtApelido.setText(this.user.getApelido());
         txtCelular.setText(this.user.getCelular());
@@ -165,7 +165,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             txtApelido.setEnabled(false);
             txtEmail.setEnabled(false);
             txtCelular.setEnabled(false);
-            spnPosicao.setEnabled(false);
+            //spnPosicao.setEnabled(false);
             spnTipoUsuario.setEnabled(false);
             txtSenha.setEnabled(false);
             txtSenha.setText("auhaushausausaushaushaushaushaush");
@@ -202,7 +202,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             String senha = txtSenha.getText().toString();
             String codigo = "";
             int id_tipo = spnTipoUsuario.getSelectedItemPosition() + 1;
-            int id_posicao = spnPosicao.getSelectedItemPosition() + 1;
+            int id_posicao = 1;
             int id_time = 0;
             String celular = txtCelular.getText().toString();
             String apelido = txtApelido.getText().toString();

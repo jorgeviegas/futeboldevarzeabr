@@ -7,14 +7,20 @@ public class Time {
 
     private int id;
     private String nome;
+    private String cidade;
+    private String uf;
 
-    public Time(int id, String nome) {
+    public Time(int id, String nome, String cidade, String uf) {
         this.nome = nome;
+        this.cidade = cidade;
+        this.uf = uf;
         this.id = id;
     }
 
-    public Time(String nome) {
+    public Time(String nome, String cidade, String uf) {
         this.nome = nome;
+        this.cidade = cidade;
+        this.uf = uf;
     }
 
     public int getId() {
@@ -31,5 +37,21 @@ public class Time {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(String cidade) {
+        this.cidade = cidade;
+    }
+
+    public String getUf() {
+        return uf;
+    }
+
+    public void setUf(String uf) {
+        this.uf = uf;
     }
 }

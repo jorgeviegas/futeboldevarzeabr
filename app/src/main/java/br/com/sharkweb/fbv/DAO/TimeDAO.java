@@ -14,6 +14,8 @@ public class TimeDAO {
     private static final String NOME_TABELA = "time";
     private static final String ID = "_id";
     private static final String NOME = "nome";
+    private static final String CIDADE = "cidade";
+    private static final String UF = "uf";
     private FBVDAO fbvdao;
 
     public TimeDAO(Context context) {
@@ -23,16 +25,21 @@ public class TimeDAO {
     public long inserir(Time time) {
         ContentValues valores = new ContentValues();
         valores.put(NOME, time.getNome());
+        valores.put(CIDADE, time.getCidade());
+        valores.put(UF, time.getUf());
+
         long retorno = fbvdao.getWritableDatabase().insert(NOME_TABELA, null, valores);
         fbvdao.close();
         return retorno;
     }
 
-    public long alterar(int id, Time time) {
+    public long alterar(Time time) {
         ContentValues valores = new ContentValues();
         valores.put(NOME, time.getNome());
+        valores.put(CIDADE, time.getCidade());
+        valores.put(UF, time.getUf());
 
-        String[] whereArgs = {Integer.toString(id)};
+        String[] whereArgs = {Integer.toString(time.getId())};
         int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID + " = ?", whereArgs);
         fbvdao.close();
         return retorno;
@@ -50,6 +57,7 @@ public class TimeDAO {
         return c;
     }
 
+
     public void excluirTodosTimes() {
         fbvdao.getReadableDatabase().delete(NOME_TABELA, null, null);
     }
@@ -65,7 +73,7 @@ public class TimeDAO {
     private ArrayList<Time> cursorToArray(Cursor c) {
         ArrayList<Time> times = new ArrayList<Time>();
         while (c.moveToNext()) {
-            times.add(new Time(c.getInt(0), c.getString(1)));
+            times.add(new Time(c.getInt(0), c.getString(1), c.getString(2),c.getString(3)));
         }
         return times;
     }

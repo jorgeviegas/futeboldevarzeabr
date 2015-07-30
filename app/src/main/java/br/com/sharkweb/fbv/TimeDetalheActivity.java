@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,9 +36,10 @@ import br.com.sharkweb.fbv.model.TimeUsuario;
 import br.com.sharkweb.fbv.model.Usuario;
 
 
-public class TimeDetalhe extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class TimeDetalheActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     private TextView tvNomeTime;
+    private CheckBox chkInativo;
     private Funcoes funcoes = new Funcoes(this);
     private ArrayList<Usuario> listaUsuarios;
     private ArrayList<TimeUsuario> listaTimesUsuario;
@@ -62,11 +64,20 @@ public class TimeDetalhe extends ActionBarActivity implements AdapterView.OnItem
             //Aqui tratamos parametros enviados para a tela principal
             this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
         }else{
-            this.time = new Time("Time nao encontrado");
+            this.time = new Time("Time nao encontrado","","");
         }
 
         tvNomeTime = (TextView) findViewById(R.id.timeDetalhe_tvNomeTime);
         tvNomeTime.setVisibility(TextView.VISIBLE);
+
+        chkInativo = (CheckBox) findViewById(R.id.time_detalhe_chkInativo);
+        chkInativo.setVisibility(View.VISIBLE);
+        chkInativo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                atualizarLista();
+            }
+        });
 
         tvNomeTime.setText(" "+this.time.getNome());
         listaJogadores = (ListView) findViewById(R.id.timeDetalhe_listJogadores);
@@ -78,24 +89,30 @@ public class TimeDetalhe extends ActionBarActivity implements AdapterView.OnItem
 
 
         atualizarLista();
+        //timeusuarioControl.excluirTodosTimesUsuarios();
 
     }
 
     public void atualizarLista(){
         listaUsuarios = new ArrayList<Usuario>();
 
-        listaTimesUsuario = timeusuarioControl.selectTimeUsuarioPorIdTime(this.time.getId());
+        if (!chkInativo.isChecked()){
+            listaTimesUsuario = timeusuarioControl.selectTimeUsuarioPorIdTime(this.time.getId());
+        }else{
+            listaTimesUsuario = timeusuarioControl.selectTimeUsuarioPorIdTimeComInativos(this.time.getId());
+        }
+
         for (int i = 0; i < listaTimesUsuario.size(); i++){
             listaUsuarios.add(usuarioControl.selectUsuarioPorId(listaTimesUsuario.get(i).getId_usuario()).get(0));
         }
 
         if(listaUsuarios.size() == 0){
             ArrayList<Usuario> listaVazia = new ArrayList<Usuario>();
-            listaVazia.add(new Usuario(0,"Nenhum jogador encontrado.", "", "", "", 0, 0, 0, "", ""));
-            adapterUsuarios = new UsuarioListAdapter(this, listaVazia);
+            listaVazia.add(new Usuario(0, "Nenhum jogador encontrado.", "", "", "", 0, 0, 0, "", ""));
+            adapterUsuarios = new UsuarioListAdapter(this, listaVazia, time);
         }
         else
-            adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios);
+            adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios, time);
             listaJogadores.setAdapter(adapterUsuarios);
     }
 
@@ -109,14 +126,17 @@ public class TimeDetalhe extends ActionBarActivity implements AdapterView.OnItem
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem m1 = menu.findItem(R.id.timedetalhe_action_cadastrarJogador);
+        MenuItem m2 = menu.findItem(R.id.timedetalhe_action_editar);
 
         //Somente usuarios administradores podem usar o menu inserir jogador
         if (tipouserControl.selectTiposUsuariosPorId(Constantes.getUsuarioLogado().
-                getId_tipo()).get(0).getTipo().equals("Administrador"))
+                getId_tipo()).get(0).getTipo().equals("Administrador")) {
             m1.setVisible(true);
-        else
+            m2.setVisible(true);
+        }else {
+            m2.setVisible(false);
             m1.setVisible(false);
-
+        }
         return true;
     }
 
@@ -169,6 +189,14 @@ public class TimeDetalhe extends ActionBarActivity implements AdapterView.OnItem
             return true;
         }
 
+        if (id == R.id.timedetalhe_action_editar) {
+            Bundle parametros = new Bundle();
+            parametros.putString("tipoAcesso", "edit");
+            parametros.putInt("id_time",time.getId());
+            mudarTela(CadastroTimeActivity.class, parametros);
+            return true;
+        }
+
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.timedetalhe_action_cadastrarJogador) {
@@ -184,7 +212,7 @@ public class TimeDetalhe extends ActionBarActivity implements AdapterView.OnItem
                     //ISSO AQUI É TESTE MAROTAO
                     ArrayList<Usuario> users = usuarioControl.selectUsuarios();
                     for (int i = 0; i < users.size(); i++) {
-                        TimeUsuario timeUser = new TimeUsuario(time.getId(), users.get(i).getId());
+                        TimeUsuario timeUser = new TimeUsuario(time.getId(), users.get(i).getId(),0,"");
                         timeusuarioControl.inserir(timeUser);
                     }
                     atualizarLista();
@@ -210,27 +238,34 @@ public class TimeDetalhe extends ActionBarActivity implements AdapterView.OnItem
     }
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-
+       final Usuario user = adapterUsuarios.getItem(position);
+        final TimeUsuario tipoUser = timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(),user.getId()).get(0);
         //Menu de opções que o usuário pode fazer com os usuarios.
         String[] arrayOpcoes = new String[2];
         arrayOpcoes[0] = "Visualizar";
-        arrayOpcoes[1] = "Excluir";
+        if (tipoUser.getInativo() > 0){
+            arrayOpcoes[1] = "Ativar usuario";
+        }else{
+            arrayOpcoes[1] = "Inativar usuario";
+        }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("O que deseja fazer?");
         builder.setCancelable(true);
         builder.setItems(arrayOpcoes, new DialogInterface.OnClickListener() {
-            Usuario user = adapterUsuarios.getItem(position);
-
             @Override
             public void onClick(DialogInterface dialog, int arg1) {
                 if (arg1 == 0) {
                     Bundle parametros = new Bundle();
                     parametros.putString("tipoAcesso", "read");
-                    parametros.putInt("id_usuario",user.getId());
+                    parametros.putInt("id_usuario", user.getId());
                     mudarTela(CadastroUsuarioActivity.class, parametros);
                 } else {
-                    timeusuarioControl.excluirTimeUsuarioPorIdUsuario(user.getId(),time.getId());
+                    if (tipoUser.getInativo() > 0) {
+                        timeusuarioControl.ativarUsuario(time.getId(), user.getId());
+                    } else {
+                        timeusuarioControl.inativarUsuario(time.getId(), user.getId());
+                    }
                     atualizarLista();
                 }
             }
@@ -248,7 +283,6 @@ public class TimeDetalhe extends ActionBarActivity implements AdapterView.OnItem
 
         return true;
     }
-
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.R;
 import br.com.sharkweb.fbv.controller.PosicaoController;
+import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -32,12 +33,16 @@ public class UsuarioListAdapter extends BaseAdapter {
     private ArrayList<Usuario> usuarios;
     private PosicaoController posicaoControl;
     private TipoUsuarioController tipousuarioControl;
+    private TimeUsuarioController timeUserControl;
+    private Time time;
 
-    public UsuarioListAdapter(Context context, ArrayList<Usuario> listaUsuarios) {
+    public UsuarioListAdapter(Context context, ArrayList<Usuario> listaUsuarios, Time time) {
         this.usuarios = listaUsuarios;
         mInflater = LayoutInflater.from(context);
         posicaoControl = new PosicaoController(context);
         tipousuarioControl = new TipoUsuarioController(context);
+        timeUserControl = new TimeUsuarioController(context);
+        this.time = time;
     }
 
     public int getCount() {
@@ -71,7 +76,13 @@ public class UsuarioListAdapter extends BaseAdapter {
 
         Usuario user = usuarios.get(position);
         itemHolder.tvUsuarioNome.setText(user.getNome());
+
         if (user.getId() > 0) {
+            //USUARIO INATIVO NESSE TIME
+            if (timeUserControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(),user.getId()).get(0).getInativo() > 0){
+                itemHolder.tvUsuarioNome.setTextColor(Color.RED);
+            }
+
             itemHolder.tvUsuarioPosicao.setText(posicaoControl.selectPosicaoPorId(user.getId_posicao()).get(0).getNome());
             itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(user.getId_tipo()).get(0).getTipo());
             itemHolder.ivImagemUsuario.setImageResource(R.drawable.parson);

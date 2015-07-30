@@ -52,9 +52,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Registrar"
-        android:layout_below="@+id/cadastro_usuario_spinner_posicao"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/cadastro_usuario_spinner" />
 
     <Spinner
         android:id="@+id/cadastro_usuario_spinner"
@@ -64,17 +64,6 @@
         android:layout_below="@+id/cadastro_usuario_edtConfirmarSenha"
         android:layout_alignRight="@+id/cadastro_usuario_edtConfirmarSenha"
         android:layout_alignEnd="@+id/cadastro_usuario_edtConfirmarSenha"
-        android:layout_alignLeft="@+id/cadastro_usuario_spinner_posicao"
-        android:layout_alignStart="@+id/cadastro_usuario_spinner_posicao" />
-
-    <Spinner
-        android:id="@+id/cadastro_usuario_spinner_posicao"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:spinnerMode="dropdown"
-        android:layout_below="@+id/cadastro_usuario_spinner"
-        android:layout_alignRight="@+id/cadastroUsuario_btnRegistrar"
-        android:layout_alignEnd="@+id/cadastroUsuario_btnRegistrar"
         android:layout_alignLeft="@+id/cadastro_usuario_btnCancelar"
         android:layout_alignStart="@+id/cadastro_usuario_btnCancelar" />
 
@@ -83,9 +72,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cancelar"
-        android:layout_below="@+id/cadastro_usuario_spinner_posicao"
         android:layout_toLeftOf="@+id/cadastroUsuario_btnRegistrar"
-        android:layout_toStartOf="@+id/cadastroUsuario_btnRegistrar" />
+        android:layout_toStartOf="@+id/cadastroUsuario_btnRegistrar"
+        android:layout_below="@+id/cadastro_usuario_spinner" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -138,20 +127,5 @@
         android:layout_alignBottom="@+id/cadastro_usuario_spinner"
         android:layout_toLeftOf="@+id/cadastro_usuario_spinner"
         android:layout_toStartOf="@+id/cadastro_usuario_spinner" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Posição: "
-        android:textSize="17sp"
-        android:paddingTop="12sp"
-        android:textColor="@android:color/black"
-        android:id="@+id/cadastro_usuario_tvlabelPosicao"
-        android:layout_above="@+id/cadastroUsuario_btnRegistrar"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/cadastro_usuario_spinner_posicao"
-        android:layout_toLeftOf="@+id/cadastro_usuario_spinner_posicao"
-        android:layout_toStartOf="@+id/cadastro_usuario_spinner_posicao" />
 
 </RelativeLayout>

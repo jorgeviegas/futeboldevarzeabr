@@ -12,6 +12,8 @@ public class TimeDAO {
 
     /*Dados da tabela*/
     private static final String NOME_TABELA = "time";
+    private static final String NOME_TABELA_VINCULO = "time_usuario";
+
     private static final String ID = "_id";
     private static final String NOME = "nome";
     private static final String CIDADE = "cidade";
@@ -53,6 +55,12 @@ public class TimeDAO {
 
     public ArrayList<Time> selectTimePorId(int id) {
         ArrayList<Time> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID + " = " + id + " ORDER BY " + NOME, null));
+        fbvdao.close();
+        return c;
+    }
+
+    public ArrayList<Time> selectTimePorIdUsuario(int id_usuario) {
+        ArrayList<Time> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID +" in (select id_time from time_usuario where id_usuario = " +id_usuario+")  ORDER BY " + NOME, null));
         fbvdao.close();
         return c;
     }

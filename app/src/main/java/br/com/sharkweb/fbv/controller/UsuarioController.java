@@ -59,6 +59,13 @@ public class UsuarioController {
         return usuarioDAO.selectUsuarioPorId(id_usuario);
     }
 
+    public void inicializarUsuarios(){
+        if (selectUsuarios().isEmpty()){
+            inserir("Tiago Klein","","kleintiagomail@gmail.com","tiago",1,1,0,"5194303838","kleintiago");
+            inserir("Jorge Viegas","","jorgematheusv@gmail.com","jorge",1,1,0,"0000000000","joegeviegas");
+        }
+    }
+
     public void excluirTodosJogadores() {
         usuarioDAO.excluirTodosUsuarios();
     }

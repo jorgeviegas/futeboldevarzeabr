@@ -58,9 +58,13 @@ public class CadastroTimeActivity extends ActionBarActivity {
                 if (inserir()) {
                     Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
                     toast.show();
+                    if (tipoAcesso.equals("write")){
+                        mudarTela(TeamActivity.class);
+                    }else{
                     Bundle parametros = new Bundle();
                     parametros.putInt("id_time", time.getId());
                     mudarTela(TimeDetalheActivity.class, parametros);
+                    }
                 }
             }
         });
@@ -68,8 +72,10 @@ public class CadastroTimeActivity extends ActionBarActivity {
         Bundle params = getIntent().getExtras();
         if (params != null) {
             tipoAcesso = params.getString("tipoAcesso");
+            if (!tipoAcesso.equals("write"))
             this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
         }else{
+            tipoAcesso = "write";
             this.time = null;
         }
 
@@ -103,12 +109,16 @@ public class CadastroTimeActivity extends ActionBarActivity {
             String nome = txtNome.getText().toString().trim();
             String cidade = txtCidade.getText().toString().trim().toUpperCase();
             String uf = txtUF.getText().toString().trim().toUpperCase();
-            Time time = new Time(this.time.getId(),nome, cidade, uf);
-
-            if (tipoAcesso.equals("edit")){
-                timeControl.alterar(time);
+            Time timeInsert;
+            if (this.time == null){
+                 timeInsert = new Time(nome, cidade, uf);
             }else {
-                timeControl.inserir(time);
+                 timeInsert = new Time(this.time.getId(),nome, cidade, uf);
+            }
+            if (tipoAcesso.equals("edit")){
+                timeControl.alterar(timeInsert);
+            }else {
+                timeControl.inserir(timeInsert);
             }
 
             return true;

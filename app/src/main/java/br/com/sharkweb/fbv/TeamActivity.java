@@ -19,7 +19,9 @@ import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
+import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Time;
+import br.com.sharkweb.fbv.model.Usuario;
 
 public class TeamActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
@@ -28,6 +30,8 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private TimeListAdapter adapterTimes;
     private TimeController timesControl = new TimeController(this);
     private TipoUsuarioController tipouserControl = new TipoUsuarioController(this);
+    private Usuario user;
+    private UsuarioController userControl = new UsuarioController(this);
 
     final Context context = this;
 
@@ -38,6 +42,13 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
 
         times = (ListView) findViewById(R.id.timelist_listviewTimes);
         times.setOnItemClickListener(this);
+
+        Bundle params = getIntent().getExtras();
+        if (params != null) {
+           this.user = userControl.selectUsuarioPorId(params.getInt("id_usuario")).get(0);
+        } else {
+            this.user = null;
+        }
 
         atualizarLista();
         times.setCacheColorHint(Color.TRANSPARENT);
@@ -87,9 +98,9 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
 
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    //Bundle parametros = new Bundle();
-                    // parametros.putString("tipoAcesso", "write");
-                    mudarTela(CadastroTimeActivity.class);
+                    Bundle parametros = new Bundle();
+                    parametros.putString("tipoAcesso", "write");
+                    mudarTela(CadastroTimeActivity.class, parametros);
                 }
 
             });
@@ -109,7 +120,11 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
 
     public void atualizarLista(){
 
-        listaTimes = timesControl.selectTimes();
+        if (this.user !=null){
+            listaTimes = timesControl.selectTimePorIdUsuario(this.user.getId());
+        }else{
+            listaTimes = timesControl.selectTimes();
+        }
         if(listaTimes.size() == 0){
             ArrayList<Time> listaVazia = new ArrayList<Time>();
             listaVazia.add(new Time(0, "Nenhum time encontrado.", "",""));

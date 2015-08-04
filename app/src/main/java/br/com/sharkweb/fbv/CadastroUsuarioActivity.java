@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.telephony.CellLocation;
+import android.telephony.TelephonyManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -73,6 +75,16 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
         txtCelular = (EditText) findViewById(R.id.cadastro_usuario_edtCelular);
         txtCelular.setVisibility(EditText.VISIBLE);
+        try {
+            TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+            String teste = tm.getLine1Number();
+            txtCelular.setText(tm.getLine1Number());
+        }catch (Exception e){
+            System.out.println("Falha ao tentar pegar o telefone automaticamente");
+            funcoes.mostrarDialogAlert(0, "erro", e.getMessage());
+        }
+
+
 
         spnTipoUsuario = (Spinner) findViewById((R.id.cadastro_usuario_spinner));
         ArrayList<TipoUsuario> tipo_usuario = tipoUsuarioControl.selectTiposUsuarios();

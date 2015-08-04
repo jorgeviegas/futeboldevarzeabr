@@ -35,6 +35,10 @@ public class TimeController {
         return timeDAO.selectTimePorId(id);
     }
 
+    public ArrayList<Time> selectTimePorIdUsuario(int id_usuario) {
+        return timeDAO.selectTimePorIdUsuario(id_usuario);
+    }
+
     public void excluirTodosTimes() {
         timeDAO.excluirTodosTimes();
     }

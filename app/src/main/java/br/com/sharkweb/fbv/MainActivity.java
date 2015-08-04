@@ -75,9 +75,10 @@ public class MainActivity extends ActionBarActivity
             this.loginFeito = false;
         }
 
-        //INICIANDO DADOS FIXOS DO APLICATIVO
+        //INICIANDO DADOS FIXOS DO APLICATIVO E DADOS DE TESTE
         tipoUsuarioControl.IniciarTiposUsuarios();
         posicaoControl.IniciarPosicoes();
+        usuarioControl.inicializarUsuarios();
 
         //DEFININDO O USUARIO LOGADO NO SISTEMA.
         if (!loginControl.selecLogin().isEmpty()){

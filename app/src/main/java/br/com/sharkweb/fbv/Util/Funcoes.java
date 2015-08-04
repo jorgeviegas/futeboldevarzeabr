@@ -31,4 +31,8 @@ public class Funcoes {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
+    public String PrimeiraLetraMaiuscula(String s){
+        return s.substring(0,1).toUpperCase() + s.substring(1);
+    }
 }

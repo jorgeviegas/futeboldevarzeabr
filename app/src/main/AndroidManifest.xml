@@ -32,6 +32,8 @@
             android:name=".TimeDetalheActivity"
             android:label="Time">
         </activity>
+
     </application>
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 </manifest>

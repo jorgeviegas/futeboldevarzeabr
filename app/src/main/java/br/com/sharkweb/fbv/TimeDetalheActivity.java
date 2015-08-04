@@ -79,7 +79,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             }
         });
 
-        tvNomeTime.setText(" "+this.time.getNome());
+        tvNomeTime.setText(" " + funcoes.PrimeiraLetraMaiuscula(this.time.getNome()));
         listaJogadores = (ListView) findViewById(R.id.timeDetalhe_listJogadores);
         //listaJogadores.setOnItemClickListener((AdapterView.OnItemClickListener) this);
         listaJogadores.setBackgroundColor(Color.WHITE);

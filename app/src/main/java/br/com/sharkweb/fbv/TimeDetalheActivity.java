@@ -211,6 +211,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                     dialog.dismiss();
                     //ISSO AQUI É TESTE MAROTAO
                     ArrayList<Usuario> users = usuarioControl.selectUsuarios();
+
                     for (int i = 0; i < users.size(); i++) {
                         TimeUsuario timeUser = new TimeUsuario(time.getId(), users.get(i).getId(),0,"");
                         timeusuarioControl.inserir(timeUser);
@@ -239,48 +240,50 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
        final Usuario user = adapterUsuarios.getItem(position);
-        final TimeUsuario tipoUser = timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(),user.getId()).get(0);
-        //Menu de opções que o usuário pode fazer com os usuarios.
-        String[] arrayOpcoes = new String[2];
-        arrayOpcoes[0] = "Visualizar";
-        if (tipoUser.getInativo() > 0){
-            arrayOpcoes[1] = "Ativar usuario";
-        }else{
-            arrayOpcoes[1] = "Inativar usuario";
-        }
+        if (user.getId() > 0) {
+            final TimeUsuario tipoUser = timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(), user.getId()).get(0);
+            //Menu de opções que o usuário pode fazer com os usuarios.
+            String[] arrayOpcoes = new String[2];
+            arrayOpcoes[0] = "Visualizar";
+            if (tipoUser.getInativo() > 0) {
+                arrayOpcoes[1] = "Ativar usuario";
+            } else {
+                arrayOpcoes[1] = "Inativar usuario";
+            }
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("O que deseja fazer?");
-        builder.setCancelable(true);
-        builder.setItems(arrayOpcoes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int arg1) {
-                if (arg1 == 0) {
-                    Bundle parametros = new Bundle();
-                    parametros.putString("tipoAcesso", "read");
-                    parametros.putInt("id_usuario", user.getId());
-                    mudarTela(CadastroUsuarioActivity.class, parametros);
-                } else {
-                    if (tipoUser.getInativo() > 0) {
-                        timeusuarioControl.ativarUsuario(time.getId(), user.getId());
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("O que deseja fazer?");
+            builder.setCancelable(true);
+            builder.setItems(arrayOpcoes, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int arg1) {
+                    if (arg1 == 0) {
+                        Bundle parametros = new Bundle();
+                        parametros.putString("tipoAcesso", "read");
+                        parametros.putInt("id_usuario", user.getId());
+                        mudarTela(CadastroUsuarioActivity.class, parametros);
                     } else {
-                        timeusuarioControl.inativarUsuario(time.getId(), user.getId());
+                        if (tipoUser.getInativo() > 0) {
+                            timeusuarioControl.ativarUsuario(time.getId(), user.getId());
+                        } else {
+                            timeusuarioControl.inativarUsuario(time.getId(), user.getId());
+                        }
+                        atualizarLista();
                     }
-                    atualizarLista();
                 }
-            }
-        });
+            });
 
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int arg1) {
-                dialog.dismiss();
-            }
-        });
+            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int arg1) {
+                    dialog.dismiss();
+                }
+            });
 
-        AlertDialog dialogExportar = builder.create();
-        dialogExportar.show();
+            AlertDialog dialogExportar = builder.create();
+            dialogExportar.show();
 
+        }
         return true;
     }
 

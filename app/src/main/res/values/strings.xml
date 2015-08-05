@@ -21,4 +21,6 @@
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_cadastro_usuario">CadastroUsuarioActivity</string>
     <string name="title_activity_time_detalhe">TimeDetalhe</string>
+    <string name="title_activity_calendario">CalendarioActivity</string>
+    <string name="title_activity_cadastro_jogo">CadastroJogoActivity</string>
 </resources>

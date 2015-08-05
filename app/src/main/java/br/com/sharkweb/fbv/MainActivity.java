@@ -130,6 +130,7 @@ public class MainActivity extends ActionBarActivity
                 break;
             case 3:
                 //mTitle = "Calendario";
+                mudarTela(CalendarioActivity.class);
                 break;
             case 4:
                 //mTitle = "Meu usuario";

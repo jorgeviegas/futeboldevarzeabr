@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="br.com.sharkweb.fbv" >
 
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/icon_ball"
@@ -30,10 +32,16 @@
             android:label="Cadastro de usuario" />
         <activity
             android:name=".TimeDetalheActivity"
-            android:label="Time">
+            android:label="Time" >
         </activity>
-
+        <activity
+            android:name=".CalendarioActivity"
+            android:label="Calendario do Time" >
+        </activity>
+        <activity
+            android:name=".CadastroJogoActivity"
+            android:label="Jogo" >
+        </activity>
     </application>
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 </manifest>

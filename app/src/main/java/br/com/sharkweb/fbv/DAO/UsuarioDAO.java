@@ -82,6 +82,16 @@ public class UsuarioDAO {
         return retorno;
     }
 
+    public long favoritarTime(int id,int id_time) {
+        ContentValues valores = new ContentValues();
+        valores.put(ID_TIME, id_time);
+
+        String[] whereAgrs = {Integer.toString(id)};
+        int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID + " = ?", whereAgrs);
+        fbvdao.close();
+        return retorno;
+    }
+
     public ArrayList<Usuario> selectUsuarios() {
         ArrayList<Usuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " ORDER BY " + NOME, null));
         fbvdao.close();

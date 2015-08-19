@@ -6,10 +6,10 @@
         android:title="Inserir Jogador"
         app:showAsAction="withText|ifRoom" />
 
+    <item android:id="@+id/timedetalhe_action_favoritar"
+        android:title="Tornar meu time favorito"
+        android:orderInCategory="100" app:showAsAction="never" />
     <item android:id="@+id/timedetalhe_action_editar"
         android:title="Editar"
-        android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/timedetalhe_action_voltar"
-        android:title="Voltar"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>

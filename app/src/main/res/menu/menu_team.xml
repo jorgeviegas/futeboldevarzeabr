@@ -6,9 +6,4 @@
         android:id="@+id/time_action_cadastrar"
         android:title="Cadastrar"
         app:showAsAction="withText|ifRoom" />
-    <item
-        android:id="@+id/time_action_cancelar"
-        android:orderInCategory="100"
-        android:title="Voltar"
-        app:showAsAction="never" />
 </menu>

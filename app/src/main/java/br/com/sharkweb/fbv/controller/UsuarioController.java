@@ -35,6 +35,10 @@ public class UsuarioController {
         return usuarioDAO.alterar(id, nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
     }
 
+    public long favoritarTime(int id, int id_time){
+        return usuarioDAO.favoritarTime(id, id_time);
+    }
+
     public ArrayList<Usuario> selectUsuarios() {
         return usuarioDAO.selectUsuarios();
     }

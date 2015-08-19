@@ -6,4 +6,117 @@
     android:paddingBottom="@dimen/activity_vertical_margin"
     tools:context="br.com.sharkweb.fbv.CadastroJogoActivity">
 
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:id="@+id/cadastrojogo_botaotime1"
+        android:drawableLeft="@drawable/blue_search"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cadastrojogo_time1"
+        android:editable="false"
+        android:hint="Time da casa:"
+        android:layout_alignBottom="@+id/cadastrojogo_botaotime1"
+        android:layout_toLeftOf="@+id/cadastrojogo_botaotime1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:drawableLeft="@drawable/blue_search"
+        android:id="@+id/cadastrojogo_botaotime2"
+        android:layout_below="@+id/cadastrojogo_botaotime1"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cadastrojogo__time2"
+        android:editable="false"
+        android:hint="Time visitante:"
+        android:layout_below="@+id/cadastrojogo_botaotime1"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toLeftOf="@+id/cadastrojogo_botaotime2"
+        android:layout_toStartOf="@+id/cadastrojogo_botaotime2" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cadastrojogo_data"
+        android:inputType="date"
+        android:hint="Data:"
+        android:layout_below="@+id/cadastrojogo_botaotime2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/cadastrojogo_horaInicio" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cadastrojogo_horafinal"
+        android:inputType="time"
+        android:hint="Final:"
+        android:layout_below="@+id/cadastrojogo_botaotime2"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toEndOf="@+id/cadastrojogo_data"
+        android:layout_alignLeft="@+id/cadastrojogo_botaotime2"
+        android:layout_alignStart="@+id/cadastrojogo_botaotime2" />
+
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/cadastrojogo_data"
+        android:id="@+id/linearLayout">
+
+
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@android:color/white"
+            android:text="Cancelar"
+            android:id="@+id/cadastrojogo_btncancelar"
+            android:layout_gravity="bottom" />
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:background="@android:color/white"
+            android:layout_alignParentEnd="true"
+            android:text="Salvar"
+            android:id="@+id/cadastrojogo_btnsalvar"
+            android:layout_gravity="bottom" />
+    </LinearLayout>
+
+    <EditText
+        android:layout_width="60sp"
+        android:layout_height="wrap_content"
+        android:inputType="time"
+        android:ems="10"
+        android:hint="Inicio:"
+        android:id="@+id/cadastrojogo_horaInicio"
+        android:layout_alignTop="@+id/cadastrojogo_horafinal"
+        android:layout_toLeftOf="@+id/cadastrojogo_botaotime2" />
+
 </RelativeLayout>

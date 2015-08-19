@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v4.app.NavUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -58,6 +59,9 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_time_detalhe);
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -184,8 +188,16 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.timedetalhe_action_voltar) {
-            onBackPressed();
+        if (id == android.R.id.home) {
+            //onBackPressed();
+            NavUtils.navigateUpFromSameTask(this);
+            return true;
+        }
+
+        if (id == R.id.timedetalhe_action_favoritar) {
+            usuarioControl.favoritarTime(Constantes.getUsuarioLogado().getId(), time.getId());
+            Constantes.getUsuarioLogado().setId_time(time.getId());
+            //item.setTitle("Teste");
             return true;
         }
 

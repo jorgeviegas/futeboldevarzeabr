@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.CellLocation;
 import android.telephony.TelephonyManager;
@@ -57,6 +58,9 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_usuario);
+
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         txtNome = (EditText) findViewById(R.id.cadastro_usuario_edtNome);
         txtNome.setVisibility(EditText.VISIBLE);
@@ -273,6 +277,12 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            onBackPressed();
+            //NavUtils.navigateUpFromSameTask(this);
+            return true;
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.cadastro_usuario_action_cancelar) {

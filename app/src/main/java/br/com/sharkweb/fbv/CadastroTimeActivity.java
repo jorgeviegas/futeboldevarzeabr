@@ -13,8 +13,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.controller.TimeController;
+import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.model.Time;
+import br.com.sharkweb.fbv.model.TimeUsuario;
 
 public class CadastroTimeActivity extends ActionBarActivity {
 
@@ -33,6 +36,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
     private Button btnCancelar;
 
     private TimeController timeControl = new TimeController(this);
+    private TimeUsuarioController timeuserControl = new TimeUsuarioController(this);
 
 
     @Override
@@ -58,13 +62,9 @@ public class CadastroTimeActivity extends ActionBarActivity {
                 if (inserir()) {
                     Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
                     toast.show();
-                    if (tipoAcesso.equals("write")){
-                        mudarTela(TeamActivity.class);
-                    }else{
                     Bundle parametros = new Bundle();
                     parametros.putInt("id_time", time.getId());
                     mudarTela(TimeDetalheActivity.class, parametros);
-                    }
                 }
             }
         });
@@ -87,7 +87,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_cadastro_usuario, menu);
+        getMenuInflater().inflate(R.menu.menu_cadastro_time, menu);
         return true;
     }
 
@@ -104,7 +104,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
         startActivity(new Intent(this, cls));
     }
 
-    private Boolean inserir() {
+    private boolean inserir() {
         if (validarCampos().isEmpty()) {
             String nome = txtNome.getText().toString().trim();
             String cidade = txtCidade.getText().toString().trim().toUpperCase();
@@ -115,12 +115,19 @@ public class CadastroTimeActivity extends ActionBarActivity {
             }else {
                  timeInsert = new Time(this.time.getId(),nome, cidade, uf);
             }
+
             if (tipoAcesso.equals("edit")){
                 timeControl.alterar(timeInsert);
             }else {
-                timeControl.inserir(timeInsert);
-            }
+                Long ret = timeControl.inserir(timeInsert);
+                if (ret > 0){
+                    time = timeControl.selectTimePorId(Integer.valueOf(ret.toString())).get(0);
 
+                    TimeUsuario timeUser = new TimeUsuario(time.getId(),
+                            Constantes.getUsuarioLogado().getId(),0,"");
+                     Long ret2 = timeuserControl.inserir(timeUser);
+                }
+            }
             return true;
         } else {
             return false;
@@ -164,7 +171,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.time_action_cancelar) {
+        if (id == R.id.cadastro_time_settings) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
             builder.setTitle("Pergunta");

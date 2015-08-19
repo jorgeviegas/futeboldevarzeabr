@@ -20,7 +20,7 @@
         </activity>
         <activity
             android:name=".TeamActivity"
-            android:label="Meus times" />
+            android:label="Selecione um Time" />
         <activity
             android:name=".CadastroTimeActivity"
             android:label="Cadastro do time" />
@@ -30,17 +30,30 @@
         <activity
             android:name=".CadastroUsuarioActivity"
             android:label="Cadastro de usuario" />
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MainActivity" />
         <activity
             android:name=".TimeDetalheActivity"
             android:label="Time" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".CalendarioActivity"
             android:label="Calendario do Time" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".CadastroJogoActivity"
             android:label="Jogo" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".CalendarioActivity" />
         </activity>
     </application>
 

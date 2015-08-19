@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,7 +33,8 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private TipoUsuarioController tipouserControl = new TipoUsuarioController(this);
     private Usuario user;
     private UsuarioController userControl = new UsuarioController(this);
-
+    private boolean esperaRetorno;
+    private Time timeSelecionado;
     final Context context = this;
 
     @Override
@@ -40,19 +42,39 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_team);
 
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         times = (ListView) findViewById(R.id.timelist_listviewTimes);
         times.setOnItemClickListener(this);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
-           this.user = userControl.selectUsuarioPorId(params.getInt("id_usuario")).get(0);
+            esperaRetorno = params.getBoolean("esperaRetorno");
         } else {
             this.user = null;
         }
 
+        //Agora essa tela sempre retorna
+        esperaRetorno = true;
+
+        this.user = userControl.selectUsuarioPorId(Constantes.getUsuarioLogado().getId()).get(0);
+        //this.user = null;
+
         atualizarLista();
         times.setCacheColorHint(Color.TRANSPARENT);
+    }
 
+    @Override
+    public void onBackPressed() {
+        if (this.esperaRetorno){
+            Intent it = new Intent();
+            if (timeSelecionado != null)
+                it.putExtra("id_time",timeSelecionado.getId());
+            else it.putExtra("id_time",0);
+            setResult(1, it);
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -72,7 +94,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-            getMenuInflater().inflate(R.menu.menu_team, menu);
+        getMenuInflater().inflate(R.menu.menu_team, menu);
         return true;
     }
 
@@ -84,10 +106,17 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.time_action_cancelar) {
+       // if (id == R.id.time_action_cancelar) {
+        //    onBackPressed();
+       //     return true;
+       // }
+
+        if (id == android.R.id.home) {
             onBackPressed();
+            //NavUtils.navigateUpFromSameTask(this);
             return true;
         }
+
         if (item.getItemId() == R.id.time_action_cadastrar) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -150,9 +179,17 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Time time = adapterTimes.getItem(position);
         if(time.getId() != 0){
-            Bundle parametros = new Bundle();
-            parametros.putInt("id_time", time.getId());
-            mudarTela(TimeDetalheActivity.class, parametros);
+
+            if (esperaRetorno){
+                this.timeSelecionado = time;
+                onBackPressed();
+            }
+          /*  else{
+                Bundle parametros = new Bundle();
+                parametros.putInt("id_time", time.getId());
+                mudarTela(TimeDetalheActivity.class, parametros);
+            }*/
+
         }
     }
 }

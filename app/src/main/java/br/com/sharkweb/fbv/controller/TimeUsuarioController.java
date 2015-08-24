@@ -42,6 +42,10 @@ public class TimeUsuarioController {
         return timeUsuarioDAO.ativarUsuario(id_time, id_usuario);
     }
 
+    public long tornarAdmin(int id_time,int id_usuario) {
+        return timeUsuarioDAO.tornarAdmin(id_time, id_usuario);
+    }
+
     public ArrayList<TimeUsuario> selectTimeUsuario() {
         return timeUsuarioDAO.selectTimeUsuario();
     }

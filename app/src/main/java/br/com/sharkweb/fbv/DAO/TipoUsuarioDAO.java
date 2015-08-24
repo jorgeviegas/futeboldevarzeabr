@@ -62,6 +62,12 @@ public class TipoUsuarioDAO {
         return c;
     }
 
+    public ArrayList<TipoUsuario> selectTipoUsuarioPorTipo(String tipo) {
+        ArrayList<TipoUsuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + TIPO + " = '" + tipo + "' ORDER BY " + TIPO, null));
+        fbvdao.close();
+        return c;
+    }
+
     public void excluirTodosTiposUsuarios() {
         fbvdao.getReadableDatabase().delete(NOME_TABELA, null, null);
     }

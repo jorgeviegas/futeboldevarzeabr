@@ -20,6 +20,7 @@ import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.model.Time;
+import br.com.sharkweb.fbv.model.TimeUsuario;
 import br.com.sharkweb.fbv.model.Usuario;
 import android.content.Intent;
 
@@ -35,14 +36,21 @@ public class UsuarioListAdapter extends BaseAdapter {
     private TipoUsuarioController tipousuarioControl;
     private TimeUsuarioController timeUserControl;
     private Time time;
+    private int modelo;
 
-    public UsuarioListAdapter(Context context, ArrayList<Usuario> listaUsuarios, Time time) {
+    public UsuarioListAdapter(Context context, ArrayList<Usuario> listaUsuarios, Time time, int modelo) {
         this.usuarios = listaUsuarios;
         mInflater = LayoutInflater.from(context);
         posicaoControl = new PosicaoController(context);
         tipousuarioControl = new TipoUsuarioController(context);
         timeUserControl = new TimeUsuarioController(context);
         this.time = time;
+
+        //MODELOS DE ADAPTER:
+        //1 - Exibe informarções como jogador;
+        //2 - Exibe informações como usuário;
+        this.modelo = modelo;
+
     }
 
     public int getCount() {
@@ -78,13 +86,36 @@ public class UsuarioListAdapter extends BaseAdapter {
         itemHolder.tvUsuarioNome.setText(user.getNome());
 
         if (user.getId() > 0) {
-            //USUARIO INATIVO NESSE TIME
-            if (timeUserControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(),user.getId()).get(0).getInativo() > 0){
-                itemHolder.tvUsuarioNome.setTextColor(Color.RED);
+
+            if (time !=null){
+                //USUARIO INATIVO NESSE TIME
+                ArrayList<TimeUsuario> timeUser = timeUserControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(),user.getId());
+
+                if (!timeUser.isEmpty() && timeUser.get(0).getInativo() > 0){
+                    itemHolder.tvUsuarioNome.setTextColor(Color.RED);
+                }
+                if (!timeUser.isEmpty()){
+                    itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(
+                            timeUser.get(0).getId_tipo_usuario()).get(0).getTipo());
+
+                    if (tipousuarioControl.selectTiposUsuariosPorId(
+                            timeUser.get(0).getId_tipo_usuario()).get(0).getTipo().equals("Administrador"))
+                    itemHolder.tvTipoUsuario.setTextColor(Color.GREEN);
+                }else {
+                    itemHolder.tvTipoUsuario.setText("");
+                    //itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(user.getId_tipo()).get(0).getTipo());
+                }
+            }else {
+                itemHolder.tvTipoUsuario.setText("");
             }
 
-            itemHolder.tvUsuarioPosicao.setText(posicaoControl.selectPosicaoPorId(user.getId_posicao()).get(0).getNome());
-            itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(user.getId_tipo()).get(0).getTipo());
+            switch (modelo){
+                case 1:
+                    itemHolder.tvUsuarioPosicao.setText(posicaoControl.selectPosicaoPorId(user.getId_posicao()).get(0).getNome());
+                case 2:
+                    itemHolder.tvUsuarioPosicao.setText(user.getApelido());
+            }
+
             itemHolder.ivImagemUsuario.setImageResource(R.drawable.parson);
         }else{
             itemHolder.tvUsuarioPosicao.setText("");

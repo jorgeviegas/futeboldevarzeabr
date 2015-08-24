@@ -39,6 +39,10 @@ public class TipoUsuarioController {
         return TipousuarioDAO.selectTipoUsuarioPorId(id_tipo);
     }
 
+    public ArrayList<TipoUsuario> selectTiposUsuariosPorTipo(String tipo) {
+        return TipousuarioDAO.selectTipoUsuarioPorTipo(tipo);
+    }
+
     public void excluirTodosTiposUsuarios() {
         TipousuarioDAO.excluirTodosTiposUsuarios();
     }

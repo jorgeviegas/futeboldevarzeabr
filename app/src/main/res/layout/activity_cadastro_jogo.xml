@@ -45,17 +45,18 @@
         android:id="@+id/cadastrojogo__time2"
         android:editable="false"
         android:hint="Time visitante:"
-        android:layout_below="@+id/cadastrojogo_botaotime1"
+        android:layout_above="@+id/cadastrojogo_data"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_toLeftOf="@+id/cadastrojogo_botaotime2"
-        android:layout_toStartOf="@+id/cadastrojogo_botaotime2" />
+        android:layout_alignRight="@+id/cadastrojogo_horaInicio"
+        android:layout_alignEnd="@+id/cadastrojogo_horaInicio" />
 
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/cadastrojogo_data"
         android:inputType="date"
+        android:editable="false"
         android:hint="Data:"
         android:layout_below="@+id/cadastrojogo_botaotime2"
         android:layout_alignParentLeft="true"
@@ -67,6 +68,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/cadastrojogo_horafinal"
         android:inputType="time"
+        android:editable="false"
         android:hint="Final:"
         android:layout_below="@+id/cadastrojogo_botaotime2"
         android:layout_alignParentRight="true"
@@ -79,11 +81,10 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="50sp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/cadastrojogo_data"
         android:id="@+id/linearLayout">
 
 
@@ -115,8 +116,53 @@
         android:inputType="time"
         android:ems="10"
         android:hint="Inicio:"
+        android:editable="false"
         android:id="@+id/cadastrojogo_horaInicio"
         android:layout_alignTop="@+id/cadastrojogo_horafinal"
         android:layout_toLeftOf="@+id/cadastrojogo_botaotime2" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cadastro_jogo_juiz"
+        android:hint="Juiz:"
+        android:editable="false"
+        android:layout_below="@+id/cadastrojogo_data"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/cadastrojogo_horaInicio"
+        android:layout_alignEnd="@+id/cadastrojogo_horaInicio" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/blue_search"
+        android:id="@+id/cadastro_jogo_btnjuiz"
+        android:layout_alignBottom="@+id/cadastro_jogo_juiz"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cadastro_jogo_local"
+        android:hint="Local do jogo:"
+        android:editable="false"
+        android:layout_alignBottom="@+id/cadastro_jogo_btnlocal"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/cadastro_jogo_juiz"
+        android:layout_alignEnd="@+id/cadastro_jogo_juiz" />
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/blue_search"
+        android:id="@+id/cadastro_jogo_btnlocal"
+        android:layout_below="@+id/cadastro_jogo_juiz"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>

@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,10 +23,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import br.com.sharkweb.fbv.Util.Constantes;
+import br.com.sharkweb.fbv.Util.ConsumirJsonActivity;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.controller.LoginController;
 import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
+import br.com.sharkweb.fbv.controller.UFController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -52,6 +55,7 @@ public class MainActivity extends ActionBarActivity
     private LoginController loginControl = new LoginController(this);
     private Funcoes funcoes = new Funcoes(this);
     private UsuarioController usuarioControl = new UsuarioController(this);
+    private UFController ufControl = new UFController(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +74,6 @@ public class MainActivity extends ActionBarActivity
         Bundle params = getIntent().getExtras();
         if (params != null) {
             //Aqui tratamos parametros enviados para a tela principal
-
             this.loginFeito = params.getBoolean("login") == true;
         } else {
             this.loginFeito = false;
@@ -80,6 +83,7 @@ public class MainActivity extends ActionBarActivity
         tipoUsuarioControl.IniciarTiposUsuarios();
         posicaoControl.IniciarPosicoes();
         usuarioControl.inicializarUsuarios();
+        ufControl.inicializarUF();
 
         //DEFININDO O USUARIO LOGADO NO SISTEMA.
         if (!loginControl.selecLogin().isEmpty()) {
@@ -88,14 +92,14 @@ public class MainActivity extends ActionBarActivity
             Constantes.setUsuarioLogado(user);
         }
 
-        tvNomeUser = (TextView) findViewById(R.id.nagivation_edtNomeUsuario);
+       /* tvNomeUser = (TextView) findViewById(R.id.nagivation_edtNomeUsuario);
         tvNomeUser.setVisibility(TextView.VISIBLE);
         String nomeUser = "";
         if (Constantes.getUsuarioLogado() != null) {
             nomeUser = Constantes.getUsuarioLogado().getNome();
-        }
+        }*/
 
-        tvNomeUser.setText(nomeUser.toUpperCase());
+       /* tvNomeUser.setText(nomeUser.toUpperCase());
         tvNomeUser.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Bundle parametros = new Bundle();
@@ -104,7 +108,7 @@ public class MainActivity extends ActionBarActivity
                 //mudarTelaComRetorno(CadastroUsuarioActivity.class, parametros, 3);
                 mudarTela(CadastroUsuarioActivity.class, parametros);
             }
-        });
+        });*/
     }
 
     @Override
@@ -136,27 +140,30 @@ public class MainActivity extends ActionBarActivity
                 .commit();
     }
 
+
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
                 // mTitle = "Inicial";
                 if (loginControl.selecLogin().isEmpty()) {
-                    Bundle parametros = new Bundle();
-                    parametros.putBoolean("salvo", true);
-                    mudarTela(LoginActivity.class, parametros);
+                    Bundle parametros2 = new Bundle();
+                    parametros2.putBoolean("salvo", true);
+                    mudarTela(LoginActivity.class, parametros2);
                 }
                 break;
             case 2:
+                Bundle parametros = new Bundle();
+                parametros.putString("tipoAcesso", "edit");
+                parametros.putInt("id_usuario", loginControl.selecLogin().get(0).getId_usuario());
+                mudarTela(CadastroUsuarioActivity.class, parametros);
+                break;
+            case 3:
                 // mTitle = "Meus times";
                 mudarTelaComRetorno(TeamActivity.class, 1);
                 break;
-            case 3:
+            case 4:
                 //mTitle = "Calendario";
                 mudarTelaComRetorno(TeamActivity.class, 2);
-                break;
-            case 4:
-                //mTitle = "Meu usuario";
-
                 break;
         }
     }

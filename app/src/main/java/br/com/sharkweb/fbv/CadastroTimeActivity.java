@@ -9,35 +9,38 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TimeUsuarioController;
+import br.com.sharkweb.fbv.controller.TipoUsuarioController;
+import br.com.sharkweb.fbv.controller.UFController;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.TimeUsuario;
+import br.com.sharkweb.fbv.model.UF;
 
 public class CadastroTimeActivity extends ActionBarActivity {
 
     final Context context = this;
     private EditText txtNome;
-    private EditText txtEmail;
     private EditText txtCidade;
-    private EditText txtUF;
-    //private EditText txtSenha;
-
+    private Spinner spnUF;
     private Time time;
-
     private String tipoAcesso;
-
     private Button btnCadastrar;
     private Button btnCancelar;
 
     private TimeController timeControl = new TimeController(this);
     private TimeUsuarioController timeuserControl = new TimeUsuarioController(this);
-
+    private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
+    private UFController ufControl = new UFController(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +53,20 @@ public class CadastroTimeActivity extends ActionBarActivity {
         txtCidade = (EditText) findViewById(R.id.cadastro_time_edtCidade);
         txtCidade.setVisibility(EditText.VISIBLE);
 
-        txtUF = (EditText) findViewById(R.id.cadastro_time_edtUF);
-        txtUF.setVisibility(EditText.VISIBLE);
+        spnUF = (Spinner) findViewById(R.id.cadastro_time_ufspinner);
+        spnUF.setVisibility(EditText.VISIBLE);
+        ArrayList<UF> est = ufControl.selectUF();
+        ArrayList<String> estados = new ArrayList<>();
 
+        for (int i = 0; i < est.size(); i++) {
+            estados.add(est.get(i).getNome().trim());
+        }
+
+        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1,
+                estados);
+
+        spnUF.setAdapter(arrayAdapter2);
+        spnUF.setVisibility(View.VISIBLE);
         //txtEmail = (EditText) findViewById(R.id.cadastro_time_edtEmail);
         //txtEmail.setVisibility(EditText.VISIBLE);
 
@@ -77,6 +91,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
         }else{
             tipoAcesso = "write";
             this.time = null;
+            spnUF.setSelection(22);
         }
 
         if (this.time != null) {
@@ -108,12 +123,13 @@ public class CadastroTimeActivity extends ActionBarActivity {
         if (validarCampos().isEmpty()) {
             String nome = txtNome.getText().toString().trim();
             String cidade = txtCidade.getText().toString().trim().toUpperCase();
-            String uf = txtUF.getText().toString().trim().toUpperCase();
+            int id_uf = spnUF.getSelectedItemPosition() + 1;
+
             Time timeInsert;
             if (this.time == null){
-                 timeInsert = new Time(nome, cidade, uf);
+                 timeInsert = new Time(nome, cidade, id_uf);
             }else {
-                 timeInsert = new Time(this.time.getId(),nome, cidade, uf);
+                 timeInsert = new Time(this.time.getId(),nome, cidade, id_uf);
             }
 
             if (tipoAcesso.equals("edit")){
@@ -123,8 +139,12 @@ public class CadastroTimeActivity extends ActionBarActivity {
                 if (ret > 0){
                     time = timeControl.selectTimePorId(Integer.valueOf(ret.toString())).get(0);
 
+                    //int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Jogador").get(0).getId();
+                    int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
+
                     TimeUsuario timeUser = new TimeUsuario(time.getId(),
-                            Constantes.getUsuarioLogado().getId(),0,"");
+                            Constantes.getUsuarioLogado().getId(),0,"",tipo_usuario);
+
                      Long ret2 = timeuserControl.inserir(timeUser);
                 }
             }
@@ -141,21 +161,19 @@ public class CadastroTimeActivity extends ActionBarActivity {
         if (txtCidade.getText().toString().isEmpty()) {
             return "Cidade nao informado";
         }
-        if (txtUF.getText().toString().isEmpty()) {
-            return "UF nao informado";
-        }
         return "";
     }
 
     private void carregarRegistro () {
         txtNome.setText(this.time.getNome());
         txtCidade.setText(this.time.getCidade());
-        txtUF.setText(this.time.getUf());
+        spnUF.setSelection(this.time.getId_uf() - 1);
+
 
         if (this.tipoAcesso.equals("read")){
             txtNome.setEnabled(false);
             txtCidade.setEnabled(false);
-            txtUF.setEnabled(false);
+            spnUF.setEnabled(false);
         }
 
         if (this.tipoAcesso.equals("edit")){

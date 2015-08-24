@@ -13,8 +13,9 @@ public class Jogo {
     private String hora;
     private String horaFinal;
     private int inativo;
+    private int id_juiz;
 
-    public Jogo(int id, int id_time, int id_time2, int id_local, String data, String hora,String horaFinal, int inativo) {
+    public Jogo(int id, int id_time, int id_time2, int id_local, String data, String hora,String horaFinal, int inativo, int id_juiz) {
         this.id = id;
         this.id_time = id_time;
         this.id_time2 = id_time2;
@@ -23,9 +24,10 @@ public class Jogo {
         this.hora = hora;
         this.horaFinal = horaFinal;
         this.inativo = inativo;
+        this.id_juiz = id_juiz;
     }
 
-    public Jogo(int id_time, int id_time2, int id_local, String data, String hora,String horaFinal, int inativo) {
+    public Jogo(int id_time, int id_time2, int id_local, String data, String hora,String horaFinal, int inativo,int id_juiz) {
         this.id_time = id_time;
         this.id_time2 = id_time2;
         this.id_local = id_local;
@@ -33,6 +35,7 @@ public class Jogo {
         this.hora = hora;
         this.horaFinal = horaFinal;
         this.inativo = inativo;
+        this.id_juiz = id_juiz;
     }
 
     public int getId() {
@@ -97,5 +100,13 @@ public class Jogo {
 
     public void setHoraFinal(String horaFinal) {
         this.horaFinal = horaFinal;
+    }
+
+    public int getId_juiz() {
+        return id_juiz;
+    }
+
+    public void setId_juiz(int id_juiz) {
+        this.id_juiz = id_juiz;
     }
 }

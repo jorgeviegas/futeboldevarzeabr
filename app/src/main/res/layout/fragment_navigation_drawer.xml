@@ -5,17 +5,6 @@
     android:background="@android:color/white">
 
     <TextView
-        android:id="@+id/nagivation_edtNomeUsuario"
-        style="?android:attr/textAppearanceLarge"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:drawableLeft="@drawable/parson"
-        android:layout_alignParentTop="true"
-        android:gravity="center_vertical"
-        android:padding="25dp"
-        android:text="Tiago Klein" />
-
-    <TextView
         android:id="@+id/footerView"
         style="?android:attr/textAppearanceMedium"
         android:layout_width="match_parent"
@@ -32,10 +21,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/footerView"
-        android:layout_below="@+id/nagivation_edtNomeUsuario"
-        android:background="#cccc"
+        android:paddingTop="10sp"
         android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp" />
+        android:divider="#dcdcdc"
+        android:dividerHeight="1dp"
+        android:background="#ffffffff" />
 
 </RelativeLayout>

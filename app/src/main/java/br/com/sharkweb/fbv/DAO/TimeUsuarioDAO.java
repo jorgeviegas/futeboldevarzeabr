@@ -6,6 +6,7 @@ import android.database.Cursor;
 
 import java.util.ArrayList;
 
+import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.TimeUsuario;
 
@@ -18,11 +19,14 @@ public class TimeUsuarioDAO {
     private static final String ID_USUARIO = "id_usuario";
     private static final String INATIVO = "inativo";
     private static final String POSICAO = "posicao";
+    private static final String ID_TIPO_USUARIO = "id_tipo_usuario";
+    private TipoUsuarioController tipoUsuarioControl;
 
     private FBVDAO fbvdao;
 
     public TimeUsuarioDAO(Context context) {
         fbvdao = FBVDAO.getInstance(context);
+        this.tipoUsuarioControl = new TipoUsuarioController(context);
     }
 
     public long inserir(TimeUsuario timeUsuario) {
@@ -32,7 +36,7 @@ public class TimeUsuarioDAO {
         valores.put(ID_USUARIO, timeUsuario.getId_usuario());
         valores.put(INATIVO, timeUsuario.getInativo());
         valores.put(POSICAO, timeUsuario.getPosicao());
-
+        valores.put(ID_TIPO_USUARIO, timeUsuario.getId_tipo_usuario());
 
         long retorno = fbvdao.getWritableDatabase().insert(NOME_TABELA, null, valores);
         fbvdao.close();
@@ -64,6 +68,18 @@ public class TimeUsuarioDAO {
     public long ativarUsuario(int id_time, int id_usuario) {
         ContentValues valores = new ContentValues();
         valores.put(INATIVO, 0);
+        String[] whereArgs = {Integer.toString(id_usuario),Integer.toString(id_time)};
+
+        int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID_USUARIO + " = ? AND "+ID_TIME+" = ? ", whereArgs);
+        fbvdao.close();
+        return retorno;
+    }
+
+    public long tornarAdmin(int id_time, int id_usuario) {
+        ContentValues valores = new ContentValues();
+
+        int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
+        valores.put(ID_TIPO_USUARIO, tipo_usuario);
         String[] whereArgs = {Integer.toString(id_usuario),Integer.toString(id_time)};
 
         int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID_USUARIO + " = ? AND "+ID_TIME+" = ? ", whereArgs);
@@ -125,7 +141,7 @@ public class TimeUsuarioDAO {
         ArrayList<TimeUsuario> timeUsuario = new ArrayList<TimeUsuario>();
 
         while (c.moveToNext()) {
-            timeUsuario.add(new TimeUsuario(c.getInt(0), c.getInt(1), c.getInt(2),c.getInt(3),c.getString(4)));
+            timeUsuario.add(new TimeUsuario(c.getInt(0), c.getInt(1), c.getInt(2),c.getInt(3),c.getString(4),c.getInt(5)));
         }
         return timeUsuario;
     }

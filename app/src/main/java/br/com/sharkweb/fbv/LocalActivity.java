@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,72 +16,73 @@ import android.widget.ListView;
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.Util.Constantes;
+import br.com.sharkweb.fbv.adapter.LocalListAdapter;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
+import br.com.sharkweb.fbv.controller.LocalController;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
+import br.com.sharkweb.fbv.model.Local;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
 
-public class TeamActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class LocalActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
-    private ListView times;
-    private ArrayList<Time> listaTimes;
-    private TimeListAdapter adapterTimes;
+    private ListView locais;
+    private ArrayList<Local> listaLocais;
+    private LocalListAdapter adapterLocal;
     private TimeController timesControl = new TimeController(this);
-    private TipoUsuarioController tipouserControl = new TipoUsuarioController(this);
-    private Usuario user;
-    private UsuarioController userControl = new UsuarioController(this);
-    private boolean esperaRetorno;
-    private Time timeSelecionado;
+    private LocalController localControl = new LocalController(this);
+    private TipoUsuarioController tipoUserControl = new TipoUsuarioController(this);
+    private Local localSelecionado;
     final Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_team);
+        setContentView(R.layout.activity_local);
 
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        times = (ListView) findViewById(R.id.timelist_listviewTimes);
-        times.setOnItemClickListener(this);
+        locais = (ListView) findViewById(R.id.locallist_listview);
+        locais.setOnItemClickListener(this);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
-            esperaRetorno = params.getBoolean("esperaRetorno");
+
         } else {
-            this.user = null;
         }
 
-        //Agora essa tela sempre retorna
-        esperaRetorno = true;
-
-        this.user = userControl.selectUsuarioPorId(Constantes.getUsuarioLogado().getId()).get(0);
-        //this.user = null;
-
         atualizarLista();
-        times.setCacheColorHint(Color.TRANSPARENT);
+        locais.setCacheColorHint(Color.TRANSPARENT);
     }
 
     @Override
     public void onBackPressed() {
-        if (this.esperaRetorno){
-            Intent it = new Intent();
-            if (timeSelecionado != null)
-                it.putExtra("id_time",timeSelecionado.getId());
-            else it.putExtra("id_time",0);
-            setResult(1, it);
-        }
+        Intent it = new Intent();
+        if (localSelecionado != null)
+            it.putExtra("id_local", localSelecionado.getId());
+        else it.putExtra("id_local", 0);
+        setResult(1, it);
         super.onBackPressed();
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case 1:
+                atualizarLista();
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem m1 = menu.findItem(R.id.time_action_cadastrar);
+        MenuItem m1 = menu.findItem(R.id.local_action_cadastrar);
 
         //Somente usuarios administradores podem usar o menu cadastrar
-        if (tipouserControl.selectTiposUsuariosPorId(Constantes.getUsuarioLogado().
+       if (tipoUserControl.selectTiposUsuariosPorId(Constantes.getUsuarioLogado().
                 getId_tipo()).get(0).getTipo().equals("Administrador"))
             m1.setVisible(true);
         else
@@ -94,7 +94,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_team, menu);
+        getMenuInflater().inflate(R.menu.menu_local, menu);
         return true;
     }
 
@@ -106,10 +106,10 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-       // if (id == R.id.time_action_cancelar) {
+        // if (id == R.id.time_action_cancelar) {
         //    onBackPressed();
-       //     return true;
-       // }
+        //     return true;
+        // }
 
         if (id == android.R.id.home) {
             onBackPressed();
@@ -117,11 +117,11 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
             return true;
         }
 
-        if (item.getItemId() == R.id.time_action_cadastrar) {
+        if (item.getItemId() == R.id.local_action_cadastrar) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
             builder.setTitle("Pergunta");
-            builder.setMessage("Tem certeza que deseja cadastrar um novo Time?");
+            builder.setMessage("Tem certeza que deseja cadastrar um novo local?");
 
             builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
 
@@ -129,7 +129,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
                     dialog.dismiss();
                     Bundle parametros = new Bundle();
                     parametros.putString("tipoAcesso", "write");
-                    mudarTela(CadastroTimeActivity.class, parametros);
+                    mudarTelaComRetorno(CadastroLocalActivity.class,parametros, 1);
                 }
 
             });
@@ -147,21 +147,17 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         return super.onOptionsItemSelected(item);
     }
 
-    public void atualizarLista(){
+    public void atualizarLista() {
 
-        if (this.user !=null){
-            listaTimes = timesControl.selectTimePorIdUsuario(this.user.getId());
-        }else{
-            listaTimes = timesControl.selectTimes();
-        }
-        if(listaTimes.size() == 0){
-            ArrayList<Time> listaVazia = new ArrayList<Time>();
-            listaVazia.add(new Time(0, "Nenhum time encontrado.", "",0));
-            adapterTimes = new TimeListAdapter(this, listaVazia);
-        }
-        else
-            adapterTimes = new TimeListAdapter(this, listaTimes);
-            times.setAdapter(adapterTimes);
+        listaLocais = localControl.selectLocais();
+
+        if (listaLocais.size() == 0) {
+            ArrayList<Local> listaVazia = new ArrayList<Local>();
+            listaVazia.add(new Local(0, "Nenhum local encontrado.", "",0, "",0));
+            adapterLocal = new LocalListAdapter(this, listaVazia);
+        } else
+            adapterLocal = new LocalListAdapter(this, listaLocais);
+           locais.setAdapter(adapterLocal);
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
@@ -175,21 +171,21 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private void mudarTela(Class cls) {
         startActivity(new Intent(this, cls));
     }
+
+    @SuppressWarnings({"rawtypes", "unused"})
+    private void mudarTelaComRetorno(Class cls, Bundle parametros, int key) {
+        Intent intent = new Intent(this, cls);
+        intent.putExtras(parametros);
+        startActivityForResult(intent, key);
+    }
+
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Time time = adapterTimes.getItem(position);
-        if(time.getId() != 0){
-
-            if (esperaRetorno){
-                this.timeSelecionado = time;
+       Local local = adapterLocal.getItem(position);
+        if(local.getId() != 0){
+                this.localSelecionado = local;
                 onBackPressed();
-            }
-          /*  else{
-                Bundle parametros = new Bundle();
-                parametros.putInt("id_time", time.getId());
-                mudarTela(TimeDetalheActivity.class, parametros);
-            }*/
-
         }
     }
 }

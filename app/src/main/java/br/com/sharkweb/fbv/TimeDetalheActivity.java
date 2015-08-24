@@ -68,7 +68,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             //Aqui tratamos parametros enviados para a tela principal
             this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
         }else{
-            this.time = new Time("Time nao encontrado","","");
+            this.time = new Time("Time nao encontrado","",0);
         }
 
         tvNomeTime = (TextView) findViewById(R.id.timeDetalhe_tvNomeTime);
@@ -113,10 +113,10 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         if(listaUsuarios.size() == 0){
             ArrayList<Usuario> listaVazia = new ArrayList<Usuario>();
             listaVazia.add(new Usuario(0, "Nenhum jogador encontrado.", "", "", "", 0, 0, 0, "", ""));
-            adapterUsuarios = new UsuarioListAdapter(this, listaVazia, time);
+            adapterUsuarios = new UsuarioListAdapter(this, listaVazia, time,1);
         }
         else
-            adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios, time);
+            adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios, time,1);
             listaJogadores.setAdapter(adapterUsuarios);
     }
 
@@ -225,14 +225,14 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                     ArrayList<Usuario> users = usuarioControl.selectUsuarios();
 
                     for (int i = 0; i < users.size(); i++) {
-                        TimeUsuario timeUser = new TimeUsuario(time.getId(), users.get(i).getId(),0,"");
-                        timeusuarioControl.inserir(timeUser);
+                        if (timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(
+                                time.getId(),users.get(i).getId()).isEmpty()) {
+                            int tipo_usuario = tipouserControl.selectTiposUsuariosPorTipo("Jogador").get(0).getId();
+                            TimeUsuario timeUser = new TimeUsuario(time.getId(), users.get(i).getId(), 0, "",tipo_usuario);
+                            timeusuarioControl.inserir(timeUser);
+                        }
                     }
                     atualizarLista();
-
-                    //String ret = PedirEmailApelido();
-                   // if (!ret.isEmpty())
-                    //funcoes.mostrarDialogAlert(0,"alo",ret);
                 }
 
             });
@@ -255,12 +255,13 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         if (user.getId() > 0) {
             final TimeUsuario tipoUser = timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(), user.getId()).get(0);
             //Menu de opções que o usuário pode fazer com os usuarios.
-            String[] arrayOpcoes = new String[2];
+            String[] arrayOpcoes = new String[3];
             arrayOpcoes[0] = "Visualizar";
+            arrayOpcoes[1] = "Tornar Admin do time";
             if (tipoUser.getInativo() > 0) {
-                arrayOpcoes[1] = "Ativar usuario";
+                arrayOpcoes[2] = "Ativar usuario";
             } else {
-                arrayOpcoes[1] = "Inativar usuario";
+                arrayOpcoes[2] = "Inativar usuario";
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -269,18 +270,25 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             builder.setItems(arrayOpcoes, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int arg1) {
-                    if (arg1 == 0) {
-                        Bundle parametros = new Bundle();
-                        parametros.putString("tipoAcesso", "read");
-                        parametros.putInt("id_usuario", user.getId());
-                        mudarTela(CadastroUsuarioActivity.class, parametros);
-                    } else {
-                        if (tipoUser.getInativo() > 0) {
-                            timeusuarioControl.ativarUsuario(time.getId(), user.getId());
-                        } else {
-                            timeusuarioControl.inativarUsuario(time.getId(), user.getId());
-                        }
-                        atualizarLista();
+                    switch (arg1) {
+                        case 0:
+                            Bundle parametros = new Bundle();
+                            parametros.putString("tipoAcesso", "read");
+                            parametros.putInt("id_usuario", user.getId());
+                            mudarTela(CadastroUsuarioActivity.class, parametros);
+                            break;
+                        case 1:
+                            timeusuarioControl.tornarAdmin(time.getId(), user.getId());
+                            atualizarLista();
+                            break;
+                        case 2:
+                            if (tipoUser.getInativo() > 0) {
+                                timeusuarioControl.ativarUsuario(time.getId(), user.getId());
+                            } else {
+                                timeusuarioControl.inativarUsuario(time.getId(), user.getId());
+                            }
+                            atualizarLista();
+                            break;
                     }
                 }
             });

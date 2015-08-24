@@ -147,13 +147,13 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
 
 
     public void atualizarLista(){
-       // ArrayList<Jogo> teste = jogoControl.selectJogos();
+        ArrayList<Jogo> teste = jogoControl.selectJogos();
 
         listaJogos = jogoControl.selectJogosPorIdTimeEData(time.getId(),funcoes.transformarDataEmString(dataSelecionada));
 
         if(listaJogos.size() == 0){
             ArrayList<Jogo> listaVazia = new ArrayList<Jogo>();
-            listaVazia.add(new Jogo(0,0,0,0,"","","",0));
+            listaVazia.add(new Jogo(0,0,0,0,"","","",0,0));
             adapterJogos = new JogoListAdapter(this, listaVazia);
         }
         else

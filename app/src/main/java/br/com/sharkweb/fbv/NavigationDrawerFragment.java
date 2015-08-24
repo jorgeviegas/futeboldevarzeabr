@@ -1,6 +1,7 @@
 package br.com.sharkweb.fbv;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -21,6 +22,11 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+
+import br.com.sharkweb.fbv.adapter.MenuOpcaoListAdapter;
+import br.com.sharkweb.fbv.model.OpcaoMenu;
 
 /**
  * Fragment used for managing interactions for and presentation of a navigation drawer.
@@ -53,6 +59,7 @@ public class NavigationDrawerFragment extends Fragment {
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerListView;
     private View mFragmentContainerView;
+    private MenuOpcaoListAdapter adapterMenu;
 
     private int mCurrentSelectedPosition = 0;
     private boolean mFromSavedInstanceState;
@@ -98,7 +105,22 @@ public class NavigationDrawerFragment extends Fragment {
                 selectItem(position);
             }
         });
-        mDrawerListView.setAdapter(new ArrayAdapter<String>(
+        //CARREGANDO OPÇÕES DO MENU
+        ArrayList<OpcaoMenu> opcoes = new ArrayList<>();
+        OpcaoMenu inicial = new OpcaoMenu(1,"Inicial","Veja tudo sobre seu desempenho nos jogos.",R.drawable.statistics_gray_64);
+        opcoes.add(inicial);
+        OpcaoMenu perfil = new OpcaoMenu(2,"Perfil","Veja todas as informações do seu usuário.",R.drawable.person_gray_64);
+        opcoes.add(perfil);
+        OpcaoMenu meusTimes = new OpcaoMenu(3,"Meus times","Visualize todos os times que você participa.",
+                R.drawable.soccercourt_64);
+        opcoes.add(meusTimes);
+        OpcaoMenu calendario = new OpcaoMenu(4,"Calendário","Visualize e crie jogos para o seu time.",
+                R.drawable.calendar_gray_64);
+        opcoes.add(calendario);
+
+        adapterMenu = new MenuOpcaoListAdapter(getActionBar().getThemedContext(), opcoes);
+        mDrawerListView.setAdapter(adapterMenu);
+      /*  mDrawerListView.setAdapter(new ArrayAdapter<String>(
                 getActionBar().getThemedContext(),
                 android.R.layout.simple_list_item_activated_1,
                 android.R.id.text1,
@@ -106,7 +128,7 @@ public class NavigationDrawerFragment extends Fragment {
                         getString(R.string.title_section1),
                         getString(R.string.title_section2),
                         getString(R.string.title_section3)
-                }));
+                }));*/
         mDrawerListView.setItemChecked(mCurrentSelectedPosition, true);
         return view;
     }

@@ -10,20 +10,23 @@ public class TimeUsuario {
     private int id_usuario;
     private int inativo;
     private String posicao;
+    private int id_tipo_usuario;
 
-    public TimeUsuario(int id, int id_time, int id_usuario, int inativo, String posicao) {
+    public TimeUsuario(int id, int id_time, int id_usuario, int inativo, String posicao, int id_tipo_usuario) {
         this.id = id;
         this.id_time = id_time;
         this.id_usuario = id_usuario;
         this.inativo = inativo;
         this.posicao = posicao;
+        this.id_tipo_usuario = id_tipo_usuario;
     }
 
-    public TimeUsuario(int id_time, int id_usuario, int inativo, String posicao) {
+    public TimeUsuario(int id_time, int id_usuario, int inativo, String posicao, int id_tipo_usuario) {
         this.id_time = id_time;
         this.id_usuario = id_usuario;
         this.inativo = inativo;
         this.posicao = posicao;
+        this.id_tipo_usuario = id_tipo_usuario;
     }
 
 
@@ -65,5 +68,13 @@ public class TimeUsuario {
 
     public void setPosicao(String posicao) {
         this.posicao = posicao;
+    }
+
+    public int getId_tipo_usuario() {
+        return id_tipo_usuario;
+    }
+
+    public void setId_tipo_usuario(int id_tipo_usuario) {
+        this.id_tipo_usuario = id_tipo_usuario;
     }
 }

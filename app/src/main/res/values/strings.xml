@@ -23,4 +23,6 @@
     <string name="title_activity_time_detalhe">TimeDetalhe</string>
     <string name="title_activity_calendario">CalendarioActivity</string>
     <string name="title_activity_cadastro_jogo">CadastroJogoActivity</string>
+    <string name="title_activity_local">Selecione um local</string>
+    <string name="title_activity_testedrawer">testedrawer</string>
 </resources>

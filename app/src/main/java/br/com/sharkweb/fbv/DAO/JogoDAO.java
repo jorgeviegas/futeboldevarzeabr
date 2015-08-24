@@ -23,6 +23,7 @@ public class JogoDAO {
     private static final String HORA = "hora";
     private static final String HORAFINAL = "horafinal";
     private static final String INATIVO = "inativo";
+    private static final String ID_JUIZ = "id_juiz";
 
     private FBVDAO fbvdao;
 
@@ -39,6 +40,7 @@ public class JogoDAO {
         valores.put(HORA, jogo.getHora());
         valores.put(HORAFINAL, jogo.getHoraFinal());
         valores.put(INATIVO, jogo.getInativo());
+        valores.put(ID_JUIZ, jogo.getId_juiz());
 
         long retorno = fbvdao.getWritableDatabase().insert(NOME_TABELA, null, valores);
         fbvdao.close();
@@ -54,6 +56,7 @@ public class JogoDAO {
         valores.put(HORA, jogo.getHora());
         valores.put(HORAFINAL, jogo.getHoraFinal());
         valores.put(INATIVO, jogo.getInativo());
+        valores.put(ID_JUIZ, jogo.getId_juiz());
 
         String[] whereArgs = {Integer.toString(jogo.getId())};
         int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID + " = ?", whereArgs);
@@ -115,7 +118,7 @@ public class JogoDAO {
     private ArrayList<Jogo> cursorToArray(Cursor c) {
         ArrayList<Jogo> jogos = new ArrayList<Jogo>();
         while (c.moveToNext()) {
-            jogos.add(new Jogo(c.getInt(0),c.getInt(1),c.getInt(2),c.getInt(3),c.getString(4),c.getString(5),c.getString(6),c.getInt(7)));
+            jogos.add(new Jogo(c.getInt(0),c.getInt(1),c.getInt(2),c.getInt(3),c.getString(4),c.getString(5),c.getString(6),c.getInt(7),c.getInt(8)));
         }
         return jogos;
     }

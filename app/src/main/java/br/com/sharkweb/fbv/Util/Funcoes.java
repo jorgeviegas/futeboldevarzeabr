@@ -84,4 +84,12 @@ public class Funcoes {
         Date date = new Date();
         return dateFormat.format(date);
     }
+
+    public String formatarHoraMinuto(int h){
+        if (h >=10){
+            return String.valueOf(h);
+        }else{
+            return "0"+String.valueOf(h);
+        }
+    }
 }

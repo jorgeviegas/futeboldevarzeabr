@@ -3,6 +3,9 @@
     package="br.com.sharkweb.fbv" >
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
@@ -30,9 +33,11 @@
         <activity
             android:name=".CadastroUsuarioActivity"
             android:label="Cadastro de usuario" />
+
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
             android:value=".MainActivity" />
+
         <activity
             android:name=".TimeDetalheActivity"
             android:label="Time" >
@@ -43,6 +48,7 @@
         <activity
             android:name=".CalendarioActivity"
             android:label="Calendario do Time" >
+
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -54,6 +60,25 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".CalendarioActivity" />
+        </activity>
+        <activity
+            android:name=".UsuariosActivity"
+            android:label="Selecione um usuario" >
+        </activity>
+        <activity
+            android:name=".LocalActivity"
+            android:label="@string/title_activity_local" >
+        </activity>
+        <activity
+            android:name=".Util.ConsumirJsonActivity"
+            android:label="Json maroto" >
+        </activity>
+        <activity
+            android:name=".CadastroLocalActivity"
+            android:label="Local" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".LocalActivity" />
         </activity>
     </application>
 

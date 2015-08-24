@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:padding="5dp"
+    >
+
+    <ImageView
+        android:id="@+id/locallist_imagemlocal"
+        android:layout_width="10dp"
+        android:layout_height="52dp"
+        android:scaleType="centerCrop"
+        />
+
+    <TextView
+        android:id="@+id/locallist_nomelocal"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/locallist_imagemlocal"
+        android:layout_alignTop="@+id/locallist_imagemlocal"
+        android:text="Nome Time"
+        android:textSize="20sp"
+        android:textColor="#333333"
+        android:paddingLeft="5dp"
+        />
+
+    <TextView
+        android:id="@+id/locallist_endereco"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/locallist_nomelocal"
+        android:layout_toRightOf="@+id/locallist_imagemlocal"
+        android:text="local"
+        android:textSize="15sp"
+        android:textColor="#a9a9a9"
+        android:paddingLeft="5dp"
+        />
+</RelativeLayout>

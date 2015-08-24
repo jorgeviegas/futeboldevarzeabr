@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import br.com.sharkweb.fbv.R;
 import br.com.sharkweb.fbv.Util.Constantes;
+import br.com.sharkweb.fbv.controller.UFController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Time;
 
@@ -27,11 +28,13 @@ public class TimeListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private ArrayList<Time> times;
     private UsuarioController usuarioControl;
+    private UFController ufControl;
 
     public TimeListAdapter(Context context, ArrayList<Time> listaTimes) {
         this.times = listaTimes;
         mInflater = LayoutInflater.from(context);
         usuarioControl = new UsuarioController(context);
+        ufControl = new UFController(context);
     }
 
     public int getCount() {
@@ -69,7 +72,7 @@ public class TimeListAdapter extends BaseAdapter {
         if (time.getId() > 0){
         itemHolder.ivSeparador.setImageResource(R.drawable.yellow_divider);
         itemHolder.tvLocalTime.setText(time.getCidade().trim().toUpperCase() + " - " +
-                time.getUf().trim().toUpperCase());
+                ufControl.selectUFPorId(time.getId_uf()).get(0).getNome().trim());
 
         if(Constantes.getUsuarioLogado().getId_time() > 0 &&
                 (Constantes.getUsuarioLogado().getId_time() == time.getId())) {

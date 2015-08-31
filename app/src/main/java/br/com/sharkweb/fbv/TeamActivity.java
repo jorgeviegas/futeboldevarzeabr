@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.controller.TimeController;
+import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Time;
@@ -121,6 +122,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
             builder.setTitle("Pergunta");
+            builder.setIcon(R.drawable.questionmark_64);
             builder.setMessage("Tem certeza que deseja cadastrar um novo Time?");
 
             builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {

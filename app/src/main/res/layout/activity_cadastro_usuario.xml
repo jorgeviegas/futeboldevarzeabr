@@ -2,9 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="br.com.sharkweb.fbv.CadastroUsuarioActivity">
 
@@ -47,15 +44,6 @@
         android:ems="10"
         android:hint="Senha:" />
 
-    <Button
-        android:id="@+id/cadastroUsuario_btnRegistrar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Registrar"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@+id/cadastro_usuario_spinner" />
-
     <Spinner
         android:id="@+id/cadastro_usuario_spinner"
         android:layout_width="wrap_content"
@@ -64,17 +52,7 @@
         android:layout_below="@+id/cadastro_usuario_edtConfirmarSenha"
         android:layout_alignRight="@+id/cadastro_usuario_edtConfirmarSenha"
         android:layout_alignEnd="@+id/cadastro_usuario_edtConfirmarSenha"
-        android:layout_alignLeft="@+id/cadastro_usuario_btnCancelar"
-        android:layout_alignStart="@+id/cadastro_usuario_btnCancelar" />
-
-    <Button
-        android:id="@+id/cadastro_usuario_btnCancelar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Cancelar"
-        android:layout_toLeftOf="@+id/cadastroUsuario_btnRegistrar"
-        android:layout_toStartOf="@+id/cadastroUsuario_btnRegistrar"
-        android:layout_below="@+id/cadastro_usuario_spinner" />
+        android:layout_toEndOf="@+id/cadastro_usuario_tvlabelTipoUsuario" />
 
     <EditText
         android:id="@+id/cadastro_usuario_edtConfirmarSenha"
@@ -100,7 +78,7 @@
         android:layout_below="@+id/cadastro_usuario_edtApelido"
         android:ems="10"
         android:hint="Celular:"
-        android:inputType="textEmailAddress" />
+        android:inputType="phone" />
 
 
     <EditText
@@ -125,8 +103,43 @@
         android:layout_below="@+id/cadastro_usuario_edtConfirmarSenha"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignBottom="@+id/cadastro_usuario_spinner"
-        android:layout_toLeftOf="@+id/cadastro_usuario_spinner"
-        android:layout_toStartOf="@+id/cadastro_usuario_spinner" />
+        android:layout_alignBottom="@+id/cadastro_usuario_spinner" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="80sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/fundo_botoes"
+        android:id="@+id/linearLayout">
+
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/botao_cancelar"
+            android:layout_margin="5dp"
+            android:textStyle="bold"
+            android:text="Cancelar"
+            android:id="@+id/cadastro_usuario_btnCancelar"
+            android:layout_gravity="center" />
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:background="@drawable/botao_salvar"
+            android:text="Salvar"
+            android:layout_margin="5sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:id="@+id/cadastroUsuario_btnRegistrar"
+            android:layout_gravity="center" />
+    </LinearLayout>
 
 </RelativeLayout>

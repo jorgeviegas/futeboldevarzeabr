@@ -5,6 +5,8 @@ package br.com.sharkweb.fbv.adapter;
  */
 
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.R;
+import br.com.sharkweb.fbv.controller.JogoController;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.model.Jogo;
 import br.com.sharkweb.fbv.model.Time;
@@ -28,11 +31,13 @@ public class JogoListAdapter extends BaseAdapter {
     private LayoutInflater mInflater;
     private ArrayList<Jogo> jogos;
     private TimeController timeControl;
+    private JogoController jogoControl;
 
     public JogoListAdapter(Context context, ArrayList<Jogo> listaJogos) {
         this.jogos = listaJogos;
         mInflater = LayoutInflater.from(context);
         timeControl = new TimeController(context);
+        jogoControl = new JogoController(context);
     }
 
     public int getCount() {
@@ -64,14 +69,26 @@ public class JogoListAdapter extends BaseAdapter {
         }
 
         Jogo jogo = jogos.get(position);
+
         if (jogo.getId_time() > 0 && jogo.getId_time2() > 0){
             Time time = timeControl.selectTimePorId(jogo.getId_time()).get(0);
             Time time2 = timeControl.selectTimePorId(jogo.getId_time2()).get(0);
 
             itemHolder.tvNomeTimes.setText(time.getNome().trim().toUpperCase()+" X "+time2.getNome().trim().toUpperCase());
-            itemHolder.tvDataHora.setText(jogo.getData()+" - "+jogo.getHora().trim()
-                    +" até "+jogo.getHoraFinal().trim());
-            itemHolder.ivJogo.setImageResource(R.drawable.blue_divider);
+            itemHolder.tvDataHora.setText(jogo.getData() + " - " + jogo.getHora().trim()
+                    + " até " + jogo.getHoraFinal().trim());
+            itemHolder.ivJogo.setBackgroundColor(Color.BLUE);
+
+
+            //Se o jogo já venceu, coloca uma tarja vermelha.
+            try {
+                if (!jogoControl.isOpen(jogo)){
+                    itemHolder.ivJogo.setBackgroundColor(Color.RED);
+
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }else{
             itemHolder.tvNomeTimes.setText("");
             itemHolder.tvDataHora.setText("");

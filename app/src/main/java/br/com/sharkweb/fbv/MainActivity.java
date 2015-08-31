@@ -165,6 +165,11 @@ public class MainActivity extends ActionBarActivity
                 //mTitle = "Calendario";
                 mudarTelaComRetorno(TeamActivity.class, 2);
                 break;
+            case 5:
+                //mTitle = "Calendario";
+                //mudarTelaComRetorno(TeamActivity.class, 2);
+                funcoes.mostrarDialogAlert(1,"Está quase pronto! Estamos com essa função no forno!");
+                break;
         }
     }
 

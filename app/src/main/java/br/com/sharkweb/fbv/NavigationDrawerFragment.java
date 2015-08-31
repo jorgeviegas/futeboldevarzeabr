@@ -117,6 +117,9 @@ public class NavigationDrawerFragment extends Fragment {
         OpcaoMenu calendario = new OpcaoMenu(4,"Calendário","Visualize e crie jogos para o seu time.",
                 R.drawable.calendar_gray_64);
         opcoes.add(calendario);
+        OpcaoMenu financeiro = new OpcaoMenu(5,"Financeiro","Administre retiradas, pagamentos e mensalidades.",
+                R.drawable.money_bag_64);
+        opcoes.add(financeiro);
 
         adapterMenu = new MenuOpcaoListAdapter(getActionBar().getThemedContext(), opcoes);
         mDrawerListView.setAdapter(adapterMenu);

@@ -25,4 +25,5 @@
     <string name="title_activity_cadastro_jogo">CadastroJogoActivity</string>
     <string name="title_activity_local">Selecione um local</string>
     <string name="title_activity_testedrawer">testedrawer</string>
+    <string name="title_activity_pos_jogo">Pós jogo</string>
 </resources>

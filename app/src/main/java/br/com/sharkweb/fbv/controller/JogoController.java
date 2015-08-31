@@ -2,19 +2,24 @@ package br.com.sharkweb.fbv.controller;
 
 import android.content.Context;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 
 import br.com.sharkweb.fbv.DAO.JogoDAO;
 import br.com.sharkweb.fbv.DAO.TimeDAO;
+import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.model.Jogo;
 import br.com.sharkweb.fbv.model.Time;
 
 public class JogoController {
 
     private JogoDAO jogoDAO;
+    private Funcoes funcoes;
 
     public JogoController(Context context) {
         jogoDAO = new JogoDAO(context);
+        funcoes = new Funcoes(context);
     }
 
     public long inserir(Jogo jogo) {
@@ -47,6 +52,22 @@ public class JogoController {
 
     public ArrayList<Jogo> selectJogosPorIdTime2(int id_time2) {
         return jogoDAO.selectJogosPorIdTime2(id_time2);
+    }
+
+    public boolean isOpen(Jogo jogo) {
+        Date datajogo = null;
+        try {
+            datajogo = funcoes.setDateTime(jogo.getData().trim()+" "+jogo.getHoraFinal().trim()+":00");
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
+        }
+        Date dataSistema = funcoes.getDateTime();
+        if (datajogo.after(dataSistema)){
+            return true;
+        }else {
+            return false;
+        }
     }
 
     public void excluirTodosJogos() {

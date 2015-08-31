@@ -67,8 +67,8 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         if (params != null) {
             //Aqui tratamos parametros enviados para a tela principal
             this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
-        }else{
-            this.time = new Time("Time nao encontrado","",0);
+        } else {
+            this.time = new Time("Time nao encontrado", "", 0);
         }
 
         tvNomeTime = (TextView) findViewById(R.id.timeDetalhe_tvNomeTime);
@@ -97,27 +97,26 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
     }
 
-    public void atualizarLista(){
+    public void atualizarLista() {
         listaUsuarios = new ArrayList<Usuario>();
 
-        if (!chkInativo.isChecked()){
+        if (!chkInativo.isChecked()) {
             listaTimesUsuario = timeusuarioControl.selectTimeUsuarioPorIdTime(this.time.getId());
-        }else{
+        } else {
             listaTimesUsuario = timeusuarioControl.selectTimeUsuarioPorIdTimeComInativos(this.time.getId());
         }
 
-        for (int i = 0; i < listaTimesUsuario.size(); i++){
+        for (int i = 0; i < listaTimesUsuario.size(); i++) {
             listaUsuarios.add(usuarioControl.selectUsuarioPorId(listaTimesUsuario.get(i).getId_usuario()).get(0));
         }
 
-        if(listaUsuarios.size() == 0){
+        if (listaUsuarios.size() == 0) {
             ArrayList<Usuario> listaVazia = new ArrayList<Usuario>();
             listaVazia.add(new Usuario(0, "Nenhum jogador encontrado.", "", "", "", 0, 0, 0, "", ""));
-            adapterUsuarios = new UsuarioListAdapter(this, listaVazia, time,1);
-        }
-        else
-            adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios, time,1);
-            listaJogadores.setAdapter(adapterUsuarios);
+            adapterUsuarios = new UsuarioListAdapter(this, listaVazia, time, 1);
+        } else
+            adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios, time, 1);
+        listaJogadores.setAdapter(adapterUsuarios);
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
@@ -132,12 +131,11 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         MenuItem m1 = menu.findItem(R.id.timedetalhe_action_cadastrarJogador);
         MenuItem m2 = menu.findItem(R.id.timedetalhe_action_editar);
 
-        //Somente usuarios administradores podem usar o menu inserir jogador
-        if (tipouserControl.selectTiposUsuariosPorId(Constantes.getUsuarioLogado().
-                getId_tipo()).get(0).getTipo().equals("Administrador")) {
+        //Somente usuarios administradores do time podem usar o menu inserir jogador
+        if (timeusuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
             m1.setVisible(true);
             m2.setVisible(true);
-        }else {
+        } else {
             m2.setVisible(false);
             m1.setVisible(false);
         }
@@ -148,10 +146,11 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_time_detalhe, menu);
+
         return true;
     }
 
-    public String PedirEmailApelido(){
+    public String PedirEmailApelido() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Informe o E-mail ou Nome de usuario do jogador");
 
@@ -180,7 +179,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     }
 
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -204,7 +202,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         if (id == R.id.timedetalhe_action_editar) {
             Bundle parametros = new Bundle();
             parametros.putString("tipoAcesso", "edit");
-            parametros.putInt("id_time",time.getId());
+            parametros.putInt("id_time", time.getId());
             mudarTela(CadastroTimeActivity.class, parametros);
             return true;
         }
@@ -213,7 +211,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         //noinspection SimplifiableIfStatement
         if (id == R.id.timedetalhe_action_cadastrarJogador) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
             builder.setTitle("Pergunta");
             builder.setMessage("Tem certeza que deseja inserir um novo Jogador?");
 
@@ -226,9 +223,9 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
                     for (int i = 0; i < users.size(); i++) {
                         if (timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(
-                                time.getId(),users.get(i).getId()).isEmpty()) {
+                                time.getId(), users.get(i).getId()).isEmpty()) {
                             int tipo_usuario = tipouserControl.selectTiposUsuariosPorTipo("Jogador").get(0).getId();
-                            TimeUsuario timeUser = new TimeUsuario(time.getId(), users.get(i).getId(), 0, "",tipo_usuario);
+                            TimeUsuario timeUser = new TimeUsuario(time.getId(), users.get(i).getId(), 0, "", tipo_usuario);
                             timeusuarioControl.inserir(timeUser);
                         }
                     }
@@ -249,22 +246,30 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-       final Usuario user = adapterUsuarios.getItem(position);
+        final Usuario user = adapterUsuarios.getItem(position);
         if (user.getId() > 0) {
             final TimeUsuario tipoUser = timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(), user.getId()).get(0);
             //Menu de opções que o usuário pode fazer com os usuarios.
-            String[] arrayOpcoes = new String[3];
+            String[] arrayOpcoes = new String[1];
             arrayOpcoes[0] = "Visualizar";
-            arrayOpcoes[1] = "Tornar Admin do time";
-            if (tipoUser.getInativo() > 0) {
-                arrayOpcoes[2] = "Ativar usuario";
-            } else {
-                arrayOpcoes[2] = "Inativar usuario";
+
+            //Diponível somente para usuarios administradores do time.
+            if (timeusuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
+                arrayOpcoes = new String[3];
+                arrayOpcoes[0] = "Visualizar";
+                arrayOpcoes[1] = "Tornar Admin do time";
+                if (tipoUser.getInativo() > 0) {
+                    arrayOpcoes[2] = "Ativar usuario";
+                } else {
+                    arrayOpcoes[2] = "Inativar usuario";
+                }
             }
 
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setIcon(R.drawable.questionmark_64);
             builder.setTitle("O que deseja fazer?");
             builder.setCancelable(true);
             builder.setItems(arrayOpcoes, new DialogInterface.OnClickListener() {

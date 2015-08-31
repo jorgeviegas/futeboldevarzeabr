@@ -9,6 +9,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
+
+import br.com.sharkweb.fbv.R;
 
 /**
  * Created by Tiago on 22/07/2015.
@@ -25,10 +28,23 @@ public class Funcoes {
 
     }
 
-    public void mostrarDialogAlert(int icone, String titulo, String mensagem) {
+    public void mostrarDialogAlert(int tipo, String mensagem) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
-        builder.setIcon(icone);
-        builder.setMessage(mensagem).setTitle(titulo);
+        switch (tipo){
+            case 1:
+                builder.setIcon(R.drawable.information_64);
+                builder.setMessage(mensagem).setTitle("Informativo");
+                break;
+            case 2:
+                builder.setIcon(R.drawable.attention_64);
+                builder.setMessage(mensagem).setTitle("Atenção!");
+                break;
+            case 3:
+                builder.setIcon(R.drawable.imoticon_sorry);
+                builder.setMessage("Isso não deveria ter acontecido, vamos trabalhar duro para que isso não se repita!" +
+                        " \n"+mensagem).setTitle("Opss..");
+                break;
+        }
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.dismiss();
@@ -37,6 +53,7 @@ public class Funcoes {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
 
     public String PrimeiraLetraMaiuscula(String s){
         return s.substring(0,1).toUpperCase() + s.substring(1);
@@ -61,6 +78,23 @@ public class Funcoes {
         String result = out.format(data);
         return result;
        // return data.getDay()+"/"+data.getMonth()+"/"+data.getYear();
+    }
+
+    public Date getDateTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        Date date = new Date();
+        String result = dateFormat.format(date);
+        try {
+            return (Date)dateFormat.parse(result);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Date setDateTime(String data) throws ParseException {
+        return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(data);
     }
 
     public long StringDataParaLong (String date){

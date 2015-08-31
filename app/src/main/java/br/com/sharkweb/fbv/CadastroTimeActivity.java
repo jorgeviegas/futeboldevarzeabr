@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.controller.TimeController;
@@ -123,7 +124,8 @@ public class CadastroTimeActivity extends ActionBarActivity {
         if (validarCampos().isEmpty()) {
             String nome = txtNome.getText().toString().trim();
             String cidade = txtCidade.getText().toString().trim().toUpperCase();
-            int id_uf = spnUF.getSelectedItemPosition() + 1;
+            int id_uf = (int) spnUF.getSelectedItemId();
+            id_uf = id_uf - 1;
 
             Time timeInsert;
             if (this.time == null){
@@ -167,7 +169,9 @@ public class CadastroTimeActivity extends ActionBarActivity {
     private void carregarRegistro () {
         txtNome.setText(this.time.getNome());
         txtCidade.setText(this.time.getCidade());
-        spnUF.setSelection(this.time.getId_uf() - 1);
+        int if_uf = this.time.getId_uf();
+        if_uf = if_uf + 1;
+        spnUF.setSelection(if_uf);
 
 
         if (this.tipoAcesso.equals("read")){

@@ -5,6 +5,7 @@ package br.com.sharkweb.fbv.adapter;
  */
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,7 +70,7 @@ public class LocalListAdapter extends BaseAdapter {
 
         Local local = locais.get(position);
         if (local.getId() > 0){
-            itemHolder.ivSeparador.setImageResource(R.drawable.yellow_divider);
+            itemHolder.ivSeparador.setBackgroundColor(Color.YELLOW);
             itemHolder.tvNomeLocal.setText(local.getNome());
             itemHolder.tvEndereco.setText(local.getEndereco().trim().toUpperCase()
                     +", "+local.getCidade().trim().toUpperCase()

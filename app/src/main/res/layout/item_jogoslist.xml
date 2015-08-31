@@ -12,6 +12,8 @@
         android:layout_width="10dp"
         android:layout_height="52dp"
         android:background="#ffffff"
+        android:paddingBottom="5sp"
+        android:paddingTop="5sp"
         android:scaleType="centerCrop"
         />
 

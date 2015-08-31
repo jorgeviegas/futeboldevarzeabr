@@ -46,6 +46,17 @@ public class TimeUsuarioController {
         return timeUsuarioDAO.tornarAdmin(id_time, id_usuario);
     }
 
+    public boolean isAdmin(int id_time,int id_usuario) {
+        ArrayList<TimeUsuario>  ret =
+                timeUsuarioDAO.selectTimeUsuarioPorIdTimeeIdUsuario(id_time, id_usuario);
+
+        if (!ret.isEmpty() && ret.get(0).getId_tipo_usuario() == 1){
+          return true;
+        }else{
+            return false;
+        }
+    }
+
     public ArrayList<TimeUsuario> selectTimeUsuario() {
         return timeUsuarioDAO.selectTimeUsuario();
     }

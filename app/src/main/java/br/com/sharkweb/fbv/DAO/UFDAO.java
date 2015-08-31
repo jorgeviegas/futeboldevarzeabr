@@ -55,7 +55,7 @@ public class UFDAO {
     }
 
     public ArrayList<UF> selectUFPorDescricao(String uf) {
-        ArrayList<UF> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + UF + " = " + uf + " ORDER BY " + UF, null));
+        ArrayList<UF> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + UF + " = '" + uf + "' ORDER BY " + UF, null));
         fbvdao.close();
         return c;
     }

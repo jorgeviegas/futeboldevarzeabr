@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.controller.LoginController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -64,7 +65,7 @@ public class LoginActivity extends ActionBarActivity {
                         }else{
                             loginControl.alterar(1,user.getId());
                         }
-
+                        Constantes.setUsuarioLogado(user);
 
                         Bundle parametros = new Bundle();
                         parametros.putBoolean("login", true);

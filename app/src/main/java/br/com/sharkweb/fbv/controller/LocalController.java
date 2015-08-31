@@ -6,15 +6,18 @@ import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.DAO.LocalDAO;
 import br.com.sharkweb.fbv.DAO.TimeDAO;
+import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.model.Local;
 import br.com.sharkweb.fbv.model.Time;
 
 public class LocalController {
 
     private LocalDAO localDAO;
+    private Funcoes funcoes;
 
     public LocalController(Context context) {
         localDAO = new LocalDAO(context);
+        funcoes = new Funcoes(context);
     }
 
     public long inserir(Local local) {
@@ -39,5 +42,20 @@ public class LocalController {
 
     public void excluirTodosLocais() {
         localDAO.excluirTodosLocais();
+    }
+
+    public String getEnderecoCompleto(Local local) {
+        String endereco = "";
+        if (!local.getEndereco().isEmpty()){
+            endereco = endereco +funcoes.PrimeiraLetraMaiuscula(local.getEndereco().trim())+", ";
+        }
+        if (local.getNumero() > 0){
+            endereco = endereco +String.valueOf(local.getNumero()).trim()+", ";
+        }
+        if (!local.getCidade().isEmpty()){
+            endereco = endereco +local.getCidade().trim().toUpperCase();
+        }
+
+        return endereco;
     }
 }

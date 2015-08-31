@@ -79,7 +79,6 @@ public class CadastroLocalActivity extends ActionBarActivity {
         spnUF.setAdapter(arrayAdapter2);
         spnUF.setVisibility(View.VISIBLE);
 
-
         btnCadastrar = (Button) findViewById(R.id.cadastro_local_btncadastrar);
         btnCadastrar.setVisibility(View.VISIBLE);
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
@@ -92,7 +91,7 @@ public class CadastroLocalActivity extends ActionBarActivity {
         btnCancelar.setVisibility(View.VISIBLE);
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-               onBackPressed();
+                onBackPressed();
             }
         });
 
@@ -114,66 +113,78 @@ public class CadastroLocalActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
-            Intent it = new Intent();
-            if (this.local != null)
-                it.putExtra("id_local",this.local.getId());
-            else it.putExtra("id_local", 0);
-            setResult(1, it);
+        Intent it = new Intent();
+        if (this.local != null)
+            it.putExtra("id_local", this.local.getId());
+        else it.putExtra("id_local", 0);
+        setResult(1, it);
         super.onBackPressed();
     }
+
     private void carregarRegistro() {
         tvtNome.setText(this.local.getNome().trim());
         tvEndereco.setText(this.local.getEndereco().trim());
         tvCidade.setText(this.local.getCidade().trim().toUpperCase());
         tvNumero.setText(this.local.getNumero());
 
-        spnUF.setSelection(this.local.getId_uf() - 1);
+        int if_uf = this.local.getId_uf();
+        if_uf = if_uf + 1;
+        spnUF.setSelection(if_uf);
+
+        //tvEnderecoLocal.setText(this.);
     }
 
     private void salvar() {
         String ret = validar();
         if (ret.isEmpty()) {
-            int id_local = spnUF.getSelectedItemPosition() -1;
+            int id_uf = (int) spnUF.getSelectedItemId();
+            id_uf = id_uf - 1;
+
+            int numero = 0;
+            if (!tvNumero.getText().toString().isEmpty()) {
+                numero = Integer.valueOf(tvNumero.getText().toString().trim());
+            }
+            
             Local localinsert = new Local(tvtNome.getText().toString().trim(),
                     tvEndereco.getText().toString().trim(),
                     Integer.valueOf(tvNumero.getText().toString().trim()),
                     tvCidade.getText().toString().trim(),
-                    id_local);
+                    id_uf);
 
             Long retorno = null;
             switch (tipoAcesso) {
                 case "edit":
                     localinsert.setId(this.local.getId());
-                     retorno = localControl.alterar(localinsert);
+                    retorno = localControl.alterar(localinsert);
                 case "write":
-                     retorno = localControl.inserir(localinsert);
+                    retorno = localControl.inserir(localinsert);
             }
 
-            if (retorno > 0){
+            if (retorno > 0) {
                 Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
                 toast.show();
                 this.local = localinsert;
                 onBackPressed();
-            }else {
+            } else {
                 Toast toast = Toast.makeText(getApplicationContext(), "Erro ao cadastrar o local", Toast.LENGTH_LONG);
                 toast.show();
             }
 
         } else {
-            funcoes.mostrarDialogAlert(0, "Informativo", ret);
+            funcoes.mostrarDialogAlert(1,ret);
         }
     }
 
     private String validar() {
-        if (tvtNome.toString().trim().isEmpty()){
+        if (tvtNome.toString().trim().isEmpty()) {
             return "Ops... Faltou informar o nome do local!";
         }
 
-        if (tvEndereco.toString().trim().isEmpty()){
+        if (tvEndereco.toString().trim().isEmpty()) {
             return "Ops... Faltou informar o endereço do local!";
         }
 
-        if (tvCidade.toString().trim().isEmpty()){
+        if (tvCidade.toString().trim().isEmpty()) {
             return "Ops... Faltou informar o munucípio do local!";
         }
 

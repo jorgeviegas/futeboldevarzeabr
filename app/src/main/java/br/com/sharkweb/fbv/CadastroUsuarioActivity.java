@@ -9,6 +9,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.telephony.CellLocation;
 import android.telephony.TelephonyManager;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.Mask;
 import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
@@ -44,7 +46,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
     private Button btnCadastrar;
     private Button btnCancelar;
-
+    private TextWatcher celularMask;
     private String tipoAcesso;
 
     private UsuarioController usuarioControl = new UsuarioController(this);
@@ -79,13 +81,16 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
         txtCelular = (EditText) findViewById(R.id.cadastro_usuario_edtCelular);
         txtCelular.setVisibility(EditText.VISIBLE);
+        celularMask = Mask.insert("(##)####-####", txtCelular);
+        txtCelular.addTextChangedListener(celularMask);
+
         try {
             TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
             String teste = tm.getLine1Number();
             txtCelular.setText(tm.getLine1Number());
         }catch (Exception e){
             System.out.println("Falha ao tentar pegar o telefone automaticamente");
-            funcoes.mostrarDialogAlert(0, "erro", e.getMessage());
+            funcoes.mostrarDialogAlert(3,e.getMessage());
         }
 
 
@@ -145,7 +150,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
                 onBackPressed();
             }
         });
-        btnCancelar.setVisibility(View.GONE);
+        btnCancelar.setVisibility(View.VISIBLE);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -220,7 +225,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             int id_tipo = spnTipoUsuario.getSelectedItemPosition() + 1;
             int id_posicao = 1;
             int id_time = 0;
-            String celular = txtCelular.getText().toString();
+            String celular = Mask.unmask(txtCelular.getText().toString());
             String apelido = txtApelido.getText().toString();
 
             if (tipoAcesso.equals("edit")){
@@ -230,7 +235,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             }
             return true;
         } else {
-            funcoes.mostrarDialogAlert(0,"Informativo",ret);
+            funcoes.mostrarDialogAlert(1,ret);
             return false;
         }
     }
@@ -238,21 +243,21 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     private String validarCampos() {
 
         if (txtNome.getText().toString().isEmpty()) {
-            return "Nome nao informado.";
+            return "Nome não informado.";
         }
         if (txtEmail.getText().toString().isEmpty()) {
-            return "E-mail nao informado.";
+            return "E-mail não informado.";
         }else{
             if (!usuarioControl.validarEmail(txtEmail.getText().toString().trim())){
-                return "Endereço de e-mail invalido.";
+                return "Endereço de e-mail inválido.";
             }
         }
         if (txtApelido.getText().toString().isEmpty()) {
-            return "Nome de usuario nao informado.";
+            return "Nome de usuário não informado.";
         }else{
             if (!usuarioControl.selectUsuarioPorApelido(txtApelido.getText().toString()).isEmpty()
                     && !tipoAcesso.equals("edit")){
-                return "Ops... Esse nome de usuario ja esta em uso.";
+                return "Ops... Esse nome de usuario já está em uso.";
             }
         }
 
@@ -266,7 +271,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
         if (!usuarioControl.selectUsuarioPorEmail(txtEmail.getText().
                 toString()).isEmpty() && !tipoAcesso.equals("edit")){
-            return "Ops... Ja existe um usuario cadastrado com este endereco de e-mail.";
+            return "Ops... Já existe um usuário cadastrado com este endereco de e-mail.";
         }
         return "";
     }

@@ -65,13 +65,14 @@ public class CadastroJogoActivity extends ActionBarActivity {
     final Context context = this;
     private TimeListAdapter adapterTimeList;
 
-    private TextView tvTime1;
-    private TextView tvTime2;
-    private TextView tvData;
-    private TextView tvHora;
-    private TextView tvHorafinal;
-    private TextView tvJuiz;
-    private TextView tvLocal;
+    private EditText tvTime1;
+    private EditText tvTime2;
+    private EditText tvData;
+    private EditText tvHora;
+    private EditText tvHorafinal;
+    private EditText tvJuiz;
+    private EditText tvLocal;
+    private TextView tvEnderecoLocal;
 
     private Button btnSearchTime1;
     private Button btnSearchTime2;
@@ -124,6 +125,10 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
         tvTime2 = (EditText) findViewById(R.id.cadastrojogo__time2);
         tvTime2.setVisibility(EditText.VISIBLE);
+
+        tvEnderecoLocal = (TextView) findViewById(R.id.cadastro_jogo_enderecolocal);
+        tvEnderecoLocal.setVisibility(EditText.VISIBLE);
+        tvEnderecoLocal.setText("");
 
         tvData = (EditText) findViewById(R.id.cadastrojogo_data);
         tvData.setVisibility(EditText.VISIBLE);
@@ -209,6 +214,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
             tvTime1.setText(time.getNome().trim().toUpperCase());
             //btnSearchTime1.setEnabled(false);
         }
+
     }
 
     @Override
@@ -237,6 +243,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
             Local loc = localControl.selectLocalPorId(id_local).get(0);
             this.local = loc;
             tvLocal.setText(this.local.getNome());
+            tvEnderecoLocal.setText(localControl.getEnderecoCompleto(this.local));
         }
 
         super.onActivityResult(requestCode, resultCode, data);
@@ -264,11 +271,13 @@ public class CadastroJogoActivity extends ActionBarActivity {
         if (jogo != null) {
             time = timecontrol.selectTimePorId(jogo.getId_time()).get(0);
             time2 = timecontrol.selectTimePorId(jogo.getId_time2()).get(0);
-            if (jogo.getId_juiz()>0)
-            juiz = userControl.selectUsuarioPorId(jogo.getId_juiz()).get(0);
+            if (jogo.getId_juiz() > 0)
+                juiz = userControl.selectUsuarioPorId(jogo.getId_juiz()).get(0);
             tvJuiz.setText(juiz.getNome().trim().toUpperCase());
 
             local = localControl.selectLocalPorId(jogo.getId_local()).get(0);
+            tvEnderecoLocal.setText(localControl.getEnderecoCompleto(this.local));
+
             tvLocal.setText(local.getNome().trim().toUpperCase());
             tvTime1.setText(time.getNome().trim().toUpperCase());
             tvTime2.setText(time2.getNome().trim().toUpperCase());
@@ -285,6 +294,11 @@ public class CadastroJogoActivity extends ActionBarActivity {
             tvTime2.setEnabled(false);
             btnSearchTime1.setEnabled(false);
             btnSearchTime2.setEnabled(false);
+            tvLocal.setEnabled(false);
+            tvJuiz.setEnabled(false);
+            btnSearchLocal.setEnabled(false);
+            btnSearchJuiz.setEnabled(false);
+            btnSalvar.setEnabled(false);
         }
     }
 
@@ -308,7 +322,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
             toast.show();
             onBackPressed();
         } else {
-            funcoes.mostrarDialogAlert(0, "Informativo", validacao);
+            funcoes.mostrarDialogAlert(1,validacao);
         }
     }
 
@@ -429,6 +443,13 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+
+        //CHAMANDO TELA DE PÓS JOGO
+        if (id == R.id.cadastro_jogo_action_abrirposjogo) {
+            funcoes.mostrarDialogAlert(1,"Está quase pronto! Estamos com essa função no forno!");
+            //mudarTela(PosJogoActivity.class);
             return true;
         }
 

@@ -6,7 +6,8 @@ package br.com.sharkweb.fbv.adapter;
 
 import java.util.ArrayList;
         import android.content.Context;
-        import android.view.LayoutInflater;
+import android.graphics.Color;
+import android.view.LayoutInflater;
         import android.view.View;
         import android.view.ViewGroup;
         import android.widget.BaseAdapter;
@@ -70,7 +71,7 @@ public class TimeListAdapter extends BaseAdapter {
         itemHolder.tvEscolhaTimeNome.setText(time.getNome().toUpperCase());
 
         if (time.getId() > 0){
-        itemHolder.ivSeparador.setImageResource(R.drawable.yellow_divider);
+            itemHolder.ivSeparador.setBackgroundColor(Color.YELLOW);
         itemHolder.tvLocalTime.setText(time.getCidade().trim().toUpperCase() + " - " +
                 ufControl.selectUFPorId(time.getId_uf()).get(0).getNome().trim());
 

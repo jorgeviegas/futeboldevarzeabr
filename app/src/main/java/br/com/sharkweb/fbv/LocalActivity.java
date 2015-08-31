@@ -20,6 +20,7 @@ import br.com.sharkweb.fbv.adapter.LocalListAdapter;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.controller.LocalController;
 import br.com.sharkweb.fbv.controller.TimeController;
+import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Local;
@@ -34,6 +35,7 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
     private TimeController timesControl = new TimeController(this);
     private LocalController localControl = new LocalController(this);
     private TipoUsuarioController tipoUserControl = new TipoUsuarioController(this);
+    private TimeUsuarioController timeUsuarioControl = new TimeUsuarioController(this);
     private Local localSelecionado;
     final Context context = this;
 
@@ -121,6 +123,7 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
             builder.setTitle("Pergunta");
+            builder.setIcon(R.drawable.questionmark_64);
             builder.setMessage("Tem certeza que deseja cadastrar um novo local?");
 
             builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {

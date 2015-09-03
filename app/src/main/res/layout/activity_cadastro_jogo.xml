@@ -182,4 +182,15 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
 
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="40sp"
+        android:background="@drawable/lixeira_48"
+        android:layout_alignParentTop="@+id/cadastrojogo_horaInicio"
+        android:id="@+id/cadastro_jogo_btnexcluirjuiz"
+        android:layout_alignTop="@+id/cadastro_jogo_btnjuiz"
+        android:layout_toLeftOf="@+id/cadastrojogo_horafinal"
+        android:layout_toStartOf="@+id/cadastrojogo_horafinal" />
+
 </RelativeLayout>

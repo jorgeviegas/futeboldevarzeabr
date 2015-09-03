@@ -95,7 +95,7 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         btnNovoJogo.setVisibility(View.VISIBLE);
         btnNovoJogo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (timeUsuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(),time.getId())){
+                if (timeUsuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
@@ -121,7 +121,7 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
                     });
                     builder.create().show();
                 } else {
-                    funcoes.mostrarDialogAlert(1,"Somente usuários administradores podem criar jogos!");
+                    funcoes.mostrarDialogAlert(1, "Somente usuários administradores podem criar jogos!");
                 }
             }
         });
@@ -258,14 +258,16 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Jogo jogo = adapterJogos.getItem(position);
-        String tipoAcesso = "read";
-        //Somente usuarios administradores podem usar o menu cadastrar
-        if (timeUsuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())){
-            tipoAcesso = "edit";
+        if (jogo != null && jogo.getId() > 0) {
+            String tipoAcesso = "read";
+            //Somente usuarios administradores podem usar o menu cadastrar
+            if (timeUsuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
+                tipoAcesso = "edit";
+            }
+            Bundle parametros = new Bundle();
+            parametros.putString("tipoAcesso", tipoAcesso);
+            parametros.putInt("id_jogo", jogo.getId());
+            mudarTelaComRetorno(CadastroJogoActivity.class, parametros, 1);
         }
-        Bundle parametros = new Bundle();
-        parametros.putString("tipoAcesso", tipoAcesso);
-        parametros.putInt("id_jogo", jogo.getId());
-        mudarTelaComRetorno(CadastroJogoActivity.class, parametros, 1);
     }
 }

@@ -97,6 +97,21 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        switch (requestCode) {
+            case 1:
+                Integer id_usuario = data.getExtras().getInt("id_usuario");
+                if (id_usuario != null && id_usuario > 0) {
+                    inserirJogador(id_usuario);
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+
     public void atualizarLista() {
         listaUsuarios = new ArrayList<Usuario>();
 
@@ -117,6 +132,20 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         } else
             adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios, time, 1);
         listaJogadores.setAdapter(adapterUsuarios);
+
+    }
+
+    public void inserirJogador(int id_usuario) {
+        Usuario user = usuarioControl.selectUsuarioPorId(id_usuario).get(0);
+        if (user != null) {
+            if (timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(
+                    time.getId(), user.getId()).isEmpty()) {
+                int tipo_usuario = tipouserControl.selectTiposUsuariosPorTipo("Jogador").get(0).getId();
+                TimeUsuario timeUser = new TimeUsuario(time.getId(), user.getId(), 0, "", tipo_usuario);
+                timeusuarioControl.inserir(timeUser);
+                atualizarLista();
+            }
+        }
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
@@ -218,7 +247,10 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    //ISSO AQUI É TESTE MAROTAO
+
+                    mudarTelaComRetorno(UsuariosActivity.class, 1);
+
+                   /* //ISSO AQUI É TESTE MAROTAO
                     ArrayList<Usuario> users = usuarioControl.selectUsuarios();
 
                     for (int i = 0; i < users.size(); i++) {
@@ -229,7 +261,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                             timeusuarioControl.inserir(timeUser);
                         }
                     }
-                    atualizarLista();
+                    atualizarLista();*/
                 }
 
             });
@@ -315,5 +347,11 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+    }
+
+    @SuppressWarnings({"rawtypes", "unused"})
+    private void mudarTelaComRetorno(Class cls, int key) {
+        Intent intent = new Intent(this, cls);
+        startActivityForResult(intent, key);
     }
 }

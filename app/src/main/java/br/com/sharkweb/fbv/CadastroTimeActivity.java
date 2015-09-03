@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -48,6 +49,9 @@ public class CadastroTimeActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cadastro_time);
 
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         txtNome = (EditText) findViewById(R.id.cadastro_time_edtNome);
         txtNome.setVisibility(EditText.VISIBLE);
 
@@ -71,10 +75,10 @@ public class CadastroTimeActivity extends ActionBarActivity {
         //txtEmail = (EditText) findViewById(R.id.cadastro_time_edtEmail);
         //txtEmail.setVisibility(EditText.VISIBLE);
 
-        btnCadastrar = (Button) findViewById(R.id.cadastroTime_btnRegistrar);
+        btnCadastrar = (Button) findViewById(R.id.cadastro_time_btncadastrar);
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (inserir()) {
+                if (salvar()) {
                     Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
                     toast.show();
                     Bundle parametros = new Bundle();
@@ -84,12 +88,19 @@ public class CadastroTimeActivity extends ActionBarActivity {
             }
         });
 
+        btnCancelar = (Button) findViewById(R.id.cadastro_time_btncancelar);
+        btnCancelar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        });
+
         Bundle params = getIntent().getExtras();
         if (params != null) {
             tipoAcesso = params.getString("tipoAcesso");
             if (!tipoAcesso.equals("write"))
-            this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
-        }else{
+                this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
+        } else {
             tipoAcesso = "write";
             this.time = null;
             spnUF.setSelection(22);
@@ -120,7 +131,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
         startActivity(new Intent(this, cls));
     }
 
-    private boolean inserir() {
+    private boolean salvar() {
         if (validarCampos().isEmpty()) {
             String nome = txtNome.getText().toString().trim();
             String cidade = txtCidade.getText().toString().trim().toUpperCase();
@@ -128,26 +139,26 @@ public class CadastroTimeActivity extends ActionBarActivity {
             id_uf = id_uf - 1;
 
             Time timeInsert;
-            if (this.time == null){
-                 timeInsert = new Time(nome, cidade, id_uf);
-            }else {
-                 timeInsert = new Time(this.time.getId(),nome, cidade, id_uf);
+            if (this.time == null) {
+                timeInsert = new Time(nome, cidade, id_uf);
+            } else {
+                timeInsert = new Time(this.time.getId(), nome, cidade, id_uf);
             }
 
-            if (tipoAcesso.equals("edit")){
+            if (tipoAcesso.equals("edit")) {
                 timeControl.alterar(timeInsert);
-            }else {
+            } else {
                 Long ret = timeControl.inserir(timeInsert);
-                if (ret > 0){
+                if (ret > 0) {
                     time = timeControl.selectTimePorId(Integer.valueOf(ret.toString())).get(0);
 
                     //int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Jogador").get(0).getId();
                     int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
 
                     TimeUsuario timeUser = new TimeUsuario(time.getId(),
-                            Constantes.getUsuarioLogado().getId(),0,"",tipo_usuario);
+                            Constantes.getUsuarioLogado().getId(), 0, "", tipo_usuario);
 
-                     Long ret2 = timeuserControl.inserir(timeUser);
+                    Long ret2 = timeuserControl.inserir(timeUser);
                 }
             }
             return true;
@@ -166,7 +177,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
         return "";
     }
 
-    private void carregarRegistro () {
+    private void carregarRegistro() {
         txtNome.setText(this.time.getNome());
         txtCidade.setText(this.time.getCidade());
         int if_uf = this.time.getId_uf();
@@ -174,23 +185,29 @@ public class CadastroTimeActivity extends ActionBarActivity {
         spnUF.setSelection(if_uf);
 
 
-        if (this.tipoAcesso.equals("read")){
+        if (this.tipoAcesso.equals("read")) {
             txtNome.setEnabled(false);
             txtCidade.setEnabled(false);
             spnUF.setEnabled(false);
         }
 
-        if (this.tipoAcesso.equals("edit")){
+        if (this.tipoAcesso.equals("edit")) {
             btnCadastrar.setText("Atualizar");
         }
     }
 
-        @Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+
+        if (id == android.R.id.home) {
+            onBackPressed();
+            //NavUtils.navigateUpFromSameTask(this);
+            return true;
+        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.cadastro_time_settings) {

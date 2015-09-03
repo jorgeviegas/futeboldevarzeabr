@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.com.sharkweb.fbv" >
+    package="br.com.sharkweb.fbv">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,10 +11,10 @@
         android:allowBackup="true"
         android:icon="@mipmap/icon_ball"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,9 +24,15 @@
         <activity
             android:name=".TeamActivity"
             android:label="Selecione um Time" />
+
         <activity
             android:name=".CadastroTimeActivity"
-            android:label="Cadastro do time" />
+            android:label="Cadastro do time">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".TimeDetalheActivity" />
+        </activity>
+
         <activity
             android:name=".LoginActivity"
             android:label="Login" />
@@ -40,14 +46,14 @@
 
         <activity
             android:name=".TimeDetalheActivity"
-            android:label="Time" >
+            android:label="Time">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
         <activity
             android:name=".CalendarioActivity"
-            android:label="Calendario do Time" >
+            android:label="Calendario do Time">
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
@@ -56,34 +62,30 @@
         </activity>
         <activity
             android:name=".CadastroJogoActivity"
-            android:label="Jogo" >
+            android:label="Jogo">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".CalendarioActivity" />
         </activity>
         <activity
             android:name=".UsuariosActivity"
-            android:label="Selecione um usuario" >
-        </activity>
+            android:label="Selecione um usuario"></activity>
         <activity
             android:name=".LocalActivity"
-            android:label="@string/title_activity_local" >
-        </activity>
+            android:label="@string/title_activity_local"></activity>
         <activity
             android:name=".Util.ConsumirJsonActivity"
-            android:label="Json maroto" >
-        </activity>
+            android:label="Json maroto"></activity>
         <activity
             android:name=".CadastroLocalActivity"
-            android:label="Local" >
+            android:label="Local">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LocalActivity" />
         </activity>
         <activity
             android:name=".PosJogoActivity"
-            android:label="@string/title_activity_pos_jogo" >
-        </activity>
+            android:label="@string/title_activity_pos_jogo"></activity>
     </application>
 
 </manifest>

@@ -69,16 +69,16 @@ public class LocalListAdapter extends BaseAdapter {
         }
 
         Local local = locais.get(position);
-        if (local.getId() > 0){
+        itemHolder.tvNomeLocal.setText(local.getNome());
+
+        if (local.getId() > 0) {
             itemHolder.ivSeparador.setBackgroundColor(Color.YELLOW);
-            itemHolder.tvNomeLocal.setText(local.getNome());
             itemHolder.tvEndereco.setText(local.getEndereco().trim().toUpperCase()
                     +", "+local.getCidade().trim().toUpperCase()
                     +", "+ufControl.selectUFPorId(local.getId_uf()).get(0).getNome().trim());
 
         }else {
             itemHolder.ivSeparador.setImageResource(IGNORE_ITEM_VIEW_TYPE);
-            itemHolder.tvNomeLocal.setText("");
             itemHolder.tvEndereco.setText("");
         }
 

@@ -194,7 +194,7 @@ public class CadastroLocalActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_local, menu);
+        //getMenuInflater().inflate(R.menu.menu_local, menu);
         return true;
     }
 
@@ -205,6 +205,10 @@ public class CadastroLocalActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;

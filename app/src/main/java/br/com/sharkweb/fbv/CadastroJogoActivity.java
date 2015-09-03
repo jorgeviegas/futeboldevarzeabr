@@ -78,6 +78,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
     private Button btnSearchTime2;
     private Button btnSearchJuiz;
     private Button btnSearchLocal;
+    private Button btnExcluirJuiz;
 
     private Button btnSalvar;
     private Button btnCancelar;
@@ -161,6 +162,23 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
         tvJuiz = (EditText) findViewById(R.id.cadastro_jogo_juiz);
         tvJuiz.setVisibility(EditText.VISIBLE);
+        tvJuiz.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus && juiz != null) {
+                    btnExcluirJuiz.setVisibility(View.VISIBLE);
+                } else {
+                    btnExcluirJuiz.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        tvJuiz.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+               if (juiz !=null)
+                   btnExcluirJuiz.setVisibility(View.VISIBLE);
+            }
+        });
 
         tvLocal = (EditText) findViewById(R.id.cadastro_jogo_local);
         tvLocal.setVisibility(EditText.VISIBLE);
@@ -185,6 +203,15 @@ public class CadastroJogoActivity extends ActionBarActivity {
                 EscolheUsuario(3);
             }
         });
+
+        btnExcluirJuiz = (Button) findViewById(R.id.cadastro_jogo_btnexcluirjuiz);
+        btnExcluirJuiz.setVisibility(View.GONE);
+        btnExcluirJuiz.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+               limparJuiz();
+            }
+        });
+
 
         btnSearchLocal = (Button) findViewById(R.id.cadastro_jogo_btnlocal);
         btnSearchLocal.setOnClickListener(new View.OnClickListener() {
@@ -267,14 +294,20 @@ public class CadastroJogoActivity extends ActionBarActivity {
         mudarTelaComRetorno(LocalActivity.class, parametros, key);
     }
 
+    public void limparJuiz(){
+        juiz = null;
+        tvJuiz.setText("");
+        btnExcluirJuiz.setVisibility(View.GONE);
+    }
+
     private void carregarRegistro() {
         if (jogo != null) {
             time = timecontrol.selectTimePorId(jogo.getId_time()).get(0);
             time2 = timecontrol.selectTimePorId(jogo.getId_time2()).get(0);
-            if (jogo.getId_juiz() > 0)
+            if (jogo.getId_juiz() > 0) {
                 juiz = userControl.selectUsuarioPorId(jogo.getId_juiz()).get(0);
-            tvJuiz.setText(juiz.getNome().trim().toUpperCase());
-
+                tvJuiz.setText(juiz.getNome().trim().toUpperCase());
+            }
             local = localControl.selectLocalPorId(jogo.getId_local()).get(0);
             tvEnderecoLocal.setText(localControl.getEnderecoCompleto(this.local));
 
@@ -322,7 +355,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
             toast.show();
             onBackPressed();
         } else {
-            funcoes.mostrarDialogAlert(1,validacao);
+            funcoes.mostrarDialogAlert(1, validacao);
         }
     }
 
@@ -448,7 +481,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
         //CHAMANDO TELA DE PÓS JOGO
         if (id == R.id.cadastro_jogo_action_abrirposjogo) {
-            funcoes.mostrarDialogAlert(1,"Está quase pronto! Estamos com essa função no forno!");
+            funcoes.mostrarDialogAlert(1, "Está quase pronto! Estamos com essa função no forno!");
             //mudarTela(PosJogoActivity.class);
             return true;
         }

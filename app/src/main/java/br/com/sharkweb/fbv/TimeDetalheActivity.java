@@ -286,12 +286,12 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             final TimeUsuario tipoUser = timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(), user.getId()).get(0);
             //Menu de opções que o usuário pode fazer com os usuarios.
             String[] arrayOpcoes = new String[1];
-            arrayOpcoes[0] = "Visualizar";
+            arrayOpcoes[0] = "Informações de contato";
 
             //Diponível somente para usuarios administradores do time.
             if (timeusuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
                 arrayOpcoes = new String[3];
-                arrayOpcoes[0] = "Visualizar";
+                arrayOpcoes[0] = "Informações de contato";
                 arrayOpcoes[1] = "Tornar Admin do time";
                 if (tipoUser.getInativo() > 0) {
                     arrayOpcoes[2] = "Ativar usuario";
@@ -309,10 +309,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                 public void onClick(DialogInterface dialog, int arg1) {
                     switch (arg1) {
                         case 0:
-                            Bundle parametros = new Bundle();
-                            parametros.putString("tipoAcesso", "read");
-                            parametros.putInt("id_usuario", user.getId());
-                            mudarTela(CadastroUsuarioActivity.class, parametros);
+                            funcoes.exibirDetalheUsuario(user,context);
                             break;
                         case 1:
                             timeusuarioControl.tornarAdmin(time.getId(), user.getId());

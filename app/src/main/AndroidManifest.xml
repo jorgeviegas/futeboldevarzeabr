@@ -83,9 +83,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LocalActivity" />
         </activity>
-        <activity
-            android:name=".PosJogoActivity"
-            android:label="@string/title_activity_pos_jogo"></activity>
     </application>
 
 </manifest>

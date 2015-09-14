@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
@@ -23,6 +24,7 @@ import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Time;
+import br.com.sharkweb.fbv.model.TimeUsuario;
 import br.com.sharkweb.fbv.model.Usuario;
 
 public class TeamActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
@@ -32,6 +34,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private TimeListAdapter adapterTimes;
     private TimeController timesControl = new TimeController(this);
     private TipoUsuarioController tipouserControl = new TipoUsuarioController(this);
+    private TimeUsuarioController timeuserControl = new TimeUsuarioController(this);
     private Usuario user;
     private UsuarioController userControl = new UsuarioController(this);
     private boolean esperaRetorno;
@@ -62,17 +65,30 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         this.user = userControl.selectUsuarioPorId(Constantes.getUsuarioLogado().getId()).get(0);
         //this.user = null;
 
+       /* if (Constantes.getUsuarioLogado().getApelido().equals("kleintiago")
+                && timesControl.selectTimes().isEmpty()){
+            Time time = new Time("GREMIO","PORTO ALEGRE",22);
+            Time time2 = new Time("INTERNACIONAL","PORTO ALEGRE",22);
+            timesControl.inserir(time);
+            timesControl.inserir(time2);
+            int tipo_usuario = tipouserControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
+            TimeUsuario timeUser = new TimeUsuario(time.getId(),
+                    Constantes.getUsuarioLogado().getId(), 0, "", tipo_usuario);
+            Long ret2 = timeuserControl.inserir(timeUser);
+
+        }*/
+
         atualizarLista();
         times.setCacheColorHint(Color.TRANSPARENT);
     }
 
     @Override
     public void onBackPressed() {
-        if (this.esperaRetorno){
+        if (this.esperaRetorno) {
             Intent it = new Intent();
             if (timeSelecionado != null)
-                it.putExtra("id_time",timeSelecionado.getId());
-            else it.putExtra("id_time",0);
+                it.putExtra("id_time", timeSelecionado.getId());
+            else it.putExtra("id_time", 0);
             setResult(1, it);
         }
         super.onBackPressed();
@@ -107,10 +123,10 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-       // if (id == R.id.time_action_cancelar) {
+        // if (id == R.id.time_action_cancelar) {
         //    onBackPressed();
-       //     return true;
-       // }
+        //     return true;
+        // }
 
         if (id == android.R.id.home) {
             onBackPressed();
@@ -149,21 +165,20 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         return super.onOptionsItemSelected(item);
     }
 
-    public void atualizarLista(){
+    public void atualizarLista() {
 
-        if (this.user !=null){
+        if (this.user != null) {
             listaTimes = timesControl.selectTimePorIdUsuario(this.user.getId());
-        }else{
+        } else {
             listaTimes = timesControl.selectTimes();
         }
-        if(listaTimes.size() == 0){
+        if (listaTimes.size() == 0) {
             ArrayList<Time> listaVazia = new ArrayList<Time>();
-            listaVazia.add(new Time(0, "Nenhum time encontrado.", "",0));
+            listaVazia.add(new Time(0, "Nenhum time encontrado.", "", 0));
             adapterTimes = new TimeListAdapter(this, listaVazia);
-        }
-        else
+        } else
             adapterTimes = new TimeListAdapter(this, listaTimes);
-            times.setAdapter(adapterTimes);
+        times.setAdapter(adapterTimes);
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
@@ -177,12 +192,13 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private void mudarTela(Class cls) {
         startActivity(new Intent(this, cls));
     }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Time time = adapterTimes.getItem(position);
-        if(time.getId() != 0){
+        if (time.getId() != 0) {
 
-            if (esperaRetorno){
+            if (esperaRetorno) {
                 this.timeSelecionado = time;
                 onBackPressed();
             }

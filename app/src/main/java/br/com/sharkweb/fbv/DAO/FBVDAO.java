@@ -41,6 +41,8 @@ public class FBVDAO extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE jogo (_id INTEGER PRIMARY KEY AUTOINCREMENT, id_time INTEGER, id_time2 INTEGER, id_local INTEGER, data TEXT, hora TEXT, horafinal TEXT, inativo INTEGER, id_juiz INTEGER);");
         db.execSQL("CREATE TABLE local (_id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, endereco TEXT, numero INTEGER, cidade TEXT, id_uf INTEGER);");
         db.execSQL("CREATE TABLE uf (_id INTEGER PRIMARY KEY AUTOINCREMENT, uf TEXT);");
+        db.execSQL("CREATE TABLE pos_jogo (_id INTEGER PRIMARY KEY AUTOINCREMENT, id_jogo INTEGER, qtd_gol_time1 INTEGER DEFAULT 0, qtd_gol_time2 INTEGER DEFAULT 0);");
+        db.execSQL("CREATE TABLE pos_jogo_usuario (_id INTEGER PRIMARY KEY AUTOINCREMENT, id_pos_jogo INTEGER, id_usuario INTEGER, qtd_gol INTEGER DEFAULT 0, qtd_cartao_amarelo INTEGER DEFAULT 0, qtd_cartao_vermelho INTEGER DEFAULT 0, nota INTEGER DEFAULT 0);");
 
     }
 

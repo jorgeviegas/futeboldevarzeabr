@@ -6,6 +6,6 @@
         android:id="@+id/cadastro_jogo_action_abrirposjogo"
         android:title="Pós jogo"
         app:showAsAction="withText|ifRoom" />
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+    <item android:id="@+id/cadastro_jogo_action_excluir" android:title="Excluir jogo"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>

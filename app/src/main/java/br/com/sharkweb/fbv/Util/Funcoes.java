@@ -14,6 +14,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import br.com.sharkweb.fbv.R;
+import br.com.sharkweb.fbv.model.PosJogoUsuarios;
 import br.com.sharkweb.fbv.model.Usuario;
 
 /**
@@ -144,4 +145,5 @@ public class Funcoes {
         //exibe na tela o dialog
         dialog.show();
     }
+
 }

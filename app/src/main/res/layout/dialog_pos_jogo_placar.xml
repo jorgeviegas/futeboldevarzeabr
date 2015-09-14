@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="72dp">
+
+        <TextView
+            android:layout_width="80sp"
+            android:layout_height="wrap_content"
+            android:text="TIME 1"
+            android:id="@+id/pos_jogo_placar_nometime1"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="#a9a9a9"
+            android:paddingLeft="5sp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true" />
+
+        <EditText
+            android:layout_width="60sp"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:ems="10"
+            android:gravity="center"
+            android:id="@+id/pos_jogo_placar_golstime1"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/pos_jogo_placar_nometime1"
+            android:layout_alignParentBottom="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=" X "
+            android:gravity="center"
+            android:textSize="15sp"
+            android:id="@+id/pos_jogo_placar_versus"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/pos_jogo_placar_golstime1"
+            android:layout_toEndOf="@+id/pos_jogo_placar_golstime1"
+            android:layout_alignParentBottom="true" />
+
+        <EditText
+            android:layout_width="60sp"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned"
+            android:ems="10"
+            android:gravity="center"
+            android:id="@+id/pos_jogo_placar_golstime2"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/pos_jogo_placar_versus"
+            android:layout_alignParentBottom="true" />
+
+        <TextView
+            android:layout_width="80sp"
+            android:layout_height="wrap_content"
+            android:text="TIME 2"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="#a9a9a9"
+            android:paddingRight="5sp"
+            android:id="@+id/pos_jogo_placar_nometime2"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_toEndOf="@+id/pos_jogo_placar_golstime2" />
+
+    </RelativeLayout>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#fff"
+        android:text="Confirmar"
+        android:id="@+id/pos_jogo_placar_btnconfirmar" />
+</LinearLayout>

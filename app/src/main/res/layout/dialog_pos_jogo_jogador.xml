@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="5sp"
+    android:paddingBottom="5sp"
+    android:paddingLeft="5sp"
+    >
+
+    <EditText
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:id="@+id/pos_jogo_jogador_cartoesvermelho"
+        android:hint="C. V."
+        android:maxLength="1"
+        android:inputType="numberSigned"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/pos_jogo_jogador_imagemvermelho"
+        android:layout_toEndOf="@+id/pos_jogo_jogador_imagemvermelho" />
+
+    <EditText
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:id="@+id/pos_jogo_jogador_cartoesamarelo"
+        android:gravity="center"
+        android:hint="C. A."
+        android:maxLength="1"
+        android:inputType="numberSigned"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/pos_jogo_jogador_imagemamarelo"
+        android:layout_toEndOf="@+id/pos_jogo_jogador_imagemamarelo" />
+
+    <EditText
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:id="@+id/pos_jogo_jogador_gols"
+        android:hint="Gols"
+        android:maxLength="2"
+        android:inputType="numberSigned"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/pos_jogo_jogador_imagemgol"
+        android:layout_toEndOf="@+id/pos_jogo_jogador_imagemgol" />
+
+    <ImageView
+        android:layout_width="30sp"
+        android:layout_height="50sp"
+        android:id="@+id/pos_jogo_jogador_imagemgol"
+        android:background="@drawable/soccer_ball_64"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/pos_jogo_jogador_nota"
+        android:layout_toEndOf="@+id/pos_jogo_jogador_nota" />
+
+    <ImageView
+        android:layout_width="30sp"
+        android:layout_height="50sp"
+        android:id="@+id/pos_jogo_jogador_imagemamarelo"
+        android:background="@drawable/yellow_card_64"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/pos_jogo_jogador_gols"
+        android:layout_toEndOf="@+id/pos_jogo_jogador_gols" />
+
+    <ImageView
+        android:layout_width="30sp"
+        android:layout_height="50sp"
+        android:id="@+id/pos_jogo_jogador_imagemvermelho"
+        android:background="@drawable/red_card_64"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/pos_jogo_jogador_cartoesamarelo"
+        android:layout_toEndOf="@+id/pos_jogo_jogador_cartoesamarelo" />
+
+    <EditText
+        android:layout_width="50sp"
+        android:layout_height="50sp"
+        android:hint="Nota"
+        android:maxLength="3"
+        android:inputType="numberSigned"
+        android:gravity="center"
+        android:id="@+id/pos_jogo_jogador_nota"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Confirmar"
+        android:background="#fff"
+        android:id="@+id/pos_jogo_jogador_btnconfirmar"
+        android:layout_below="@+id/pos_jogo_jogador_cartoesvermelho"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/pos_jogo_jogador_cartoesvermelho"
+        android:layout_alignEnd="@+id/pos_jogo_jogador_cartoesvermelho" />
+
+</RelativeLayout>

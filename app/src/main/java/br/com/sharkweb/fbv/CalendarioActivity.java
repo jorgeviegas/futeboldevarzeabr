@@ -59,7 +59,6 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         setContentView(R.layout.activity_calendario);
 
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-
         actionBar.setDisplayHomeAsUpEnabled(true);
         // actionBar.setIcon(R.drawable.calendar);
         // actionBar.setDisplayShowHomeEnabled(true);

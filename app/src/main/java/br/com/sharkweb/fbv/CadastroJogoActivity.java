@@ -35,6 +35,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.controller.JogoController;
@@ -175,8 +176,8 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
         tvJuiz.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-               if (juiz !=null)
-                   btnExcluirJuiz.setVisibility(View.VISIBLE);
+                if (juiz != null)
+                    btnExcluirJuiz.setVisibility(View.VISIBLE);
             }
         });
 
@@ -208,7 +209,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
         btnExcluirJuiz.setVisibility(View.GONE);
         btnExcluirJuiz.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-               limparJuiz();
+                limparJuiz();
             }
         });
 
@@ -239,7 +240,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
         } else {
             tvData.setText(data);
             tvTime1.setText(time.getNome().trim().toUpperCase());
-            //btnSearchTime1.setEnabled(false);
+            btnSearchTime1.setEnabled(false);
         }
 
     }
@@ -294,7 +295,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
         mudarTelaComRetorno(LocalActivity.class, parametros, key);
     }
 
-    public void limparJuiz(){
+    public void limparJuiz() {
         juiz = null;
         tvJuiz.setText("");
         btnExcluirJuiz.setVisibility(View.GONE);
@@ -313,6 +314,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
             tvLocal.setText(local.getNome().trim().toUpperCase());
             tvTime1.setText(time.getNome().trim().toUpperCase());
+            btnSearchTime1.setEnabled(false);
             tvTime2.setText(time2.getNome().trim().toUpperCase());
             tvData.setText(jogo.getData().trim());
             tvHora.setText(jogo.getHora().trim());
@@ -449,6 +451,20 @@ public class CadastroJogoActivity extends ActionBarActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem m1 = menu.findItem(R.id.cadastro_jogo_action_excluir);
+        MenuItem m2 = menu.findItem(R.id.cadastro_jogo_action_abrirposjogo);
+        if (this.jogo != null && this.jogo.getId() > 0) {
+            m1.setVisible(true);
+            m2.setVisible(true);
+        } else {
+            m1.setVisible(false);
+            m2.setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_cadastro_jogo, menu);
@@ -474,15 +490,18 @@ public class CadastroJogoActivity extends ActionBarActivity {
             return true;
         }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.cadastro_jogo_action_excluir) {
+            jogoControl.excluirJogoPorId(this.jogo.getId());
+            onBackPressed();
             return true;
         }
 
         //CHAMANDO TELA DE PÓS JOGO
         if (id == R.id.cadastro_jogo_action_abrirposjogo) {
-            funcoes.mostrarDialogAlert(1, "Está quase pronto! Estamos com essa função no forno!");
-            //mudarTela(PosJogoActivity.class);
+            //funcoes.mostrarDialogAlert(1, "Está quase pronto! Estamos com essa função no forno!");
+            Bundle parametros = new Bundle();
+            parametros.putInt("id_jogo", jogo.getId());
+            mudarTela(PosJogoActivity.class, parametros);
             return true;
         }
 
@@ -502,6 +521,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
         intent.putExtras(parametros);
         startActivityForResult(intent, key);
     }
+
 
     @SuppressWarnings("rawtypes")
     private void mudarTela(Class cls) {

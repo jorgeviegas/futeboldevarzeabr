@@ -1,5 +1,133 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/activity_pos_jogo"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="br.com.sharkweb.fbv.PosJogoActivity">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="80sp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/fundo_botoes"
+        android:id="@+id/linearLayout">
+
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:text="Cancelar"
+            android:background="@drawable/botao_cancelar"
+            android:layout_margin="5dp"
+            android:textStyle="bold"
+            android:id="@+id/pos_jogo_btncancelar"
+            android:layout_gravity="bottom" />
+        <Button
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:text="Salvar"
+            android:background="@drawable/botao_salvar"
+            android:layout_margin="5sp"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:id="@+id/pos_jogo_btncadastrar"
+            android:layout_gravity="bottom" />
+    </LinearLayout>
+
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/pos_jogo_usuarioslist"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/linearLayout"
+        android:paddingTop="10sp"
+        android:background="#fff"
+        android:layout_below="@+id/linearLayout3" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="80sp"
+        android:layout_alignParentTop="true"
+        android:id="@+id/pos_jogo_relative">
+
+
+        <TextView
+            android:id="@+id/pos_jogo_nometime1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TIME 1"
+            android:textSize="30sp"
+            android:paddingLeft="5sp"
+            android:gravity="center"
+            android:textColor="#a9a9a9"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true" />
+
+        <ImageView
+            android:id="@+id/pos_jogo_imagemtime1"
+            android:layout_width="80sp"
+            android:layout_height="80sp"
+            android:background="@drawable/estadio"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/pos_jogo_nometime1"
+            android:layout_toEndOf="@+id/pos_jogo_nometime1"
+            android:layout_alignParentBottom="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Text"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:id="@+id/pos_jogo_versus"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/pos_jogo_imagemtime1"
+            android:layout_toLeftOf="@+id/pos_jogo_imagemtime2"
+            android:layout_toStartOf="@+id/pos_jogo_imagemtime2" />
+
+        <ImageView
+            android:id="@+id/pos_jogo_imagemtime2"
+            android:layout_width="80sp"
+            android:layout_height="80sp"
+            android:background="@drawable/estadio"
+            android:layout_alignParentTop="true"
+            android:layout_toStartOf="@+id/pos_jogo_nometime2"
+            android:layout_alignParentBottom="true"
+            android:layout_toLeftOf="@+id/pos_jogo_nometime2" />
+
+        <TextView
+            android:id="@+id/pos_jogo_nometime2"
+            android:text="TIME 2"
+            android:textSize="30sp"
+            android:gravity="center"
+            android:textColor="#a9a9a9"
+            android:paddingRight="5sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="20sp"
+        android:layout_below="@+id/pos_jogo_relative"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/linearLayout3"></LinearLayout>
+
+</RelativeLayout>

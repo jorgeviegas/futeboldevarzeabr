@@ -7,19 +7,23 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import br.com.sharkweb.fbv.DAO.JogoDAO;
+import br.com.sharkweb.fbv.DAO.PosJogoDAO;
 import br.com.sharkweb.fbv.DAO.TimeDAO;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.model.Jogo;
+import br.com.sharkweb.fbv.model.PosJogo;
 import br.com.sharkweb.fbv.model.Time;
 
 public class JogoController {
 
     private JogoDAO jogoDAO;
     private Funcoes funcoes;
+    //private PosJogoController posJogoControl;
 
     public JogoController(Context context) {
         jogoDAO = new JogoDAO(context);
         funcoes = new Funcoes(context);
+        //posJogoControl = new PosJogoController(context);
     }
 
     public long inserir(Jogo jogo) {
@@ -74,6 +78,7 @@ public class JogoController {
         jogoDAO.excluirTodosJogos();
     }
     public long excluirJogoPorId(int id) {
+        //posJogoControl.excluirPosJogoPorIdJogo(id);
         return jogoDAO.excluirJogoPorId(id);
     }
 

@@ -84,6 +84,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".CadastroJogoActivity" />
         </activity>
+        <activity
+            android:name=".FinanceiroActivity"
+            android:label="Financeiro">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
     </application>
 
 </manifest>

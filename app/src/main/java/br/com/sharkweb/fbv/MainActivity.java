@@ -1,36 +1,27 @@
 package br.com.sharkweb.fbv;
 
 import android.app.Activity;
-import android.content.ClipData;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.util.JsonReader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import br.com.sharkweb.fbv.Util.Constantes;
-import br.com.sharkweb.fbv.Util.ConsumirJsonActivity;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.controller.LoginController;
 import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UFController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
-import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
 
 public class MainActivity extends ActionBarActivity
@@ -167,8 +158,8 @@ public class MainActivity extends ActionBarActivity
                 break;
             case 5:
                 //mTitle = "Calendario";
-                //mudarTelaComRetorno(TeamActivity.class, 2);
-                funcoes.mostrarDialogAlert(1,"Está quase pronto! Estamos com essa função no forno!");
+                mudarTelaComRetorno(FinanceiroActivity.class, 2);
+                //funcoes.mostrarDialogAlert(1,"Está quase pronto! Estamos com essa função no forno!");
                 break;
         }
     }

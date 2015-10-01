@@ -24,6 +24,10 @@ public class FinanceiroActivity extends AppCompatActivity {
     private double valor = 0;
     private Caixa caixa;
 
+    TextView txtSaldo;
+    Button btnRetirada;
+    Button btnEntrada;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -36,12 +40,11 @@ public class FinanceiroActivity extends AppCompatActivity {
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        final TextView txtSaldo = (TextView) findViewById(R.id.txtSaldo);
-        Button btnRetirada = (Button) findViewById(R.id.btnRetirada);
-        Button btnEntrada = (Button) findViewById(R.id.btnEntrada);
+        txtSaldo = (TextView) findViewById(R.id.txtSaldo);
+        btnRetirada = (Button) findViewById(R.id.btnRetirada);
+        btnEntrada = (Button) findViewById(R.id.btnEntrada);
 
-        txtSaldo.setText("Saldo: R$ " + caixa.getSaldo());
-
+        atualizarSaldo();
         btnRetirada.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -55,6 +58,9 @@ public class FinanceiroActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         valor = Double.valueOf(input.getText().toString());
+                        caixa.setSaldo(caixa.getSaldo() - valor);
+                        atualizarSaldo();
+                        //txtSaldo.invalidate();
                     }
                 });
                 builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -65,10 +71,38 @@ public class FinanceiroActivity extends AppCompatActivity {
                 });
 
                 builder.show();
-                caixa.setSaldo(caixa.getSaldo() - valor);
-                txtSaldo.invalidate();
             }
         });
+
+        btnEntrada.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Nova Entrada");
+
+                final EditText input = new EditText(context);
+                input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
+                builder.setView(input);
+
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        valor = Double.valueOf(input.getText().toString());
+                        caixa.setSaldo(caixa.getSaldo() + valor);
+                        atualizarSaldo();
+                        //txtSaldo.invalidate();
+                    }
+                });
+                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+            }
+        });
+
         /*
         txtApelido = (EditText) findViewById(R.id.cadastro_usuario_edtApelido);
         txtApelido.setVisibility(EditText.VISIBLE);
@@ -157,4 +191,7 @@ public class FinanceiroActivity extends AppCompatActivity {
         }*/
     }
 
+    private void atualizarSaldo() {
+        txtSaldo.setText("Saldo:\n R$" + funcoes.formatarNumeroComVirgula(caixa.getSaldo()));
+    }
 }

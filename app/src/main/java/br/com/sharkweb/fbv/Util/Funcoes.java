@@ -146,4 +146,7 @@ public class Funcoes {
         dialog.show();
     }
 
+    public String formatarNumeroComVirgula(double valor) {
+        return String.valueOf(valor).format("%.2f", valor);
+    }
 }

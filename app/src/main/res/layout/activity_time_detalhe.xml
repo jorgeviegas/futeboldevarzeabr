@@ -9,6 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/estadio"
+        android:background="@color/AzulPrincipal"
+        android:textColor="#fff"
         android:layout_alignParentTop="true"
         android:gravity="center_vertical"
         android:padding="25dp"

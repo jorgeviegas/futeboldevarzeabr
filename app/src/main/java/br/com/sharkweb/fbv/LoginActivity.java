@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import br.com.sharkweb.fbv.Util.Constantes;
@@ -23,8 +25,10 @@ public class LoginActivity extends ActionBarActivity {
     final Context context = this;
     private EditText txtemail;
     private EditText txtSenha;
+    private TextView txtCadastrar;
+    private TextView txtEsqueceuSenha;
     private Button btnLogin;
-    private Button btnCadastrar;
+    //private Button btnCadastrar;
     private UsuarioController usuarioControl = new UsuarioController(this);
     private LoginController loginControl = new LoginController(this);
 
@@ -48,11 +52,31 @@ public class LoginActivity extends ActionBarActivity {
         txtSenha = (EditText) findViewById(R.id.login_txtsenha);
         txtSenha.setVisibility(EditText.VISIBLE);
 
+        txtCadastrar = (TextView) findViewById(R.id.login_cadastrar);
+        txtCadastrar.setVisibility(EditText.VISIBLE);
+        txtCadastrar.setTextColor(Color.WHITE);
+
+        txtCadastrar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Bundle parametros = new Bundle();
+                parametros.putString("tipoAcesso", "write");
+                mudarTela(CadastroUsuarioActivity.class, parametros);
+            }
+        });
+        txtEsqueceuSenha = (TextView) findViewById(R.id.login_esqueceu_senha);
+        txtEsqueceuSenha.setVisibility(EditText.VISIBLE);
+        txtEsqueceuSenha.setTextColor(Color.WHITE);
+        txtEsqueceuSenha.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+            }
+        });
+
         btnLogin = (Button) findViewById(R.id.login_btnlogin);
         btnLogin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                String retV = validarCampos();
-                if (retV.isEmpty()) {
+                boolean retV = validarCampos();
+                if (retV) {
                     Boolean ret = usuarioControl.validarLogin(txtemail.getText().toString(), txtSenha.getText().toString());
                     if (ret) {
                         Toast toast = Toast.makeText(getApplicationContext(), "Login feito com sucesso!", Toast.LENGTH_LONG);
@@ -71,23 +95,20 @@ public class LoginActivity extends ActionBarActivity {
                         parametros.putBoolean("login", true);
                         mudarTela(MainActivity.class, parametros);
                     } else {
-                        Toast toast = Toast.makeText(getApplicationContext(), "Usuario nao cadastrado!", Toast.LENGTH_LONG);
+                        Toast toast = Toast.makeText(getApplicationContext(), "Usuario nao cadastrado!", Toast.LENGTH_SHORT);
                         toast.show();
                     }
-                } else {
-                    mostrarDialogAlert(0, "Informativo", retV);
                 }
-
             }
         });
 
-        btnCadastrar = (Button) findViewById(R.id.login_btnCadastrar);
+       /* btnCadastrar = (Button) findViewById(R.id.login_btnCadastrar);
         btnCadastrar.setVisibility(View.GONE);
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
             }
-        });
+        });*/
     }
 
     @Override
@@ -109,26 +130,11 @@ public class LoginActivity extends ActionBarActivity {
         startActivity(new Intent(this, cls));
     }
 
-    public void mostrarDialogAlert(int icone, String titulo, String mensagem) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setIcon(icone);
-        builder.setMessage(mensagem).setTitle(titulo);
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-    }
-
-    private String validarCampos() {
-        String ret = "";
+    private boolean validarCampos() {
         if (txtemail.getText().toString().isEmpty() || txtSenha.getText().toString().isEmpty()) {
-            ret = "Por favor, informe e-mail e senha para continuar";
+           return false;
         }
-
-        return ret;
+        return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -138,10 +144,10 @@ public class LoginActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        /*if (id == R.id.action_settings) {
             return true;
-        }
-        if (item.getItemId() == R.id.login_action_cadastrar) {
+        }*/
+      /*  if (item.getItemId() == R.id.login_action_cadastrar) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
             builder.setTitle("Pergunta");
@@ -167,7 +173,7 @@ public class LoginActivity extends ActionBarActivity {
 
             builder.create().show();
             return true;
-        }
+        }*/
 
         return super.onOptionsItemSelected(item);
     }

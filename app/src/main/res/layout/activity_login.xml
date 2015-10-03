@@ -3,53 +3,96 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingLeft="35dp"
+    android:paddingRight="35dp"
+    android:paddingTop="5dp"
+    android:background="@color/AzulPrincipal"
     tools:context="br.com.sharkweb.fbv.LoginActivity">
 
     <EditText
         android:id="@+id/login_txtemail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:ems="10"
         android:focusable="true"
+        android:paddingTop="30sp"
         android:hint="Nome de usuario ou E-mail:"
-        android:inputType="textEmailAddress" />
+        android:textColorHint="#d3d3d3"
+        android:textColor="#fff"
+        android:inputType="textEmailAddress"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_above="@+id/login_txtsenha"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <EditText
         android:id="@+id/login_txtsenha"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignEnd="@+id/login_txtemail"
+        android:ems="10"
+        android:hint="Senha:"
+        android:textColorHint="#d3d3d3"
+        android:textColor="#fff"
+        android:inputType="textPassword"
+        android:layout_above="@+id/login_btnlogin"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignRight="@+id/login_txtemail"
-        android:layout_below="@+id/login_txtemail"
-        android:ems="10"
-        android:hint="Senha:"
-        android:inputType="textPassword" />
+        android:layout_alignEnd="@+id/login_txtemail" />
 
     <Button
         android:id="@+id/login_btnlogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/login_txtsenha"
-        android:text="Entrar" />
+        android:text="Entrar"
+        android:layout_centerVertical="true"
+        android:background="#d3d3d3"
+        android:layout_alignRight="@+id/login_txtsenha"
+        android:layout_alignEnd="@+id/login_txtsenha"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
-    <Button
-        android:id="@+id/login_btnCadastrar"
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/login_txtsenha"
-        android:layout_toLeftOf="@+id/login_btnlogin"
-        android:layout_toStartOf="@+id/login_btnlogin"
-        android:text="Registrar" />
+        android:id="@+id/login_imagemlogin"
+        android:background="@drawable/profile3"
+        android:layout_above="@+id/login_txtemail"
+        android:layout_centerHorizontal="true" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/login_btnlogin"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/AzulPrincipal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:id="@+id/login_texto1"
+            android:layout_weight="0.26" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cadastre-se no FBV"
+            android:gravity="center"
+            android:id="@+id/login_cadastrar"
+            android:layout_weight="0.26" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Esqueceu a senha?"
+            android:gravity="center"
+            android:id="@+id/login_esqueceu_senha"
+            android:layout_weight="0.26" />
+    </LinearLayout>
+
 </RelativeLayout>

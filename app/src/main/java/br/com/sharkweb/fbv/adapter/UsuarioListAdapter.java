@@ -37,9 +37,11 @@ public class UsuarioListAdapter extends BaseAdapter {
     private TimeUsuarioController timeUserControl;
     private Time time;
     private int modelo;
+    private Context context;
 
     public UsuarioListAdapter(Context context, ArrayList<Usuario> listaUsuarios, Time time, int modelo) {
         this.usuarios = listaUsuarios;
+        this.context = context;
         mInflater = LayoutInflater.from(context);
         posicaoControl = new PosicaoController(context);
         tipousuarioControl = new TipoUsuarioController(context);
@@ -100,7 +102,7 @@ public class UsuarioListAdapter extends BaseAdapter {
 
                     if (tipousuarioControl.selectTiposUsuariosPorId(
                             timeUser.get(0).getId_tipo_usuario()).get(0).getTipo().equals("Administrador"))
-                    itemHolder.tvTipoUsuario.setTextColor(Color.GREEN);
+                    itemHolder.tvTipoUsuario.setTextColor(context.getResources().getColor(R.color.greengreen));
                 }else {
                     itemHolder.tvTipoUsuario.setText("");
                     //itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(user.getId_tipo()).get(0).getTipo());

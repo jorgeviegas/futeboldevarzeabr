@@ -32,9 +32,10 @@ public class JogoListAdapter extends BaseAdapter {
     private ArrayList<Jogo> jogos;
     private TimeController timeControl;
     private JogoController jogoControl;
-
+    private Context context;
     public JogoListAdapter(Context context, ArrayList<Jogo> listaJogos) {
         this.jogos = listaJogos;
+        this.context = context;
         mInflater = LayoutInflater.from(context);
         timeControl = new TimeController(context);
         jogoControl = new JogoController(context);
@@ -77,13 +78,12 @@ public class JogoListAdapter extends BaseAdapter {
             itemHolder.tvNomeTimes.setText(time.getNome().trim().toUpperCase()+" X "+time2.getNome().trim().toUpperCase());
             itemHolder.tvDataHora.setText(jogo.getData() + " - " + jogo.getHora().trim()
                     + " até " + jogo.getHoraFinal().trim());
-            itemHolder.ivJogo.setBackgroundColor(Color.BLUE);
-
+            itemHolder.ivJogo.setBackgroundColor(context.getResources().getColor(R.color.AzulPrincipal));
 
             //Se o jogo já venceu, coloca uma tarja vermelha.
             try {
                 if (!jogoControl.isOpen(jogo)){
-                    itemHolder.ivJogo.setBackgroundColor(Color.RED);
+                    itemHolder.ivJogo.setBackgroundColor(context.getResources().getColor(R.color.vermelhoEscuro));
 
                 }
             } catch (Exception e) {

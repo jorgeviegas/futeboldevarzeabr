@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Context;
+import android.text.InputType;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.text.DateFormat;
@@ -149,4 +151,5 @@ public class Funcoes {
     public String formatarNumeroComVirgula(double valor) {
         return String.valueOf(valor).format("%.2f", valor);
     }
+
 }

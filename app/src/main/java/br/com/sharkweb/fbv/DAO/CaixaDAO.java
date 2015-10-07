@@ -81,7 +81,7 @@ public class CaixaDAO {
     private ArrayList<Caixa> cursorToArray(Cursor c) {
         ArrayList<Caixa> caixas = new ArrayList<Caixa>();
         while (c.moveToNext()) {
-            caixas.add(new Caixa());
+            caixas.add(new Caixa(c.getInt(0),c.getInt(1),c.getDouble(2),c.getInt(3)));
         }
         return caixas;
     }

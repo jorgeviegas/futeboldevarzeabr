@@ -8,7 +8,22 @@ public class Caixa {
     private int id;
     private int id_time;
     private double saldo;
-    private boolean visivel;
+    private int visivel;
+
+    public Caixa(){
+
+    }
+    public Caixa(int id, int id_time, double saldo, int visivel) {
+        this.id = id;
+        this.id_time = id_time;
+        this.saldo = saldo;
+        this.visivel = visivel;
+    }
+    public Caixa(int id_time, double saldo, int visivel) {
+        this.id_time = id_time;
+        this.saldo = saldo;
+        this.visivel = visivel;
+    }
 
     public int getId() {
         return id;
@@ -34,11 +49,11 @@ public class Caixa {
         this.saldo = saldo;
     }
 
-    public boolean getVisivel() {
+    public int getVisivel() {
         return visivel;
     }
 
-    public void setVisivel(boolean visivel) {
+    public void setVisivel(int visivel) {
         this.visivel = visivel;
     }
 }

@@ -91,6 +91,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+        <activity
+            android:name=".MovimentosActivity"
+            android:label="Histórico de Movimentos">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FinanceiroActivity" />
+        </activity>
+        <activity
+            android:name=".MensalidadesActivity"
+            android:label="Mensalidades">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FinanceiroActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="1">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="New Text"
+        android:textSize="15sp"
+        android:id="@+id/item_mensalidades_data"
+        android:layout_weight="0.07" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:textSize="15sp"
+        android:text="New Text"
+        android:id="@+id/item_mensalidades_usuario"
+        android:layout_weight="0.36" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="New Text"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:id="@+id/item_mensalidades_valor"
+        android:layout_weight="0.15" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:text="New Text"
+        android:textSize="15sp"
+        android:id="@+id/item_mensalidades_valor_pago"
+        android:layout_weight="0.06" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:id="@+id/item_mensalidades_imgcheck"
+        android:layout_weight="0.34" />
+
+</LinearLayout>

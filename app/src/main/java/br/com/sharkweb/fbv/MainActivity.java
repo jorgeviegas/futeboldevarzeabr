@@ -82,24 +82,6 @@ public class MainActivity extends ActionBarActivity
                     .get(0).getId_usuario()).get(0);
             Constantes.setUsuarioLogado(user);
         }
-
-       /* tvNomeUser = (TextView) findViewById(R.id.nagivation_edtNomeUsuario);
-        tvNomeUser.setVisibility(TextView.VISIBLE);
-        String nomeUser = "";
-        if (Constantes.getUsuarioLogado() != null) {
-            nomeUser = Constantes.getUsuarioLogado().getNome();
-        }*/
-
-       /* tvNomeUser.setText(nomeUser.toUpperCase());
-        tvNomeUser.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Bundle parametros = new Bundle();
-                parametros.putString("tipoAcesso", "edit");
-                parametros.putInt("id_usuario", loginControl.selecLogin().get(0).getId_usuario());
-                //mudarTelaComRetorno(CadastroUsuarioActivity.class, parametros, 3);
-                mudarTela(CadastroUsuarioActivity.class, parametros);
-            }
-        });*/
     }
 
     @Override
@@ -116,6 +98,7 @@ public class MainActivity extends ActionBarActivity
                     mudarTela(CalendarioActivity.class, parametros);
                     break;
                 case 3:
+                    mudarTela(FinanceiroActivity.class, parametros);
                     break;
             }
         }
@@ -158,7 +141,7 @@ public class MainActivity extends ActionBarActivity
                 break;
             case 5:
                 //mTitle = "Calendario";
-                mudarTelaComRetorno(FinanceiroActivity.class, 2);
+                mudarTelaComRetorno(TeamActivity.class, 3);
                 //funcoes.mostrarDialogAlert(1,"Está quase pronto! Estamos com essa função no forno!");
                 break;
         }

@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="br.com.sharkweb.fbv.FinanceiroActivity">
+    <item android:id="@+id/action_cadastrar_entrada" android:title="Nova Entrada Manual"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_cadastrar_retirada" android:title="Nova Retirada Manual"
+        android:orderInCategory="100" app:showAsAction="never" />
+</menu>

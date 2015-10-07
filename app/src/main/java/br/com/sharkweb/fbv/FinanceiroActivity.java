@@ -3,16 +3,29 @@ package br.com.sharkweb.fbv;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.controller.CaixaController;
+import br.com.sharkweb.fbv.controller.MovimentoController;
+import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.model.Caixa;
+import br.com.sharkweb.fbv.model.Mensalidade;
+import br.com.sharkweb.fbv.model.Movimento;
+import br.com.sharkweb.fbv.model.Time;
 
 /**
  * Created by Jorge on 30/09/2015.
@@ -21,18 +34,19 @@ public class FinanceiroActivity extends AppCompatActivity {
 
     final Context context = this;
     private Funcoes funcoes = new Funcoes(this);
+    private MovimentoController movimentoControl = new MovimentoController(this);
+    private TimeController timeControl = new TimeController(this);
+    private CaixaController caixaControl = new CaixaController(this);
     private double valor = 0;
     private Caixa caixa;
+    private Time time;
 
-    TextView txtSaldo;
-    Button btnRetirada;
-    Button btnEntrada;
+    private TextView txtSaldo;
+    private Button btnMovimentos;
+    private Button btnMensalidades;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        caixa = new Caixa();
-        caixa.setSaldo(10);
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_financeiro);
@@ -41,154 +55,145 @@ public class FinanceiroActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         txtSaldo = (TextView) findViewById(R.id.txtSaldo);
-        btnRetirada = (Button) findViewById(R.id.btnRetirada);
-        btnEntrada = (Button) findViewById(R.id.btnEntrada);
-
-        atualizarSaldo();
-        btnRetirada.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Nova Retirada");
-
-                final EditText input = new EditText(context);
-                input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                builder.setView(input);
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        valor = Double.valueOf(input.getText().toString());
-                        caixa.setSaldo(caixa.getSaldo() - valor);
-                        atualizarSaldo();
-                        //txtSaldo.invalidate();
-                    }
-                });
-                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
-            }
-        });
-
-        btnEntrada.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Nova Entrada");
-
-                final EditText input = new EditText(context);
-                input.setInputType(InputType.TYPE_NUMBER_FLAG_DECIMAL);
-                builder.setView(input);
-
-                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        valor = Double.valueOf(input.getText().toString());
-                        caixa.setSaldo(caixa.getSaldo() + valor);
-                        atualizarSaldo();
-                        //txtSaldo.invalidate();
-                    }
-                });
-                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-
-                builder.show();
-            }
-        });
-
-        /*
-        txtApelido = (EditText) findViewById(R.id.cadastro_usuario_edtApelido);
-        txtApelido.setVisibility(EditText.VISIBLE);
-
-        txtCelular = (EditText) findViewById(R.id.cadastro_usuario_edtCelular);
-        txtCelular.setVisibility(EditText.VISIBLE);
-        celularMask = Mask.insert("(##)####-####", txtCelular);
-        txtCelular.addTextChangedListener(celularMask);
-
-        try {
-            TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-            String teste = tm.getLine1Number();
-            txtCelular.setText(tm.getLine1Number());
-        }catch (Exception e){
-            System.out.println("Falha ao tentar pegar o telefone automaticamente");
-            funcoes.mostrarDialogAlert(3,e.getMessage());
-        }
-
-
-
-        spnTipoUsuario = (Spinner) findViewById((R.id.cadastro_usuario_spinner));
-        ArrayList<TipoUsuario> tipo_usuario = tipoUsuarioControl.selectTiposUsuarios();
-        ArrayList<String> tipo_usuarios = new ArrayList<>();
-
-        for (int i = 0; i < tipo_usuario.size(); i++) {
-            tipo_usuarios.add(tipo_usuario.get(i).getTipo().trim());
-        }
-
-        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1,
-                tipo_usuarios);
-
-        spnTipoUsuario.setAdapter(arrayAdapter2);
-        spnTipoUsuario.setSelection(1);
-        spnTipoUsuario.setVisibility(View.VISIBLE);
-
-       *//* spnPosicao = (Spinner) findViewById((R.id.cadastro_usuario_spinner_posicao));
-        ArrayList<Posicao> posicao = posicaoControl.selectPosicoes();
-        ArrayList<String> posicoes = new ArrayList<>();
-
-        for (int i = 0; i < posicao.size(); i++) {
-            posicoes.add(posicao.get(i).getNome().trim());
-        }
-        //abc_list_menu_item_checkbox
-        ArrayAdapter<String> arrayAdapterPosicao = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1,
-                posicoes);
-        spnPosicao.setAdapter(arrayAdapterPosicao);
-        spnPosicao.setVisibility(View.VISIBLE);*//*
-
-        //final String spinVal = String.valueOf(spin.getSelectedItem());
-
-        btnCadastrar = (Button) findViewById(R.id.cadastroUsuario_btnRegistrar);
-        btnCadastrar.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (inserir()) {
-                    if (tipoAcesso.equals("edit")){
-                        Toast toast = Toast.makeText(getApplicationContext(), "Cadastro atualizado com sucesso!", Toast.LENGTH_LONG);
-                        toast.show();
-                        mudarTela(MainActivity.class);
-                    }else {
-                        Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
-                        toast.show();
-                        mudarTela(LoginActivity.class);
-                    }
-                }
-            }
-        });
-
-        btnCancelar = (Button) findViewById(R.id.cadastro_usuario_btnCancelar);
-        btnCancelar.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                //mudarTela(LoginActivity.class);
-                //funcoes.mostrarDialogAlert(0,"TESTE MAROTAO",String.valueOf(user.getId_tipo()));
-                onBackPressed();
-            }
-        });
-        btnCancelar.setVisibility(View.VISIBLE);
+        btnMovimentos = (Button) findViewById(R.id.financeiro_movimentos);
+        btnMensalidades = (Button) findViewById(R.id.financeiro_mensalidades);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
-            //Aqui tratamos parametros enviados para a tela de cadastro de usuario
-            tipoAcesso = params.getString("tipoAcesso");
+            time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
+        } else {
+            time = null;
+        }
 
-            if (params.getInt("id_usuario") > 0) {
-                carregarRegistro(params.getInt("id_usuario"));
+        carregarRegistro();
+        atualizarSaldo();
+
+        btnMovimentos.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Bundle parametros = new Bundle();
+                parametros.putInt("id_caixa", caixa.getId());
+                mudarTela(MovimentosActivity.class, parametros);
             }
-        }*/
+        });
+
+        btnMensalidades.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Bundle parametros = new Bundle();
+                parametros.putInt("id_caixa", caixa.getId());
+                mudarTela(MensalidadesActivity.class, parametros);
+            }
+        });
+    }
+
+    private void carregarRegistro() {
+        ArrayList<Caixa> caixa = caixaControl.selectJogosPorIdTime(time.getId());
+        if (caixa.size() > 0) {
+            this.caixa = caixa.get(0);
+        } else {
+            Caixa caixa2 = new Caixa(time.getId(), 0, 0);
+            Long ret = caixaControl.inserir(caixa2);
+            if (ret > 0) {
+                caixa2.setId(Integer.valueOf(ret.toString()));
+                this.caixa = caixa2;
+            } else {
+                funcoes.mostrarDialogAlert(3, "");
+                return;
+            }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_financeiro, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem m1 = menu.findItem(R.id.action_cadastrar_entrada);
+        m1.setVisible(true);
+        MenuItem m2 = menu.findItem(R.id.action_cadastrar_retirada);
+        m1.setVisible(true);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_cadastrar_entrada) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Nova Entrada");
+
+            final EditText input = new EditText(context);
+            input.setInputType(InputType.TYPE_CLASS_NUMBER |
+                    InputType.TYPE_NUMBER_FLAG_DECIMAL |
+                    InputType.TYPE_NUMBER_FLAG_SIGNED);
+            builder.setView(input);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    valor = Double.valueOf(input.getText().toString());
+                    movimentoControl.criarMovimento("E", caixa, valor);
+                    atualizarSaldo();
+
+                }
+            });
+            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+            return true;
+        }
+        if (id == R.id.action_cadastrar_retirada) {
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Nova Retirada");
+
+            final EditText input = new EditText(context);
+            input.setInputType(InputType.TYPE_CLASS_NUMBER |
+                    InputType.TYPE_NUMBER_FLAG_DECIMAL |
+                    InputType.TYPE_NUMBER_FLAG_SIGNED);
+            builder.setView(input);
+
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    valor = Double.valueOf(input.getText().toString());
+                    movimentoControl.criarMovimento("R", caixa, valor);
+                    atualizarSaldo();
+                }
+            });
+            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            });
+
+            builder.show();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @SuppressWarnings({"rawtypes", "unused"})
+    private void mudarTela(Class cls, Bundle parametros) {
+        Intent intent = new Intent(this, cls);
+        intent.putExtras(parametros);
+        startActivity(intent);
     }
 
     private void atualizarSaldo() {

@@ -10,28 +10,29 @@
         android:text="Large Text"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="60dp"
+        android:textColor="#000"
         android:gravity="center"
-        android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_above="@+id/financeiro_movimentos" />
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/textView2" />
 
-    <Button
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Moviementos"
-        android:id="@+id/financeiro_movimentos"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:text="Saldo"
+        android:gravity="center"
+        android:background="@color/AzulPrincipal"
+        android:textColor="#fff"
+        android:paddingTop="20sp"
+        android:paddingBottom="20sp"
+        android:textSize="60sp"
+        android:id="@+id/textView2"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="mensalidades"
-        android:id="@+id/financeiro_mensalidades"
-        android:layout_alignBottom="@+id/financeiro_movimentos"
-        android:layout_toLeftOf="@+id/financeiro_movimentos"
-        android:layout_toStartOf="@+id/financeiro_movimentos" />
 </RelativeLayout>

@@ -21,6 +21,7 @@ public class MensalidadeDAO {
     private static final String PAGAMENTO = "pagamento";
     private static final String VALOR = "valor";
     private static final String VALOR_PAGO = "valor_pago";
+    private static final String DIA_VENCIMENTO = "dia_vencimento";
 
     private FBVDAO fbvdao;
 
@@ -36,6 +37,7 @@ public class MensalidadeDAO {
         valores.put(PAGAMENTO, mensalidade.getPagamento());
         valores.put(VALOR, mensalidade.getValor());
         valores.put(VALOR_PAGO, mensalidade.getValor_pago());
+        valores.put(DIA_VENCIMENTO, mensalidade.getDiaVencimento());
 
         long retorno = fbvdao.getWritableDatabase().insert(NOME_TABELA, null, valores);
         fbvdao.close();
@@ -50,6 +52,7 @@ public class MensalidadeDAO {
         valores.put(PAGAMENTO, mensalidade.getPagamento());
         valores.put(VALOR, mensalidade.getValor());
         valores.put(VALOR_PAGO, mensalidade.getValor_pago());
+        valores.put(DIA_VENCIMENTO, mensalidade.getDiaVencimento());
 
         String[] whereArgs = {Integer.toString(mensalidade.getId())};
         int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID + " = ?", whereArgs);
@@ -95,7 +98,7 @@ public class MensalidadeDAO {
     private ArrayList<Mensalidade> cursorToArray(Cursor c) {
         ArrayList<Mensalidade> mensalidades = new ArrayList<Mensalidade>();
         while (c.moveToNext()) {
-            mensalidades.add(new Mensalidade(c.getInt(0),c.getInt(1),c.getInt(2),c.getString(3),c.getInt(4),c.getDouble(5),c.getDouble(6)));
+            mensalidades.add(new Mensalidade(c.getInt(0),c.getInt(1),c.getInt(2),c.getString(3),c.getInt(4),c.getDouble(5),c.getDouble(6), c.getInt(7)));
         }
         return mensalidades;
     }

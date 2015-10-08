@@ -84,7 +84,6 @@ public class JogoListAdapter extends BaseAdapter {
             try {
                 if (!jogoControl.isOpen(jogo)){
                     itemHolder.ivJogo.setBackgroundColor(context.getResources().getColor(R.color.vermelhoEscuro));
-
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -98,7 +98,7 @@ public class MainActivity extends ActionBarActivity
                     mudarTela(CalendarioActivity.class, parametros);
                     break;
                 case 3:
-                    mudarTela(FinanceiroActivity.class, parametros);
+                    mudarTela(Financeiro2Activity.class, parametros);
                     break;
             }
         }

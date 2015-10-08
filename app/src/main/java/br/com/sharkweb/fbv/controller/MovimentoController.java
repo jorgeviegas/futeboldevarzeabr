@@ -13,16 +13,19 @@ import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.model.Caixa;
 import br.com.sharkweb.fbv.model.Jogo;
 import br.com.sharkweb.fbv.model.Movimento;
+import br.com.sharkweb.fbv.model.Usuario;
 
 public class MovimentoController {
 
     private MovimentoDAO movimentoDAO;
     private CaixaController caixaControl;
+    private UsuarioController userControl;
     private Funcoes funcoes;
 
     public MovimentoController(Context context) {
         movimentoDAO = new MovimentoDAO(context);
         caixaControl = new CaixaController(context);
+        userControl = new UsuarioController(context);
         funcoes = new Funcoes(context);
     }
 
@@ -46,7 +49,7 @@ public class MovimentoController {
         return movimentoDAO.selectMovimentosPorIdCaixa(id_caixa);
     }
 
-    public void criarMovimento(String tipo, Caixa caixa, double valor) {
+    public void criarMovimento(String tipo, Caixa caixa, double valor, int id_usuario) {
         String historico = "";
         if (tipo.equals("R")) {
             historico = "Retirada manual";
@@ -57,6 +60,10 @@ public class MovimentoController {
         } else if (tipo.equals("M")) {
             caixa.setSaldo(caixa.getSaldo() + valor);
             historico = "Pgto. Mensalidade";
+            if (id_usuario > 0){
+                Usuario user = userControl.selectUsuarioPorId(id_usuario).get(0);
+                historico = historico + ": \n"+user.getNome().trim();
+            }
         }
         Movimento mov = new Movimento(caixa.getId(), historico, funcoes.getDataDia(), valor,
                 tipo, Constantes.getUsuarioLogado().getId());

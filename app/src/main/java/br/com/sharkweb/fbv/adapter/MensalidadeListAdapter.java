@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import br.com.sharkweb.fbv.R;
 import br.com.sharkweb.fbv.Util.Funcoes;
@@ -35,6 +36,7 @@ public class MensalidadeListAdapter extends BaseAdapter {
     private MensalidadeController mensalidadeControl;
     private UsuarioController usuarioControl;
     private Funcoes funcoes;
+    private Context context;
 
     public MensalidadeListAdapter(Context context, ArrayList<Mensalidade> listaMensalidades) {
         this.mensalidades = listaMensalidades;
@@ -42,6 +44,7 @@ public class MensalidadeListAdapter extends BaseAdapter {
         mensalidadeControl = new MensalidadeController(context);
         usuarioControl = new UsuarioController(context);
         funcoes = new Funcoes(context);
+        this.context = context;
     }
 
     public int getCount() {
@@ -67,6 +70,7 @@ public class MensalidadeListAdapter extends BaseAdapter {
             itemHolder.tvValor = ((TextView) view.findViewById(R.id.item_mensalidades_valor));
             itemHolder.tvValorPago = ((TextView) view.findViewById(R.id.item_mensalidades_valor_pago));
             itemHolder.ivCheck = ((ImageView) view.findViewById(R.id.item_mensalidades_imgcheck));
+            itemHolder.ivVencido = ((ImageView) view.findViewById(R.id.item_mensalidades_imgvencido));
 
             view.setTag(itemHolder);
         } else {
@@ -76,15 +80,28 @@ public class MensalidadeListAdapter extends BaseAdapter {
         Mensalidade mensalidade = mensalidades.get(position);
         if (mensalidade != null && mensalidade.getId() > 0) {
             Usuario user = usuarioControl.selectUsuarioPorId(mensalidade.getId_usuario()).get(0);
+
             itemHolder.tvData.setText(mensalidade.getData().trim());
             itemHolder.tvUsuario.setText(user.getNome().trim());
             itemHolder.tvValor.setText(funcoes.formatarNumeroComVirgula(mensalidade.getValor()).trim());
             itemHolder.tvValorPago.setText(funcoes.formatarNumeroComVirgula(mensalidade.getValor_pago()).trim());
+            itemHolder.ivVencido.setBackgroundColor(context.getResources().getColor(R.color.AzulPrincipal));
 
             if (mensalidade.getValor() == mensalidade.getValor_pago()) {
                 itemHolder.ivCheck.setImageResource(R.drawable.check_green_oval_48);
+                itemHolder.tvValor.setTextColor(Color.BLUE);
+                itemHolder.tvValorPago.setTextColor(Color.BLUE);
             } else {
                 itemHolder.ivCheck.setImageResource(R.drawable.interrogacao_red_48);
+                itemHolder.tvValor.setTextColor(Color.BLUE);
+                itemHolder.tvValorPago.setTextColor(Color.RED);
+                try {
+                    if (funcoes.transformarStringEmData(mensalidade.getData()).before(funcoes.getDate())) {
+                        itemHolder.ivVencido.setBackgroundColor(context.getResources().getColor(R.color.vermelhoEscuro));
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             itemHolder.tvData.setText("");
@@ -102,6 +119,7 @@ public class MensalidadeListAdapter extends BaseAdapter {
         public TextView tvValor;
         public TextView tvValorPago;
         public ImageView ivCheck;
+        public ImageView ivVencido;
 
     }
 }

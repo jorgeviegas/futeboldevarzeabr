@@ -12,8 +12,9 @@ public class Mensalidade {
     private int pagamento;
     private double valor;
     private double valor_pago;
+    private int diaVencimento;
 
-    public Mensalidade(int id, int id_time,int id_usuario, String data, int pagamento, double valor, double valor_pago) {
+    public Mensalidade(int id, int id_time,int id_usuario, String data, int pagamento, double valor, double valor_pago, int diaVencimento) {
         this.id = id;
         this.id_usuario = id_usuario;
         this.id_time = id_time;
@@ -21,14 +22,17 @@ public class Mensalidade {
         this.pagamento = pagamento;
         this.valor = valor;
         this.valor_pago = valor_pago;
+        this.diaVencimento = diaVencimento;
+
     }
-    public Mensalidade(int id_time, int id_usuario, String data, int pagamento, double valor, double valor_pago) {
+    public Mensalidade(int id_time, int id_usuario, String data, int pagamento, double valor, double valor_pago, int diaVencimento) {
         this.id_time = id_time;
         this.id_usuario = id_usuario;
         this.data = data;
         this.pagamento = pagamento;
         this.valor = valor;
         this.valor_pago = valor_pago;
+        this.diaVencimento = diaVencimento;
     }
 
     public Mensalidade(){
@@ -88,5 +92,13 @@ public class Mensalidade {
 
     public void setValor_pago(double valor_pago) {
         this.valor_pago = valor_pago;
+    }
+
+    public int getDiaVencimento() {
+        return diaVencimento;
+    }
+
+    public void setDiaVencimento(int diaVencimento) {
+        this.diaVencimento = diaVencimento;
     }
 }

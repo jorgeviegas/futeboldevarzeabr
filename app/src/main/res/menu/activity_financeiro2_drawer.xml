@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/nav_saldo" android:icon="@android:drawable/ic_menu_view"
+            android:title="Saldo caixa" />
+        <item android:id="@+id/nav_movimentos" android:icon="@android:drawable/ic_menu_info_details"
+            android:title="Movimentos" />
+        <item android:id="@+id/nav_mensalidades" android:icon="@android:drawable/ic_menu_my_calendar"
+            android:title="Mensalidades" />
+        <item android:id="@+id/nav_manage" android:icon="@android:drawable/ic_menu_manage"
+            android:title="Configurações" />
+        <item android:id="@+id/nav_telaPrincipal" android:icon="@android:drawable/ic_dialog_dialer"
+            android:title="Tela Principal" />
+    </group>
+
+    <item android:title="Comunicação">
+        <menu>
+            <item android:id="@+id/nav_send" android:icon="@android:drawable/ic_menu_send"
+                android:title="Enviar comunicado" />
+        </menu>
+    </item>
+
+</menu>

@@ -40,10 +40,6 @@ public class LoginActivity extends ActionBarActivity {
         Bundle params = getIntent().getExtras();
         if (params != null) {
             //Aqui tratamos parametros enviados para a tela de login
-
-            if (params.getBoolean("salvo")) {
-                //mudarTela(MainActivity.class);
-            }
         }
 
         txtemail = (EditText) findViewById(R.id.login_txtemail);
@@ -93,7 +89,7 @@ public class LoginActivity extends ActionBarActivity {
 
                         Bundle parametros = new Bundle();
                         parametros.putBoolean("login", true);
-                        mudarTela(MainActivity.class, parametros);
+                        mudarTela(NewMainActivity.class, parametros);
                     } else {
                         Toast toast = Toast.makeText(getApplicationContext(), "Usuario nao cadastrado!", Toast.LENGTH_SHORT);
                         toast.show();

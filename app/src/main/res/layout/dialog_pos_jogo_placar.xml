@@ -76,7 +76,8 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#fff"
+        android:background="@drawable/botaoazul"
+        android:textColor="#fff"
         android:text="Confirmar"
         android:id="@+id/pos_jogo_placar_btnconfirmar" />
 </LinearLayout>

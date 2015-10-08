@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Spinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right|center"
+        android:id="@+id/dialog_mensalidade_frequencia" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Dia do vencimento:"
+        android:id="@+id/dialog_mensalidade_data" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Valor:"
+        android:id="@+id/dialog_mensalidade_valor" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Confirmar"
+        android:background="@drawable/botaoazul"
+        android:textColor="#fff"
+        android:id="@+id/dialog_mensalidade_btnConfirmar" />
+</LinearLayout>

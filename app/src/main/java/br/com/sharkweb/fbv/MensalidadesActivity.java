@@ -1,21 +1,35 @@
 package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.adapter.MensalidadeListAdapter;
@@ -25,6 +39,7 @@ import br.com.sharkweb.fbv.controller.MensalidadeController;
 import br.com.sharkweb.fbv.controller.MovimentoController;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.model.Caixa;
+import br.com.sharkweb.fbv.model.Jogo;
 import br.com.sharkweb.fbv.model.Mensalidade;
 import br.com.sharkweb.fbv.model.Movimento;
 import br.com.sharkweb.fbv.model.Time;
@@ -53,18 +68,27 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.mensalidade_botaoflutuante);
+        fab.setColorFilter(getResources().getColor(R.color.AzulPrincipal));
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mudarTelaComRetorno(UsuariosActivity.class, 1);
+            }
+        });
+
         mensalidades = (ListView) findViewById(R.id.mensalidadeslist_listviewmensalidades);
         mensalidades.setOnItemClickListener(this);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
-            caixa = caixaControl.selectCaixaPorId(params.getInt("id_caixa")).get(0);
-            time = timeControl.selectTimePorId(caixa.getId_time()).get(0);
+            time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
         } else {
             caixa = null;
             time = null;
         }
 
+        carregarRegistro();
         atualizarLista();
         mensalidades.setCacheColorHint(Color.TRANSPARENT);
     }
@@ -97,7 +121,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_mensalidade, menu);
+       // getMenuInflater().inflate(R.menu.menu_mensalidade, menu);
         return true;
     }
 
@@ -121,20 +145,30 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
         return super.onOptionsItemSelected(item);
     }
 
+    private void carregarRegistro() {
+        ArrayList<Caixa> caixa = caixaControl.selectJogosPorIdTime(time.getId());
+        if (caixa.size() > 0) {
+            this.caixa = caixa.get(0);
+        } else {
+            Caixa caixa2 = new Caixa(time.getId(), 0, 0);
+            Long ret = caixaControl.inserir(caixa2);
+            if (ret > 0) {
+                caixa2.setId(Integer.valueOf(ret.toString()));
+                this.caixa = caixa2;
+            } else {
+                funcoes.mostrarDialogAlert(3, "");
+                return;
+            }
+        }
+    }
+
     public void atualizarLista() {
-    /*    if (caixa!=null){
-            listaMovimentos = movimentosControl.selectMovimentosPorIdCaixa(caixa.getId());
-        }else {
-            listaMovimentos = movimentosControl.selectMovimentos();
-        }*/
-        // Mensalidade mens = new Mensalidade(1,1,funcoes.getDataDia(),0,200.00,100.00);
-        // mensalidadeControl.inserir(mens);
 
         listaMensalidades = mensalidadeControl.selectMensalidadesPorIdTime(this.time.getId());
 
         if (listaMensalidades.size() == 0) {
             ArrayList<Mensalidade> listaVazia = new ArrayList<Mensalidade>();
-            listaVazia.add(new Mensalidade(0, 0, "", 0, 0, 0));
+            listaVazia.add(new Mensalidade(0, 0, "", 0, 0, 0, 0));
             adapterMensalidade = new MensalidadeListAdapter(this, listaVazia);
         } else
             adapterMensalidade = new MensalidadeListAdapter(this, listaMensalidades);
@@ -144,41 +178,66 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
     private void inserirUsuario(final int id_usuario) {
         //int id_time, int id_usuario, String data, int pagamento, double valor, double valor_pago
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Informe o valor da Mensalidade:");
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.dialog_mensalidade);
 
-        final EditText input = new EditText(context);
+        dialog.setTitle("Dados da mensalidade:");
+        final EditText txtDiaVencimento = (EditText) dialog.findViewById(R.id.dialog_mensalidade_data);
+        final TextView input = (TextView) dialog.findViewById(R.id.dialog_mensalidade_valor);
         input.setInputType(InputType.TYPE_CLASS_NUMBER |
                 InputType.TYPE_NUMBER_FLAG_DECIMAL |
                 InputType.TYPE_NUMBER_FLAG_SIGNED);
-        builder.setView(input);
-        input.setText("0.00");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        txtDiaVencimento.setInputType(InputType.TYPE_CLASS_NUMBER |
+                InputType.TYPE_NUMBER_FLAG_SIGNED);
+        final Spinner frequencia = (Spinner) dialog.findViewById(R.id.dialog_mensalidade_frequencia);
+        ArrayList<String> opcoes = new ArrayList<>();
+        opcoes.add("Mensal");
+        opcoes.add("Trimestral");
+        opcoes.add("Semestral");
+        opcoes.add("Anual");
+        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_activated_1,
+                opcoes);
+
+        frequencia.setAdapter(arrayAdapter2);
+
+        final Button btnconfirmar = (Button) dialog.findViewById(R.id.dialog_mensalidade_btnConfirmar);
+        btnconfirmar.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
                 if (input.getText().toString().isEmpty()) {
                     input.setText("0.00");
                 }
+
                 double valor = Double.valueOf(input.getText().toString());
-                if (valor > 0) {
-                    Mensalidade mensalidade = new Mensalidade(time.getId(), id_usuario, funcoes.getDataDia(),
-                            1, valor, 0);
-                    mensalidadeControl.inserir(mensalidade);
-                    atualizarLista();
+                int diaVencimento = Integer.valueOf(txtDiaVencimento.getText().toString().trim());
+                if (diaVencimento > 0) {
+                    if (valor > 0) {
+                        String data = "";
+                        if (diaVencimento < funcoes.getDate().getDate()) {
+                            data = funcoes.transformarDataEmString(
+                                    funcoes.dataPorPeriodo(funcoes.getDate(), diaVencimento, frequencia.getSelectedItemPosition())).trim();
+                        } else {
+                            Date ret = funcoes.getDate();
+                            ret.setDate(diaVencimento);
+                            data = funcoes.transformarDataEmString(ret);
+                        }
+
+                        Mensalidade mensalidade = new Mensalidade(time.getId(), id_usuario, data,
+                                frequencia.getSelectedItemPosition(), valor, 0, diaVencimento);
+                        mensalidadeControl.inserir(mensalidade);
+                        atualizarLista();
+                        dialog.dismiss();
+                    } else {
+                        funcoes.mostrarDialogAlert(1, "O valor não pode ser menor ou igual à zero.");
+                    }
                 } else {
-                    funcoes.mostrarDialogAlert(1, "O valor não pode ser menor ou igual à zero.");
+                    funcoes.mostrarDialogAlert(1, "Deve ser informado o dia de vecimento");
                 }
-
-            }
-        });
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
             }
         });
 
-        builder.show();
+        dialog.show();
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
@@ -207,17 +266,31 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
                     InputType.TYPE_NUMBER_FLAG_DECIMAL |
                     InputType.TYPE_NUMBER_FLAG_SIGNED);
 
-            input.setText(String.valueOf(valorFaltante));
+            input.setText(String.valueOf(funcoes.formatarNumeroComVirgula(valorFaltante)).replace(",","."));
             builder.setView(input);
+            input.setHint("Valor:");
 
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     double valorMov = Double.valueOf(input.getText().toString());
-                    movimentoControl.criarMovimento("M", caixa, valorMov);
+                    movimentoControl.criarMovimento("M", caixa, valorMov, mensalidade.getId_usuario());
 
                     mensalidade.setValor_pago(mensalidade.getValor_pago() +
                             Double.valueOf(input.getText().toString()));
+
+                    //Ao pagar a mensalidade, atualiza a data da próxima e zera o valor pago.
+                    if (mensalidade.getValor_pago() == mensalidade.getValor()) {
+                        try {
+                            Date novaData = funcoes.transformarStringEmData(mensalidade.getData());
+                            novaData = funcoes.dataPorPeriodo(novaData, mensalidade.getDiaVencimento(),
+                                    mensalidade.getPagamento());
+                            mensalidade.setData(funcoes.transformarDataEmString(novaData));
+                            mensalidade.setValor_pago(0);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
                     mensalidadeControl.alterar(mensalidade);
                     atualizarLista();
                 }

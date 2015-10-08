@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/main_estatisticas" android:icon="@drawable/statistics_26"
+            android:title="Minhas estatísticas" />
+        <item android:id="@+id/main_meuperfil" android:icon="@android:drawable/ic_menu_myplaces"
+            android:title="Meu perfil" />
+        <item android:id="@+id/main_config" android:icon="@android:drawable/ic_menu_manage"
+            android:title="Configurações" />
+    </group>
+
+    <item android:title="Time">
+        <menu>
+            <item android:id="@+id/main_meustimes" android:icon="@drawable/soccer_24"
+                android:title="Meus times" />
+            <item android:id="@+id/main_calendario" android:icon="@android:drawable/ic_menu_my_calendar"
+                android:title="Calendário" />
+        </menu>
+    </item>
+
+    <item android:title="Financeiro">
+        <menu>
+            <item android:id="@+id/main_caixa" android:icon="@android:drawable/ic_menu_view"
+                android:title="Saldo caixa" />
+            <item android:id="@+id/main_movimento" android:icon="@android:drawable/ic_menu_info_details"
+                android:title="Movimentos" />
+            <item android:id="@+id/main_mensalidade" android:icon="@android:drawable/ic_menu_my_calendar"
+                android:title="Mensalidades" />
+        </menu>
+    </item>
+
+</menu>

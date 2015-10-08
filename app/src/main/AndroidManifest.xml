@@ -13,14 +13,6 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".MainActivity"
-            android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".TeamActivity"
             android:label="Selecione um Time" />
         <activity
@@ -39,23 +31,22 @@
 
         <meta-data
             android:name="android.support.PARENT_ACTIVITY"
-            android:value=".MainActivity" />
+            android:value=".NewMainActivity" />
 
         <activity
             android:name=".TimeDetalheActivity"
             android:label="Time" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".NewMainActivity" />
         </activity>
         <activity
             android:name=".CalendarioActivity"
             android:label="Calendario do Time" >
-
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".NewMainActivity" />
         </activity>
         <activity
             android:name=".CadastroJogoActivity"
@@ -86,24 +77,39 @@
         </activity>
         <activity
             android:name=".FinanceiroActivity"
-            android:label="Financeiro">
+            android:label="Financeiro" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value=".NewMainActivity" />
         </activity>
         <activity
             android:name=".MovimentosActivity"
-            android:label="Histórico de Movimentos">
+            android:label="Histórico de Movimentos" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".FinanceiroActivity" />
         </activity>
         <activity
             android:name=".MensalidadesActivity"
-            android:label="Mensalidades">
+            android:label="Mensalidades" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".FinanceiroActivity" />
+        </activity>
+        <activity
+            android:name=".Financeiro2Activity"
+            android:label="@string/title_activity_financeiro2"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
+        <activity
+            android:name=".NewMainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

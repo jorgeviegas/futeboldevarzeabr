@@ -85,7 +85,7 @@ public class MovimentoListAdapter extends BaseAdapter {
             }
         } else {
             itemHolder.tvData.setText("");
-            itemHolder.tvHistorico.setText("");
+            itemHolder.tvHistorico.setText("Nenhum movimento encontrado.");
             itemHolder.tvValor.setText("");
         }
 

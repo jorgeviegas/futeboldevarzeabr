@@ -30,12 +30,14 @@ public class TimeListAdapter extends BaseAdapter {
     private ArrayList<Time> times;
     private UsuarioController usuarioControl;
     private UFController ufControl;
+    private Context context;
 
     public TimeListAdapter(Context context, ArrayList<Time> listaTimes) {
         this.times = listaTimes;
         mInflater = LayoutInflater.from(context);
         usuarioControl = new UsuarioController(context);
         ufControl = new UFController(context);
+        this.context = context;
     }
 
     public int getCount() {
@@ -71,7 +73,7 @@ public class TimeListAdapter extends BaseAdapter {
         itemHolder.tvEscolhaTimeNome.setText(time.getNome().toUpperCase());
 
         if (time.getId() > 0){
-            itemHolder.ivSeparador.setBackgroundColor(Color.YELLOW);
+            itemHolder.ivSeparador.setBackgroundColor(context.getResources().getColor(R.color.AzulPrincipal));
         itemHolder.tvLocalTime.setText(time.getCidade().trim().toUpperCase() + " - " +
                 ufControl.selectUFPorId(time.getId_uf()).get(0).getNome().trim());
 

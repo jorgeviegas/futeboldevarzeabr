@@ -99,6 +99,19 @@ public class Funcoes {
         return null;
     }
 
+    public Date getDate() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(
+                "dd/MM/yyyy", Locale.getDefault());
+        Date date = new Date();
+        String result = dateFormat.format(date);
+        try {
+            return (Date) dateFormat.parse(result);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public Date setDateTime(String data) throws ParseException {
         return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(data);
     }
@@ -150,6 +163,29 @@ public class Funcoes {
 
     public String formatarNumeroComVirgula(double valor) {
         return String.valueOf(valor).format("%.2f", valor);
+    }
+
+    public Date dataPorPeriodo(Date dat,int diaVencimento, int frequencia) {
+        dat.setDate(diaVencimento);
+        switch (frequencia) {
+            case 0:
+                //Mensal
+                dat.setMonth(dat.getMonth() + 1);
+                break;
+            case 1:
+                //Trimestral
+                dat.setMonth(dat.getMonth() + 3);
+                break;
+            case 2:
+                //Semestral
+                dat.setMonth(dat.getMonth() + 6);
+                break;
+            case 3:
+                //Anual
+                dat.setMonth(dat.getMonth() + 12);
+                break;
+        }
+        return dat;
     }
 
 }

@@ -7,15 +7,21 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.internal.widget.AdapterViewCompat;
+import android.support.v7.internal.widget.AdapterViewCompat.OnItemSelectedListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.Util.Constantes;
+import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.adapter.MovimentoListAdapter;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.controller.CaixaController;
@@ -32,11 +38,15 @@ import br.com.sharkweb.fbv.model.Usuario;
 public class MovimentosActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private ListView movimentos;
+    private Spinner spnFiltro;
     private ArrayList<Movimento> listaMovimentos;
     private MovimentoListAdapter adapterMovimentos;
     private MovimentoController movimentosControl = new MovimentoController(this);
     private CaixaController caixaControl = new CaixaController(this);
+    private TimeController timeControl = new TimeController(this);
     private Caixa caixa;
+    private Time time;
+    private Funcoes funcoes = new Funcoes();
     final Context context = this;
 
     @Override
@@ -50,15 +60,45 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
         movimentos = (ListView) findViewById(R.id.movimentoslist_listviewmovimentos);
         movimentos.setOnItemClickListener(this);
 
+        spnFiltro = (Spinner) findViewById(R.id.movimentos_tipofiltro);
+        ArrayList<String> opcoes = new ArrayList<>();
+        opcoes.add("Últimos 15 dias");
+        opcoes.add("Últimos 30 dias");
+        opcoes.add("Últimos 45 dias");
+        opcoes.add("Mes anterior");
+        ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_activated_1,
+                opcoes);
+
+        spnFiltro.setAdapter(arrayAdapter2);
+        spnFiltro.setVisibility(View.GONE);
         Bundle params = getIntent().getExtras();
         if (params != null) {
-            // this.caixa = caixaControl.selectCaixaPorId(params.getInt("id_caixa")).get(0);
+            this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
         } else {
             this.caixa = null;
         }
 
+        carregarRegistro();
         atualizarLista();
         movimentos.setCacheColorHint(Color.TRANSPARENT);
+    }
+
+    private void carregarRegistro() {
+        ArrayList<Caixa> caixa = caixaControl.selectJogosPorIdTime(time.getId());
+        if (caixa.size() > 0) {
+            this.caixa = caixa.get(0);
+        } else {
+            Caixa caixa2 = new Caixa(time.getId(), 0, 0);
+            Long ret = caixaControl.inserir(caixa2);
+            if (ret > 0) {
+                caixa2.setId(Integer.valueOf(ret.toString()));
+                this.caixa = caixa2;
+            } else {
+                funcoes.mostrarDialogAlert(3, "");
+                return;
+            }
+        }
     }
 
     @Override
@@ -97,12 +137,11 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
     }
 
     public void atualizarLista() {
-    /*    if (caixa!=null){
+        if (caixa != null) {
             listaMovimentos = movimentosControl.selectMovimentosPorIdCaixa(caixa.getId());
-        }else {
+        } else {
             listaMovimentos = movimentosControl.selectMovimentos();
-        }*/
-        listaMovimentos = movimentosControl.selectMovimentos();
+        }
 
         if (listaMovimentos.size() == 0) {
             ArrayList<Movimento> listaVazia = new ArrayList<Movimento>();

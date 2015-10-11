@@ -30,7 +30,6 @@ import br.com.sharkweb.fbv.model.Usuario;
 public class NewMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private boolean loginFeito;
     private TextView txtEmailUsuario;
     private TextView txtNomeUsuario;
     private ImageView imgPerfilUusario;
@@ -72,9 +71,6 @@ public class NewMainActivity extends AppCompatActivity
         Bundle params = getIntent().getExtras();
         if (params != null) {
             //Aqui tratamos parametros enviados para a tela principal
-            this.loginFeito = params.getBoolean("login") == true;
-        } else {
-            this.loginFeito = false;
         }
 
         //INICIANDO DADOS FIXOS DO APLICATIVO E DADOS DE TESTE
@@ -83,20 +79,23 @@ public class NewMainActivity extends AppCompatActivity
         usuarioControl.inicializarUsuarios();
         ufControl.inicializarUF();
 
+        txtEmailUsuario = (TextView) findViewById(R.id.nav_header_main_email);
+        txtNomeUsuario = (TextView) findViewById(R.id.nav_header_main_nome);
+        imgPerfilUusario = (ImageView) findViewById(R.id.nav_header_main_imgperfil);
+
         //DEFININDO O USUARIO LOGADO NO SISTEMA.
         if (!loginControl.selecLogin().isEmpty()) {
             Usuario user = usuarioControl.selectUsuarioPorId(loginControl.selecLogin()
                     .get(0).getId_usuario()).get(0);
             Constantes.setUsuarioLogado(user);
+
+            txtNomeUsuario.setText(Constantes.getUsuarioLogado().getNome().trim());
+            txtEmailUsuario.setText(Constantes.getUsuarioLogado().getEmail().trim());
+            imgPerfilUusario.setImageResource(R.drawable.profile4_68);
+        } else {
+            mudarTela(LoginActivity.class);
         }
 
-        txtEmailUsuario = (TextView) findViewById(R.id.nav_header_main_email);
-        txtNomeUsuario = (TextView) findViewById(R.id.nav_header_main_nome);
-        imgPerfilUusario = (ImageView) findViewById(R.id.nav_header_main_imgperfil);
-
-        txtNomeUsuario.setText(Constantes.getUsuarioLogado().getNome().trim());
-        txtEmailUsuario.setText(Constantes.getUsuarioLogado().getEmail().trim());
-        imgPerfilUusario.setImageResource(R.drawable.profile4_68);
     }
 
     @Override
@@ -169,7 +168,7 @@ public class NewMainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
+        Bundle parametros = new Bundle();
         if (id == R.id.main_estatisticas) {
             // mTitle = "Inicial";
             if (loginControl.selecLogin().isEmpty()) {
@@ -177,25 +176,29 @@ public class NewMainActivity extends AppCompatActivity
                 parametros2.putBoolean("salvo", true);
                 mudarTela(LoginActivity.class, parametros2);
             }
-            funcoes.mostrarDialogAlert(1,"Função ainda não implementada! Estará disponível nas próximas versões.");
+            funcoes.mostrarDialogAlert(1, "Função ainda não implementada! Estará disponível nas próximas versões.");
         } else if (id == R.id.main_meuperfil) {
-            Bundle parametros = new Bundle();
             parametros.putString("tipoAcesso", "edit");
             parametros.putInt("id_usuario", loginControl.selecLogin().get(0).getId_usuario());
             mudarTela(CadastroUsuarioActivity.class, parametros);
 
         } else if (id == R.id.main_config) {
-            funcoes.mostrarDialogAlert(1,"Função ainda não implementada! Estará disponível nas próximas versões.");
+            funcoes.mostrarDialogAlert(1, "Função ainda não implementada! Estará disponível nas próximas versões.");
         } else if (id == R.id.main_meustimes) {
-            mudarTelaComRetorno(TeamActivity.class, 1);
+            parametros.putBoolean("cadastrar", true);
+            mudarTelaComRetorno(TeamActivity.class, parametros, 1);
         } else if (id == R.id.main_calendario) {
-            mudarTelaComRetorno(TeamActivity.class, 2);
+            parametros.putBoolean("cadastrar", false);
+            mudarTelaComRetorno(TeamActivity.class, parametros, 2);
         } else if (id == R.id.main_caixa) {
-            mudarTelaComRetorno(TeamActivity.class, 3);
+            parametros.putBoolean("cadastrar", false);
+            mudarTelaComRetorno(TeamActivity.class, parametros, 3);
         } else if (id == R.id.main_movimento) {
-            mudarTelaComRetorno(TeamActivity.class, 4);
+            parametros.putBoolean("cadastrar", false);
+            mudarTelaComRetorno(TeamActivity.class, parametros, 4);
         } else if (id == R.id.main_mensalidade) {
-            mudarTelaComRetorno(TeamActivity.class, 5);
+            parametros.putBoolean("cadastrar", false);
+            mudarTelaComRetorno(TeamActivity.class, parametros, 5);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -218,6 +221,13 @@ public class NewMainActivity extends AppCompatActivity
     @SuppressWarnings({"rawtypes", "unused"})
     private void mudarTelaComRetorno(Class cls, int key) {
         Intent intent = new Intent(this, cls);
+        startActivityForResult(intent, key);
+    }
+
+    @SuppressWarnings({"rawtypes", "unused"})
+    private void mudarTelaComRetorno(Class cls, Bundle parametros, int key) {
+        Intent intent = new Intent(this, cls);
+        intent.putExtras(parametros);
         startActivityForResult(intent, key);
     }
 }

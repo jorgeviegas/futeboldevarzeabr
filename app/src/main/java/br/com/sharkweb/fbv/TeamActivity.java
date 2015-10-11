@@ -39,6 +39,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private UsuarioController userControl = new UsuarioController(this);
     private boolean esperaRetorno;
     private Time timeSelecionado;
+    private boolean podeCadastrar = true;
     final Context context = this;
 
     @Override
@@ -55,6 +56,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         Bundle params = getIntent().getExtras();
         if (params != null) {
             esperaRetorno = params.getBoolean("esperaRetorno");
+            podeCadastrar = params.getBoolean("cadastrar");
         } else {
             this.user = null;
         }
@@ -63,21 +65,6 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         esperaRetorno = true;
 
         this.user = userControl.selectUsuarioPorId(Constantes.getUsuarioLogado().getId()).get(0);
-        //this.user = null;
-
-       /* if (Constantes.getUsuarioLogado().getApelido().equals("kleintiago")
-                && timesControl.selectTimes().isEmpty()){
-            Time time = new Time("GREMIO","PORTO ALEGRE",22);
-            Time time2 = new Time("INTERNACIONAL","PORTO ALEGRE",22);
-            timesControl.inserir(time);
-            timesControl.inserir(time2);
-            int tipo_usuario = tipouserControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
-            TimeUsuario timeUser = new TimeUsuario(time.getId(),
-                    Constantes.getUsuarioLogado().getId(), 0, "", tipo_usuario);
-            Long ret2 = timeuserControl.inserir(timeUser);
-
-        }*/
-
         atualizarLista();
         times.setCacheColorHint(Color.TRANSPARENT);
     }
@@ -100,7 +87,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
 
         //Somente usuarios administradores podem usar o menu cadastrar
         if (tipouserControl.selectTiposUsuariosPorId(Constantes.getUsuarioLogado().
-                getId_tipo()).get(0).getTipo().equals("Administrador"))
+                getId_tipo()).get(0).getTipo().equals("Administrador") && this.podeCadastrar)
             m1.setVisible(true);
         else
             m1.setVisible(false);

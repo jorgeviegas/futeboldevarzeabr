@@ -11,11 +11,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="10sp"
-        android:paddingRight="10sp"
         android:divider="#dcdcdc"
         android:dividerHeight="1dp"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/linearLayout4" />
+        android:layout_alignParentTop="true" />
 
     <RelativeLayout
         android:layout_width="fill_parent"

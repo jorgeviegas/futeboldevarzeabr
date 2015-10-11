@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.NavUtils;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
@@ -240,6 +241,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         //noinspection SimplifiableIfStatement
         if (id == R.id.timedetalhe_action_cadastrarJogador) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setIcon(R.drawable.questionmark_64);
             builder.setTitle("Pergunta");
             builder.setMessage("Tem certeza que deseja inserir um novo Jogador?");
 
@@ -247,21 +249,8 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-
                     mudarTelaComRetorno(UsuariosActivity.class, 1);
 
-                   /* //ISSO AQUI É TESTE MAROTAO
-                    ArrayList<Usuario> users = usuarioControl.selectUsuarios();
-
-                    for (int i = 0; i < users.size(); i++) {
-                        if (timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(
-                                time.getId(), users.get(i).getId()).isEmpty()) {
-                            int tipo_usuario = tipouserControl.selectTiposUsuariosPorTipo("Jogador").get(0).getId();
-                            TimeUsuario timeUser = new TimeUsuario(time.getId(), users.get(i).getId(), 0, "", tipo_usuario);
-                            timeusuarioControl.inserir(timeUser);
-                        }
-                    }
-                    atualizarLista();*/
                 }
 
             });
@@ -309,7 +298,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                 public void onClick(DialogInterface dialog, int arg1) {
                     switch (arg1) {
                         case 0:
-                            funcoes.exibirDetalheUsuario(user,context);
+                            funcoes.exibirDetalheUsuario(user, context);
                             break;
                         case 1:
                             timeusuarioControl.tornarAdmin(time.getId(), user.getId());

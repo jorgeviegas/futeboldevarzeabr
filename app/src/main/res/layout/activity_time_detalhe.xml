@@ -20,7 +20,6 @@
         android:id="@+id/timeDetalhe_listJogadores"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/footerView"
         android:background="#cccc"
         android:choiceMode="singleChoice"
         android:paddingLeft="10sp"

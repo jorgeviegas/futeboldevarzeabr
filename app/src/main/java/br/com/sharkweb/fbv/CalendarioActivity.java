@@ -142,7 +142,7 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
 
     public void atualizarLista() {
 
-        ArrayList<Jogo> teste = jogoControl.selectJogos();
+        //ArrayList<Jogo> teste = jogoControl.selectJogos();
 
         listaJogos = jogoControl.selectJogosPorIdTimeEData(time.getId(), funcoes.transformarDataEmString(dataSelecionada));
 
@@ -204,8 +204,6 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        MenuItem m1 = menu.findItem(R.id.calenario_action_novoJogo);
-        m1.setVisible(false);
         return true;
     }
 
@@ -215,11 +213,6 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        if (id == android.R.id.home) {
-            NavUtils.navigateUpFromSameTask(this);
-            return true;
-        }
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {

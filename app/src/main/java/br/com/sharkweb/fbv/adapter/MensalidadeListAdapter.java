@@ -89,12 +89,12 @@ public class MensalidadeListAdapter extends BaseAdapter {
 
             if (mensalidade.getValor() == mensalidade.getValor_pago()) {
                 itemHolder.ivCheck.setImageResource(R.drawable.check_green_oval_48);
-                itemHolder.tvValor.setTextColor(Color.BLUE);
-                itemHolder.tvValorPago.setTextColor(Color.BLUE);
+                itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.AzulPrincipal));
+                itemHolder.tvValorPago.setTextColor(context.getResources().getColor(R.color.AzulPrincipal));
             } else {
                 itemHolder.ivCheck.setImageResource(R.drawable.interrogacao_red_48);
-                itemHolder.tvValor.setTextColor(Color.BLUE);
-                itemHolder.tvValorPago.setTextColor(Color.RED);
+                itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.AzulPrincipal));
+                itemHolder.tvValorPago.setTextColor(context.getResources().getColor(R.color.vermelhoEscuro));
                 try {
                     if (funcoes.transformarStringEmData(mensalidade.getData()).before(funcoes.getDate())) {
                         itemHolder.ivVencido.setBackgroundColor(context.getResources().getColor(R.color.vermelhoEscuro));

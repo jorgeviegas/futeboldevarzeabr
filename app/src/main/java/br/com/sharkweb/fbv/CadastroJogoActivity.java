@@ -98,8 +98,6 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        //actionBar.setIcon(R.drawable.soccerplain);
-        // actionBar.setDisplayShowHomeEnabled(true);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -280,6 +278,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
     public void EscolheTime(int key) {
         Bundle parametros = new Bundle();
         parametros.putBoolean("esperaRetorno", true);
+        parametros.putBoolean("cadastrar", false);
         mudarTelaComRetorno(TeamActivity.class, parametros, key);
     }
 
@@ -486,7 +485,6 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
         if (id == android.R.id.home) {
             onBackPressed();
-            //NavUtils.navigateUpFromSameTask(this);
             return true;
         }
 

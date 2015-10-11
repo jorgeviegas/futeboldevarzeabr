@@ -87,19 +87,14 @@
             android:label="Histórico de Movimentos" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FinanceiroActivity" />
+                android:value=".NewMainActivity" />
         </activity>
         <activity
             android:name=".MensalidadesActivity"
             android:label="Mensalidades" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".FinanceiroActivity" />
-        </activity>
-        <activity
-            android:name=".Financeiro2Activity"
-            android:label="@string/title_activity_financeiro2"
-            android:theme="@style/AppTheme.NoActionBar" >
+                android:value=".NewMainActivity" />
         </activity>
         <activity
             android:name=".NewMainActivity"
@@ -107,7 +102,6 @@
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

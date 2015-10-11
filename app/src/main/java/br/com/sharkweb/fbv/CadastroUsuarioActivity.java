@@ -94,7 +94,6 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         }
 
 
-
         spnTipoUsuario = (Spinner) findViewById((R.id.cadastro_usuario_spinner));
         ArrayList<TipoUsuario> tipo_usuario = tipoUsuarioControl.selectTiposUsuarios();
         ArrayList<String> tipo_usuarios = new ArrayList<>();
@@ -132,7 +131,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
                     if (tipoAcesso.equals("edit")){
                         Toast toast = Toast.makeText(getApplicationContext(), "Cadastro atualizado com sucesso!", Toast.LENGTH_LONG);
                         toast.show();
-                        mudarTela(MainActivity.class);
+                        mudarTela(NewMainActivity.class);
                     }else {
                         Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
                         toast.show();

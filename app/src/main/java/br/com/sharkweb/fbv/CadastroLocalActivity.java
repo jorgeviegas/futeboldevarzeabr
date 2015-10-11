@@ -147,7 +147,7 @@ public class CadastroLocalActivity extends ActionBarActivity {
             
             Local localinsert = new Local(tvtNome.getText().toString().trim(),
                     tvEndereco.getText().toString().trim(),
-                    Integer.valueOf(tvNumero.getText().toString().trim()),
+                    numero,
                     tvCidade.getText().toString().trim(),
                     id_uf);
 
@@ -205,10 +205,6 @@ public class CadastroLocalActivity extends ActionBarActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == android.R.id.home) {
-            onBackPressed();
-            return true;
-        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;

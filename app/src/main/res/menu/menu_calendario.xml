@@ -2,11 +2,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="br.com.sharkweb.fbv.CalendarioActivity">
-    <item
-        android:id="@+id/calenario_action_novoJogo"
-        android:title="Novo Jogo"
-        app:showAsAction="withText|ifRoom" />
 
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" app:showAsAction="never" />
 </menu>

@@ -91,7 +91,7 @@ public class LoginActivity extends ActionBarActivity {
                         parametros.putBoolean("login", true);
                         mudarTela(NewMainActivity.class, parametros);
                     } else {
-                        Toast toast = Toast.makeText(getApplicationContext(), "Usuario nao cadastrado!", Toast.LENGTH_SHORT);
+                        Toast toast = Toast.makeText(getApplicationContext(), "Usuario não cadastrado!", Toast.LENGTH_SHORT);
                         toast.show();
                     }
                 }

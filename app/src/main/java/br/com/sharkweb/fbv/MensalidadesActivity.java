@@ -67,9 +67,8 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
 
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.mensalidade_botaoflutuante);
-        fab.setColorFilter(getResources().getColor(R.color.AzulPrincipal));
+        fab.setColorFilter(Color.WHITE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -132,12 +131,6 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-
-        if (id == android.R.id.home) {
-            onBackPressed();
-            //NavUtils.navigateUpFromSameTask(this);
-            return true;
-        }
         if (id == R.id.action_cadastrar_mensalidade) {
             mudarTelaComRetorno(UsuariosActivity.class, 1);
         }

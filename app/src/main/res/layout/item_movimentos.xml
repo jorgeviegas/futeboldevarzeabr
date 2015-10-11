@@ -40,6 +40,7 @@
 
         <ImageView
             android:layout_width="15sp"
+            android:paddingRight="5sp"
             android:layout_gravity="center"
             android:layout_height="match_parent"
             android:id="@+id/movimentos_imgtipomovimento"

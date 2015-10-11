@@ -33,12 +33,14 @@ public class MovimentoListAdapter extends BaseAdapter {
     private ArrayList<Movimento> movimentos;
     private MovimentoController movimentoControl;
     private Funcoes funcoes;
+    private Context context;
 
     public MovimentoListAdapter(Context context, ArrayList<Movimento> listaMovimentos) {
         this.movimentos = listaMovimentos;
         mInflater = LayoutInflater.from(context);
         movimentoControl = new MovimentoController(context);
         funcoes = new Funcoes(context);
+        this.context = context;
     }
 
     public int getCount() {
@@ -78,10 +80,10 @@ public class MovimentoListAdapter extends BaseAdapter {
             if (movimento.getTipo().equals("E") ||
                     movimento.getTipo().equals("M")) {
                 itemHolder.ivTipoMov.setImageResource(R.drawable.plus_blue32);
-                itemHolder.tvValor.setTextColor(Color.BLUE);
+                itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.AzulPrincipal));
             } else if (movimento.getTipo().equals("R")) {
                 itemHolder.ivTipoMov.setImageResource(R.drawable.minus_red_32);
-                itemHolder.tvValor.setTextColor(Color.RED);
+                itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.vermelhoEscuro));
             }
         } else {
             itemHolder.tvData.setText("");

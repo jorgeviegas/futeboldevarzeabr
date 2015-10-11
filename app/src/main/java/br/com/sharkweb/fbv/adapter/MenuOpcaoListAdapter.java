@@ -14,7 +14,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import br.com.sharkweb.fbv.NavigationDrawerFragment;
 import br.com.sharkweb.fbv.R;
 import br.com.sharkweb.fbv.model.OpcaoMenu;
 

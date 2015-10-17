@@ -126,6 +126,11 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 

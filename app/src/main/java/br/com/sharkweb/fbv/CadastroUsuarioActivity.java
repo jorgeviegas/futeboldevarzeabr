@@ -18,7 +18,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.Util.Funcoes;
@@ -284,7 +283,6 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
         if (id == android.R.id.home) {
             onBackPressed();
-            //NavUtils.navigateUpFromSameTask(this);
             return true;
         }
 

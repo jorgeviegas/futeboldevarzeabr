@@ -131,6 +131,11 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
         if (id == R.id.action_cadastrar_mensalidade) {
             mudarTelaComRetorno(UsuariosActivity.class, 1);
         }
@@ -221,6 +226,8 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
                         mensalidadeControl.inserir(mensalidade);
                         atualizarLista();
                         dialog.dismiss();
+                       // Snackbar.make(v, "Mensalidade criada com sucesso.", Snackbar.LENGTH_SHORT)
+                         //       .setAction("Action", null).show();
                     } else {
                         funcoes.mostrarDialogAlert(1, "O valor não pode ser menor ou igual à zero.");
                     }
@@ -267,7 +274,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     double valorMov = Double.valueOf(input.getText().toString());
-                    movimentoControl.criarMovimento("M", caixa, valorMov, mensalidade.getId_usuario());
+                    movimentoControl.criarMovimento("M", caixa, valorMov, mensalidade.getId_usuario(),"");
 
                     mensalidade.setValor_pago(mensalidade.getValor_pago() +
                             Double.valueOf(input.getText().toString()));

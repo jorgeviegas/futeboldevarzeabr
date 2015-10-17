@@ -1,6 +1,7 @@
 package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -108,63 +109,53 @@ public class FinanceiroActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
+        if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_cadastrar_entrada) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Nova Entrada");
+            final Dialog dialog = new Dialog(context);
+            dialog.setContentView(R.layout.dialog_financeiro);
+            dialog.setTitle("Nova Entrada");
 
-            final EditText input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER |
-                    InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                    InputType.TYPE_NUMBER_FLAG_SIGNED);
-            builder.setView(input);
+            final TextView tvObs = (TextView) dialog.findViewById(R.id.dialog_financeiro_obs);
+            final TextView tvValor = (TextView) dialog.findViewById(R.id.dialog_financeiro_valor);
 
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    valor = Double.valueOf(input.getText().toString());
-                    movimentoControl.criarMovimento("E", caixa, valor,0);
+            final Button btnconfirmar = (Button) dialog.findViewById(R.id.dialog_financeiro_btnConfirmar);
+            btnconfirmar.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    valor = Double.valueOf(tvValor.getText().toString());
+                    movimentoControl.criarMovimento("E", caixa, valor, 0, tvObs.getText().toString().trim());
                     atualizarSaldo();
-
-                }
-            });
-            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
+                    dialog.dismiss();
                 }
             });
 
-            builder.show();
+            dialog.show();
             return true;
         }
         if (id == R.id.action_cadastrar_retirada) {
 
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Nova Retirada");
+            final Dialog dialog = new Dialog(context);
+            dialog.setContentView(R.layout.dialog_financeiro);
+            dialog.setTitle("Nova Retirada");
 
-            final EditText input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER |
-                    InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                    InputType.TYPE_NUMBER_FLAG_SIGNED);
-            builder.setView(input);
+            final TextView tvObs = (TextView) dialog.findViewById(R.id.dialog_financeiro_obs);
+            final TextView tvValor = (TextView) dialog.findViewById(R.id.dialog_financeiro_valor);
 
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    valor = Double.valueOf(input.getText().toString());
-                    movimentoControl.criarMovimento("R", caixa, valor,0);
+            final Button btnconfirmar = (Button) dialog.findViewById(R.id.dialog_financeiro_btnConfirmar);
+            btnconfirmar.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    valor = Double.valueOf(tvValor.getText().toString());
+                    movimentoControl.criarMovimento("R", caixa, valor, 0, tvObs.getText().toString().trim());
                     atualizarSaldo();
-                }
-            });
-            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
+                    dialog.dismiss();
                 }
             });
 
-            builder.show();
+            dialog.show();
             return true;
         }
 

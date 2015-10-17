@@ -49,7 +49,7 @@ public class MovimentoController {
         return movimentoDAO.selectMovimentosPorIdCaixa(id_caixa);
     }
 
-    public void criarMovimento(String tipo, Caixa caixa, double valor, int id_usuario) {
+    public void criarMovimento(String tipo, Caixa caixa, double valor, int id_usuario, String obs) {
         String historico = "";
         if (tipo.equals("R")) {
             historico = "Retirada manual";
@@ -60,10 +60,13 @@ public class MovimentoController {
         } else if (tipo.equals("M")) {
             caixa.setSaldo(caixa.getSaldo() + valor);
             historico = "Pgto. Mensalidade";
-            if (id_usuario > 0){
+            if (id_usuario > 0) {
                 Usuario user = userControl.selectUsuarioPorId(id_usuario).get(0);
-                historico = historico + ": \n"+user.getNome().trim();
+                historico = historico + ": \n" + user.getNome().trim();
             }
+        }
+        if (!obs.isEmpty()) {
+            historico = obs.trim();
         }
         Movimento mov = new Movimento(caixa.getId(), historico, funcoes.getDataDia(), valor,
                 tipo, Constantes.getUsuarioLogado().getId());

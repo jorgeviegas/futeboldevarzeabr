@@ -16,6 +16,9 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.Parse;
+import com.parse.ParseObject;
+
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.controller.CaixaController;
@@ -58,6 +61,11 @@ public class NewMainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+
+        //PARSE!
+        // Enable Local Datastore.
+        Parse.enableLocalDatastore(this);
+        Parse.initialize(this, "wmmuV3lyE7UQlyECrJwjJB22D03RD0gWZ3Ate89K", "7IegdKGnREcqge6xHTWW3YnRiRt7CJAiZOmpZTDm");
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(

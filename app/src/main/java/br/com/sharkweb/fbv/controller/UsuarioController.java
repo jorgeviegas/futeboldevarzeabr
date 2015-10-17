@@ -2,6 +2,8 @@ package br.com.sharkweb.fbv.controller;
 
 import android.content.Context;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -9,22 +11,41 @@ import java.util.regex.Pattern;
 import br.com.sharkweb.fbv.DAO.UsuarioDAO;
 import br.com.sharkweb.fbv.model.Usuario;
 
+import com.parse.ParseObject;
+
 /**
  * @author Tiago Klein
- *
- * Classe respons�vel somente pelas regras de neg�cio dos objetos do tipo Login.
- * Intera��es com o usu�rio ou com a tela do dispositivo devem ser implementadas na respectiva View.
+ *         <p/>
+ *         Classe respons�vel somente pelas regras de neg�cio dos objetos do tipo Login.
+ *         Intera��es com o usu�rio ou com a tela do dispositivo devem ser implementadas na respectiva View.
  */
 public class UsuarioController {
 
     private UsuarioDAO usuarioDAO;
+
     public UsuarioController(Context context) {
         usuarioDAO = new UsuarioDAO(context);
     }
 
 
     public long inserir(String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
+        if (false) {
+            //TESTE PARSE
+            ParseObject testObject = new ParseObject("usuario");
+            testObject.put("nome", nome);
+            testObject.put("email", email);
+            testObject.put("senha", senha);
+            testObject.put("codigo", codigo);
+            testObject.put("nome", nome);
+            testObject.put("id_tipo", id_tipo);
+            testObject.put("id_time", id_time);
+            testObject.put("celular", celular);
+            testObject.put("apelido", apelido);
+            testObject.saveInBackground();
+        }
+
         return usuarioDAO.inserir(nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
+
     }
 
     public long inserirComId(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
@@ -35,7 +56,7 @@ public class UsuarioController {
         return usuarioDAO.alterar(id, nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
     }
 
-    public long favoritarTime(int id, int id_time){
+    public long favoritarTime(int id, int id_time) {
         return usuarioDAO.favoritarTime(id, id_time);
     }
 
@@ -48,9 +69,9 @@ public class UsuarioController {
     }
 
     public ArrayList<Usuario> selectUsuarioPorEmailouApelido(String email) {
-        if (validarEmail(email)){
+        if (validarEmail(email)) {
             return usuarioDAO.selectUsuarioPorEmail(email);
-        }else{
+        } else {
             return usuarioDAO.selectUsuarioPorApelido(email);
         }
     }
@@ -63,10 +84,10 @@ public class UsuarioController {
         return usuarioDAO.selectUsuarioPorId(id_usuario);
     }
 
-    public void inicializarUsuarios(){
-        if (selectUsuarios().isEmpty()){
-            inserir("Tiago Klein","","kleintiagomail@gmail.com","tiago",1,1,0,"5194303838","kleintiago");
-            inserir("Jorge Viegas","","jorgematheusv@gmail.com","jorge",1,1,0,"0000000000","jorgeviegas");
+    public void inicializarUsuarios() {
+        if (selectUsuarios().isEmpty()) {
+            inserir("Tiago Klein", "", "kleintiagomail@gmail.com", "tiago", 1, 1, 0, "5194303838", "kleintiago");
+            inserir("Jorge Viegas", "", "jorgematheusv@gmail.com", "jorge", 1, 1, 0, "0000000000", "jorgeviegas");
         }
     }
 
@@ -80,9 +101,9 @@ public class UsuarioController {
 
         ArrayList<Usuario> logins = new ArrayList<>();
 
-        if (validarEmail(email)){
-           logins = selectUsuarioPorEmail(email);
-        }else{
+        if (validarEmail(email)) {
+            logins = selectUsuarioPorEmail(email);
+        } else {
             logins = selectUsuarioPorApelido(email);
         }
 
@@ -96,8 +117,8 @@ public class UsuarioController {
         return false;
     }
 
-    public String validarSenha(String senha,String confirmarSenha){
-        if (!senha.equals(confirmarSenha)){
+    public String validarSenha(String senha, String confirmarSenha) {
+        if (!senha.equals(confirmarSenha)) {
             return "Senha e Confirmar senha devem ser iguais.";
         }
         return "";

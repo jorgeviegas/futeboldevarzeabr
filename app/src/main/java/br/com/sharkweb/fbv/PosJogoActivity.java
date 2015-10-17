@@ -74,8 +74,7 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
         } else {
             this.jogo = null;
         }
-
-
+        
         tvNomeTime1 = (TextView) findViewById(R.id.pos_jogo_nometime1);
         tvNomeTime1.setVisibility(View.VISIBLE);
         tvNomeTime1.setText("TM1");

@@ -114,18 +114,35 @@ public class PosJogoController {
         final TextView tvCA = (TextView) dialog.findViewById(R.id.pos_jogo_jogador_cartoesamarelo);
         final TextView tvCV = (TextView) dialog.findViewById(R.id.pos_jogo_jogador_cartoesvermelho);
 
-        tvNota.setText(String.valueOf(posJogoUser.getNota()).trim());
-        tvGols.setText(String.valueOf(posJogoUser.getQtd_gol()).trim());
-        tvCA.setText(String.valueOf(posJogoUser.getQtd_cartao_amarelo()).trim());
-        tvCV.setText(String.valueOf(posJogoUser.getQtd_cartao_vermelho()).trim());
+        if (posJogoUser.getNota() > 0) {
+            tvNota.setText(String.valueOf(posJogoUser.getNota()).trim());
+        }
+        if (posJogoUser.getQtd_gol() > 0) {
+            tvGols.setText(String.valueOf(posJogoUser.getQtd_gol()).trim());
+        }
+        if (posJogoUser.getQtd_cartao_amarelo() > 0) {
+            tvCA.setText(String.valueOf(posJogoUser.getQtd_cartao_amarelo()).trim());
+        }
+        if (posJogoUser.getQtd_cartao_vermelho() > 0) {
+            tvCV.setText(String.valueOf(posJogoUser.getQtd_cartao_vermelho()).trim());
+        }
 
         final Button btnconfirmar = (Button) dialog.findViewById(R.id.pos_jogo_jogador_btnconfirmar);
         btnconfirmar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                posJogoUser.setNota(Integer.valueOf(tvNota.getText().toString().trim()));
-                posJogoUser.setQtd_gol(Integer.valueOf(tvGols.getText().toString().trim()));
-                posJogoUser.setQtd_cartao_amarelo(Integer.valueOf(tvCA.getText().toString().trim()));
-                posJogoUser.setQtd_cartao_vermelho(Integer.valueOf(tvCV.getText().toString().trim()));
+                if (!tvNota.getText().toString().trim().isEmpty()) {
+                    posJogoUser.setNota(Integer.valueOf(tvNota.getText().toString().trim()));
+                }
+                if (!tvGols.getText().toString().isEmpty()) {
+                    posJogoUser.setQtd_gol(Integer.valueOf(tvGols.getText().toString().trim()));
+                }
+                if (!tvCA.getText().toString().isEmpty()) {
+                    posJogoUser.setQtd_cartao_amarelo(Integer.valueOf(tvCA.getText().toString().trim()));
+                }
+                if (!tvCV.getText().toString().isEmpty()) {
+                    posJogoUser.setQtd_cartao_vermelho(Integer.valueOf(tvCV.getText().toString().trim()));
+                }
+
                 dialog.dismiss();
             }
         });

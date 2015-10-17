@@ -217,8 +217,8 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         int id = item.getItemId();
 
         if (id == android.R.id.home) {
-            //onBackPressed();
-            NavUtils.navigateUpFromSameTask(this);
+            onBackPressed();
+            //NavUtils.navigateUpFromSameTask(this);
             return true;
         }
 

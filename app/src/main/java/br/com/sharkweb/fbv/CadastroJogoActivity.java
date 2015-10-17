@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.MaskFilter;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -352,6 +353,8 @@ public class CadastroJogoActivity extends ActionBarActivity {
             } else {
                 Long ret = jogoControl.inserir(jogo);
             }
+            //Snackbar.make(getCurrentFocus(), "Cadastro salvo com sucesso.", Snackbar.LENGTH_SHORT)
+             //       .setAction("Action", null).show();
             Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
             toast.show();
             onBackPressed();

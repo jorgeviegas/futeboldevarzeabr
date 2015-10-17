@@ -22,7 +22,7 @@ public class PosJogoUsuariosController {
     }
     public long veriricarEinserir(PosJogoUsuarios posJogoUsuarios) {
 
-       ArrayList<PosJogoUsuarios> teste = selectPosJogoUsuarios();
+       //ArrayList<PosJogoUsuarios> teste = selectPosJogoUsuarios();
 
         if (!selectPosJogoUsuariosPorPosjogoUsuario(posJogoUsuarios.getId_pos_jogo(),
                 posJogoUsuarios.getId_usuario()).isEmpty()){

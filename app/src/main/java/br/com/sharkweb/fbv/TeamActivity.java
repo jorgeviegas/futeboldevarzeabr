@@ -23,6 +23,8 @@ import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
+import br.com.sharkweb.fbv.controllerParse.TimeControllerParse;
+import br.com.sharkweb.fbv.controllerParse.TimeUsuarioControllerParse;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.TimeUsuario;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -33,10 +35,10 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private ArrayList<Time> listaTimes;
     private TimeListAdapter adapterTimes;
     private TimeController timesControl = new TimeController(this);
+    private TimeControllerParse timesControlParse = new TimeControllerParse(this);
+    private TimeUsuarioControllerParse timeUsuarioControlParse = new TimeUsuarioControllerParse(this);
     private TipoUsuarioController tipouserControl = new TipoUsuarioController(this);
-    private TimeUsuarioController timeuserControl = new TimeUsuarioController(this);
     private Usuario user;
-    private UsuarioController userControl = new UsuarioController(this);
     private boolean esperaRetorno;
     private Time timeSelecionado;
     private boolean podeCadastrar = true;
@@ -64,7 +66,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         //Agora essa tela sempre retorna
         esperaRetorno = true;
 
-        this.user = userControl.selectUsuarioPorId(Constantes.getUsuarioLogado().getId()).get(0);
+        this.user = Constantes.getUsuarioLogado();
         atualizarLista();
         times.setCacheColorHint(Color.TRANSPARENT);
     }
@@ -74,8 +76,8 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         if (this.esperaRetorno) {
             Intent it = new Intent();
             if (timeSelecionado != null)
-                it.putExtra("id_time", timeSelecionado.getId());
-            else it.putExtra("id_time", 0);
+                it.putExtra("id_time", timeSelecionado.getId_parse());
+            else it.putExtra("id_time", "");
             setResult(1, it);
         }
         super.onBackPressed();
@@ -109,15 +111,8 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        // if (id == R.id.time_action_cancelar) {
-        //    onBackPressed();
-        //     return true;
-        // }
-
         if (id == android.R.id.home) {
             onBackPressed();
-            //NavUtils.navigateUpFromSameTask(this);
             return true;
         }
 
@@ -155,9 +150,13 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     public void atualizarLista() {
 
         if (this.user != null) {
-            listaTimes = timesControl.selectTimePorIdUsuario(this.user.getId());
+            //listaTimes = timesControl.selectTimePorIdUsuario(this.user.getId(), false);
+            ArrayList<TimeUsuario> retorno = timeUsuarioControlParse.buscarTimesUsuario(this.user.getIdParse());
+            if (retorno !=null && retorno.size() > 0){
+            }
+            //listaTimes = timesControlParse.selectTimePorIdUsuario("");
         } else {
-            listaTimes = timesControl.selectTimes();
+            listaTimes = timesControl.selectTimes(false);
         }
         if (listaTimes.size() == 0) {
             ArrayList<Time> listaVazia = new ArrayList<Time>();
@@ -189,12 +188,6 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
                 this.timeSelecionado = time;
                 onBackPressed();
             }
-          /*  else{
-                Bundle parametros = new Bundle();
-                parametros.putInt("id_time", time.getId());
-                mudarTela(TimeDetalheActivity.class, parametros);
-            }*/
-
         }
     }
 }

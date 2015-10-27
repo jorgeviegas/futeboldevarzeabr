@@ -19,6 +19,9 @@ import android.widget.TextView;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.controller.CaixaController;
@@ -28,6 +31,7 @@ import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UFController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Caixa;
+import br.com.sharkweb.fbv.model.Login;
 import br.com.sharkweb.fbv.model.Usuario;
 
 public class NewMainActivity extends AppCompatActivity
@@ -62,11 +66,6 @@ public class NewMainActivity extends AppCompatActivity
             }
         });
 
-        //PARSE!
-        // Enable Local Datastore.
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "wmmuV3lyE7UQlyECrJwjJB22D03RD0gWZ3Ate89K", "7IegdKGnREcqge6xHTWW3YnRiRt7CJAiZOmpZTDm");
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -84,34 +83,43 @@ public class NewMainActivity extends AppCompatActivity
         //INICIANDO DADOS FIXOS DO APLICATIVO E DADOS DE TESTE
         tipoUsuarioControl.IniciarTiposUsuarios();
         posicaoControl.IniciarPosicoes();
-        usuarioControl.inicializarUsuarios();
+        //usuarioControl.inicializarUsuarios();
         ufControl.inicializarUF();
 
         txtEmailUsuario = (TextView) findViewById(R.id.nav_header_main_email);
         txtNomeUsuario = (TextView) findViewById(R.id.nav_header_main_nome);
         imgPerfilUusario = (ImageView) findViewById(R.id.nav_header_main_imgperfil);
 
-        //DEFININDO O USUARIO LOGADO NO SISTEMA.
-        if (!loginControl.selecLogin().isEmpty()) {
-            Usuario user = usuarioControl.selectUsuarioPorId(loginControl.selecLogin()
-                    .get(0).getId_usuario()).get(0);
-            Constantes.setUsuarioLogado(user);
 
+        //DEFININDO O USUARIO LOGADO NO SISTEMA.
+        if (!loginControl.selecLogin().isEmpty() &&
+                loginControl.selecLogin().get(0).getIdParse() != null) {
+            Login login = loginControl.selecLogin().get(0);
+            ArrayList<Usuario> retorno = usuarioControl.selectUsuarioPorIdParse(login.getIdParse().trim(), false);
+            if (retorno != null && retorno.size() > 0) {
+                Constantes.setUsuarioLogado(retorno.get(0));
+            } else {
+                mudarTela(LoginActivity.class);
+            }
+        } else {
+            loginControl.excluirTodosLogins();
+            mudarTela(LoginActivity.class);
+        }
+
+        if (Constantes.getUsuarioLogado() != null) {
             txtNomeUsuario.setText(Constantes.getUsuarioLogado().getNome().trim());
             txtEmailUsuario.setText(Constantes.getUsuarioLogado().getEmail().trim());
             imgPerfilUusario.setImageResource(R.drawable.profile4_68);
-        } else {
-            mudarTela(LoginActivity.class);
         }
 
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        int id_time = data.getExtras().getInt("id_time");
+        String id_time = data.getExtras().getString("id_time");
         Bundle parametros = new Bundle();
-        parametros.putInt("id_time", id_time);
-        if (id_time > 0) {
+        parametros.putString("id_time", id_time);
+        if (id_time != null && !id_time.isEmpty()) {
             switch (requestCode) {
                 case 1:
                     mudarTela(TimeDetalheActivity.class, parametros);
@@ -158,7 +166,6 @@ public class NewMainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_logoff) {
-            loginControl.excluirTodosLogins();
             mudarTela(LoginActivity.class);
             return true;
         }
@@ -187,7 +194,7 @@ public class NewMainActivity extends AppCompatActivity
             funcoes.mostrarDialogAlert(1, "Função ainda não implementada! Estará disponível nas próximas versões.");
         } else if (id == R.id.main_meuperfil) {
             parametros.putString("tipoAcesso", "edit");
-            parametros.putInt("id_usuario", loginControl.selecLogin().get(0).getId_usuario());
+            parametros.putString("id_usuario", Constantes.getUsuarioLogado().getIdParse().trim());
             mudarTela(CadastroUsuarioActivity.class, parametros);
 
         } else if (id == R.id.main_config) {

@@ -21,16 +21,12 @@ public class LoginController {
         loginDAO = new LoginDAO(context);
     }
 
-    public long inserir(int id_usuario) {
-        return loginDAO.inserir(id_usuario);
+    public long inserir(Login login) {
+        return loginDAO.inserir(login);
     }
 
-    public long inserirComId(int id, int id_usuario) {
-        return loginDAO.inserirComId(id, id_usuario);
-    }
-
-    public long alterar(int id, int id_usuario) {
-        return loginDAO.alterar(id, id_usuario);
+    public long alterar(Login login) {
+        return loginDAO.alterar(login);
     }
 
     public ArrayList<Login> selecLogin() {

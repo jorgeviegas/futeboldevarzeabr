@@ -75,8 +75,8 @@ public class PosJogoController {
         dialog.setContentView(R.layout.dialog_pos_jogo_placar);
         Jogo jogo = jogoControl.selectJogoPorId(posJogo.getId_jogo()).get(0);
 
-        Time time1 = timeControl.selectTimePorId(jogo.getId_time()).get(0);
-        Time time2 = timeControl.selectTimePorId(jogo.getId_time2()).get(0);
+        Time time1 = timeControl.selectTimePorId(jogo.getId_time(),"").get(0);
+        Time time2 = timeControl.selectTimePorId(jogo.getId_time2(),"").get(0);
 
         dialog.setTitle("Placar:");
         final TextView tvNomeTime1 = (TextView) dialog.findViewById(R.id.pos_jogo_placar_nometime1);
@@ -106,7 +106,7 @@ public class PosJogoController {
     public void exibirFeedBackPosJogoJogador(final PosJogoUsuarios posJogoUser, Context context) {
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_pos_jogo_jogador);
-        Usuario user = userControl.selectUsuarioPorId(posJogoUser.getId_usuario()).get(0);
+        Usuario user = userControl.selectUsuarioPorId(posJogoUser.getId_usuario(),"").get(0);
 
         dialog.setTitle(user.getNome().toUpperCase().trim());
         final TextView tvNota = (TextView) dialog.findViewById(R.id.pos_jogo_jogador_nota);

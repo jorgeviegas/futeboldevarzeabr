@@ -6,27 +6,30 @@ package br.com.sharkweb.fbv.model;
 public class TimeUsuario {
 
     private int id;
-    private int id_time;
-    private int id_usuario;
+    private String id_time;
+    private String id_usuario;
     private int inativo;
     private String posicao;
     private int id_tipo_usuario;
+    private String id_parse;
 
-    public TimeUsuario(int id, int id_time, int id_usuario, int inativo, String posicao, int id_tipo_usuario) {
+    public TimeUsuario(int id, String id_time, String id_usuario, int inativo, String posicao, int id_tipo_usuario, String id_parse) {
         this.id = id;
         this.id_time = id_time;
         this.id_usuario = id_usuario;
         this.inativo = inativo;
         this.posicao = posicao;
         this.id_tipo_usuario = id_tipo_usuario;
+        this.id_parse = id_parse;
     }
 
-    public TimeUsuario(int id_time, int id_usuario, int inativo, String posicao, int id_tipo_usuario) {
+    public TimeUsuario(String id_time, String id_usuario, int inativo, String posicao, int id_tipo_usuario, String id_parse) {
         this.id_time = id_time;
         this.id_usuario = id_usuario;
         this.inativo = inativo;
         this.posicao = posicao;
         this.id_tipo_usuario = id_tipo_usuario;
+        this.id_parse = id_parse;
     }
 
 
@@ -38,19 +41,19 @@ public class TimeUsuario {
         this.id = id;
     }
 
-    public int getId_time() {
+    public String getId_time() {
         return id_time;
     }
 
-    public void setId_time(int id_time) {
+    public void setId_time(String id_time) {
         this.id_time = id_time;
     }
 
-    public int getId_usuario() {
+    public String getId_usuario() {
         return id_usuario;
     }
 
-    public void setId_usuario(int id_usuario) {
+    public void setId_usuario(String id_usuario) {
         this.id_usuario = id_usuario;
     }
 
@@ -76,5 +79,13 @@ public class TimeUsuario {
 
     public void setId_tipo_usuario(int id_tipo_usuario) {
         this.id_tipo_usuario = id_tipo_usuario;
+    }
+
+    public String getId_parse() {
+        return id_parse;
+    }
+
+    public void setId_parse(String id_parse) {
+        this.id_parse = id_parse;
     }
 }

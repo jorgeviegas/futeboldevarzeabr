@@ -67,7 +67,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         Bundle params = getIntent().getExtras();
         if (params != null) {
             //Aqui tratamos parametros enviados para a tela principal
-            this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
+            this.time = timeControl.selectTimePorId(params.getInt("id_time"),"").get(0);
         } else {
             this.time = new Time("Time nao encontrado", "", 0);
         }
@@ -123,12 +123,12 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         }
 
         for (int i = 0; i < listaTimesUsuario.size(); i++) {
-            listaUsuarios.add(usuarioControl.selectUsuarioPorId(listaTimesUsuario.get(i).getId_usuario()).get(0));
+            listaUsuarios.add(usuarioControl.selectUsuarioPorId(listaTimesUsuario.get(i).getId(),"").get(0));
         }
 
         if (listaUsuarios.size() == 0) {
             ArrayList<Usuario> listaVazia = new ArrayList<Usuario>();
-            listaVazia.add(new Usuario(0, "Nenhum jogador encontrado.", "", "", "", 0, 0, 0, "", ""));
+            listaVazia.add(new Usuario(0, "Nenhum jogador encontrado.", "", "", "", 0, 0, 0, "", "",""));
             adapterUsuarios = new UsuarioListAdapter(this, listaVazia, time, 1);
         } else
             adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios, time, 1);
@@ -137,12 +137,12 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     }
 
     public void inserirJogador(int id_usuario) {
-        Usuario user = usuarioControl.selectUsuarioPorId(id_usuario).get(0);
+        Usuario user = usuarioControl.selectUsuarioPorId(id_usuario,"").get(0);
         if (user != null) {
             if (timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(
                     time.getId(), user.getId()).isEmpty()) {
                 int tipo_usuario = tipouserControl.selectTiposUsuariosPorTipo("Jogador").get(0).getId();
-                TimeUsuario timeUser = new TimeUsuario(time.getId(), user.getId(), 0, "", tipo_usuario);
+                TimeUsuario timeUser = new TimeUsuario(time.getId_parse(), user.getIdParse(), 0, "", tipo_usuario,"");
                 timeusuarioControl.inserir(timeUser);
                 atualizarLista();
             }

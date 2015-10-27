@@ -72,8 +72,8 @@ public class JogoListAdapter extends BaseAdapter {
         Jogo jogo = jogos.get(position);
 
         if (jogo.getId_time() > 0 && jogo.getId_time2() > 0){
-            Time time = timeControl.selectTimePorId(jogo.getId_time()).get(0);
-            Time time2 = timeControl.selectTimePorId(jogo.getId_time2()).get(0);
+            Time time = timeControl.selectTimePorId(jogo.getId_time(),"").get(0);
+            Time time2 = timeControl.selectTimePorId(jogo.getId_time2(),"").get(0);
 
             itemHolder.tvNomeTimes.setText(time.getNome().trim().toUpperCase()+" X "+time2.getNome().trim().toUpperCase());
             itemHolder.tvDataHora.setText(jogo.getData() + " - " + jogo.getHora().trim()

@@ -16,6 +16,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -24,6 +26,8 @@ import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UFController;
+import br.com.sharkweb.fbv.controllerParse.TimeControllerParse;
+import br.com.sharkweb.fbv.controllerParse.TimeUsuarioControllerParse;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.TimeUsuario;
 import br.com.sharkweb.fbv.model.UF;
@@ -40,7 +44,9 @@ public class CadastroTimeActivity extends ActionBarActivity {
     private Button btnCancelar;
 
     private TimeController timeControl = new TimeController(this);
+    private TimeControllerParse timeControlParse = new TimeControllerParse(this);
     private TimeUsuarioController timeuserControl = new TimeUsuarioController(this);
+    private TimeUsuarioControllerParse timeuserControlParse = new TimeUsuarioControllerParse(this);
     private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
     private UFController ufControl = new UFController(this);
 
@@ -99,7 +105,8 @@ public class CadastroTimeActivity extends ActionBarActivity {
         if (params != null) {
             tipoAcesso = params.getString("tipoAcesso");
             if (!tipoAcesso.equals("write"))
-                this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
+                this.time = timeControlParse.selectTimePorId(params.getString("id_time"));
+            //this.time = timeControl.selectTimePorId(params.getInt("id_time"), "").get(0);
         } else {
             tipoAcesso = "write";
             this.time = null;
@@ -146,19 +153,19 @@ public class CadastroTimeActivity extends ActionBarActivity {
             }
 
             if (tipoAcesso.equals("edit")) {
-                timeControl.alterar(timeInsert);
-            } else {
-                Long ret = timeControl.inserir(timeInsert);
-                if (ret > 0) {
-                    time = timeControl.selectTimePorId(Integer.valueOf(ret.toString())).get(0);
+                timeInsert.setId_parse(this.time.getId_parse());
+            }
 
-                    //int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Jogador").get(0).getId();
+            ParseObject ret = timeControlParse.salvar(timeInsert);
+            if (ret != null) {
+                time = timeControlParse.selectTimePorId(ret.getObjectId());
+                if (time != null && !tipoAcesso.equals("edit")) {
                     int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
 
-                    TimeUsuario timeUser = new TimeUsuario(time.getId(),
-                            Constantes.getUsuarioLogado().getId(), 0, "", tipo_usuario);
+                    TimeUsuario timeUser = new TimeUsuario(time.getId_parse(),
+                            Constantes.getUsuarioLogado().getIdParse(), 0, "", tipo_usuario,"");
 
-                    Long ret2 = timeuserControl.inserir(timeUser);
+                    ParseObject retorno = timeuserControlParse.inserir(timeUser);
                 }
             }
             return true;

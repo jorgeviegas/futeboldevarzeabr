@@ -9,85 +9,99 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.com.sharkweb.fbv.DAO.UsuarioDAO;
+import br.com.sharkweb.fbv.DAOParse.UsuarioDAOParse;
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.model.Usuario;
 
 import com.parse.ParseObject;
 
 /**
  * @author Tiago Klein
- *         <p/>
- *         Classe respons�vel somente pelas regras de neg�cio dos objetos do tipo Login.
- *         Intera��es com o usu�rio ou com a tela do dispositivo devem ser implementadas na respectiva View.
  */
 public class UsuarioController {
 
     private UsuarioDAO usuarioDAO;
+    private UsuarioDAOParse usuarioDAOParse;
 
     public UsuarioController(Context context) {
         usuarioDAO = new UsuarioDAO(context);
+        usuarioDAOParse = new UsuarioDAOParse(context);
     }
 
 
-    public long inserir(String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
-        if (false) {
-            //TESTE PARSE
-            ParseObject testObject = new ParseObject("usuario");
-            testObject.put("nome", nome);
-            testObject.put("email", email);
-            testObject.put("senha", senha);
-            testObject.put("codigo", codigo);
-            testObject.put("nome", nome);
-            testObject.put("id_tipo", id_tipo);
-            testObject.put("id_time", id_time);
-            testObject.put("celular", celular);
-            testObject.put("apelido", apelido);
-            testObject.saveInBackground();
+    public long inserir(Usuario usuario, boolean parse) {
+        if (parse) {
+            return usuarioDAOParse.salvar(usuario);
+        } else {
+            return usuarioDAO.inserir(usuario);
         }
-
-        return usuarioDAO.inserir(nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
-
     }
 
-    public long inserirComId(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
-        return usuarioDAO.inserirComId(id, nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
-    }
-
-    public long alterar(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
-        return usuarioDAO.alterar(id, nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
+    public long alterar(Usuario usuario, boolean parse) {
+        if (parse) {
+            return usuarioDAOParse.salvar(usuario);
+        } else {
+            return usuarioDAO.alterar(usuario);
+        }
     }
 
     public long favoritarTime(int id, int id_time) {
         return usuarioDAO.favoritarTime(id, id_time);
     }
 
-    public ArrayList<Usuario> selectUsuarios() {
-        return usuarioDAO.selectUsuarios();
-    }
-
-    public ArrayList<Usuario> selectUsuarioPorEmail(String email) {
-        return usuarioDAO.selectUsuarioPorEmail(email);
-    }
-
-    public ArrayList<Usuario> selectUsuarioPorEmailouApelido(String email) {
-        if (validarEmail(email)) {
-            return usuarioDAO.selectUsuarioPorEmail(email);
+    public ArrayList<Usuario> selectUsuarios(boolean parse) {
+        if (parse) {
+            return usuarioDAOParse.buscarUsuarios("", "", 0);
         } else {
-            return usuarioDAO.selectUsuarioPorApelido(email);
+            return usuarioDAO.selectUsuarios();
         }
     }
 
-    public ArrayList<Usuario> selectUsuarioPorApelido(String apelido) {
-        return usuarioDAO.selectUsuarioPorApelido(apelido);
+    public ArrayList<Usuario> selectUsuarioPorEmail(String email, boolean parse) {
+        if (parse) {
+            return usuarioDAOParse.buscarUsuarios("email", email, 1);
+        } else {
+            return usuarioDAO.selectUsuarioPorEmail(email);
+        }
     }
 
-    public ArrayList<Usuario> selectUsuarioPorId(int id_usuario) {
-        return usuarioDAO.selectUsuarioPorId(id_usuario);
+    public ArrayList<Usuario> selectUsuarioPorEmailouApelido(String email, boolean parse) {
+        if (validarEmail(email)) {
+            if (parse) {
+                return usuarioDAOParse.buscarUsuarios("email", email, 1);
+            } else {
+                return usuarioDAO.selectUsuarioPorEmail(email);
+            }
+        } else {
+            if (parse) {
+                return usuarioDAOParse.buscarUsuarios("apelido", email, 1);
+            } else {
+                return usuarioDAO.selectUsuarioPorApelido(email);
+            }
+        }
     }
 
-    public void inicializarUsuarios() {
-        if (selectUsuarios().isEmpty()) {
-            inserir("Tiago Klein", "", "kleintiagomail@gmail.com", "tiago", 1, 1, 0, "5194303838", "kleintiago");
-            inserir("Jorge Viegas", "", "jorgematheusv@gmail.com", "jorge", 1, 1, 0, "0000000000", "jorgeviegas");
+    public ArrayList<Usuario> selectUsuarioPorApelido(String apelido, boolean parse) {
+        if (parse) {
+            return usuarioDAOParse.buscarUsuarios("apelido", apelido, 1);
+        } else {
+            return usuarioDAO.selectUsuarioPorApelido(apelido);
+        }
+    }
+
+    public ArrayList<Usuario> selectUsuarioPorId(int id_usuario, String id_parse) {
+        if (!id_parse.isEmpty()) {
+            return usuarioDAOParse.selectUsuarioPorId(id_parse);
+        } else {
+            return usuarioDAO.selectUsuarioPorId(id_usuario);
+        }
+    }
+
+    public ArrayList<Usuario> selectUsuarioPorIdParse(String id_parse, boolean parse) {
+        if (parse) {
+            return usuarioDAOParse.selectUsuarioPorId(id_parse);
+        } else {
+            return usuarioDAO.selectUsuarioPorIdParse(id_parse);
         }
     }
 
@@ -95,25 +109,10 @@ public class UsuarioController {
         usuarioDAO.excluirTodosUsuarios();
     }
 
-    public boolean validarLogin(String email, String senha) {
-
-        ArrayList<Usuario> logins2 = selectUsuarios();
-
-        ArrayList<Usuario> logins = new ArrayList<>();
-
-        if (validarEmail(email)) {
-            logins = selectUsuarioPorEmail(email);
-        } else {
-            logins = selectUsuarioPorApelido(email);
+    public boolean validarLogin(Usuario usuario, String senha) {
+        if (usuario.getSenha().equals(senha)) {
+            return true;
         }
-
-        if (logins.size() > 0) {
-            Usuario login = logins.get(0);
-            if (login.getSenha().equals(senha)) {
-                return true;
-            }
-        }
-
         return false;
     }
 

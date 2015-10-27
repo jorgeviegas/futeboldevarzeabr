@@ -52,7 +52,7 @@ public class UsuariosActivity extends ActionBarActivity implements AdapterView.O
             this.user = null;
         }
 
-        this.user = userControl.selectUsuarioPorId(Constantes.getUsuarioLogado().getId()).get(0);
+        this.user = userControl.selectUsuarioPorId(Constantes.getUsuarioLogado().getId(),"").get(0);
 
         atualizarLista();
         usuarios.setBackgroundColor(Color.WHITE);
@@ -105,11 +105,11 @@ public class UsuariosActivity extends ActionBarActivity implements AdapterView.O
 
     public void atualizarLista(){
 
-       listaUsuarios = userControl.selectUsuarios();
+       listaUsuarios = userControl.selectUsuarios(false);
 
         if(listaUsuarios.size() == 0){
             ArrayList<Usuario> listaVazia = new ArrayList<Usuario>();
-            listaVazia.add(new Usuario(0, "Nenhum usuário encontrado.", "", "","", 0, 0, 0, "", ""));
+            listaVazia.add(new Usuario(0, "Nenhum usuário encontrado.", "", "","", 0, 0, 0, "", "",""));
             adapterUsuarios = new UsuarioListAdapter(this, listaVazia,null,2);
         }
         else

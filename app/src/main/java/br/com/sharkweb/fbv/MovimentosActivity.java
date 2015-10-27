@@ -74,7 +74,7 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
         spnFiltro.setVisibility(View.GONE);
         Bundle params = getIntent().getExtras();
         if (params != null) {
-            this.time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
+            this.time = timeControl.selectTimePorId(params.getInt("id_time"),"").get(0);
         } else {
             this.caixa = null;
         }

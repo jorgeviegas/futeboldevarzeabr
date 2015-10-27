@@ -115,8 +115,8 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
 
     private void carregarRegistro() {
         if (this.jogo != null) {
-            this.time1 = timeControl.selectTimePorId(this.jogo.getId_time()).get(0);
-            this.time2 = timeControl.selectTimePorId(this.jogo.getId_time2()).get(0);
+            this.time1 = timeControl.selectTimePorId(this.jogo.getId_time(),"").get(0);
+            this.time2 = timeControl.selectTimePorId(this.jogo.getId_time2(),"").get(0);
             tvNomeTime1.setText(this.time1.getNome().trim().toUpperCase().substring(0, 3));
             tvNomeTime2.setText(this.time2.getNome().trim().toUpperCase().substring(0, 3));
 
@@ -145,7 +145,7 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
             ArrayList<TimeUsuario> usertime = timeUserControl.selectTimeUsuarioPorIdTime(this.jogo.getId_time());
             ArrayList<PosJogoUsuarios> users = new ArrayList<>();
             for (int i = 0; i < usertime.size(); i++) {
-                Usuario user = userControl.selectUsuarioPorId(usertime.get(i).getId_usuario()).get(0);
+                Usuario user = userControl.selectUsuarioPorId(usertime.get(i).getId(),"").get(0);
                 PosJogoUsuarios posjogo = new PosJogoUsuarios(0, user.getId(), 0, 0, 0, 0);
                 users.add(posjogo);
             }

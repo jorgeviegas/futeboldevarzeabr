@@ -18,13 +18,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
 import java.util.ArrayList;
 
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.Mask;
+import br.com.sharkweb.fbv.controller.LoginController;
 import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
+import br.com.sharkweb.fbv.model.Login;
 import br.com.sharkweb.fbv.model.Posicao;
 import br.com.sharkweb.fbv.model.TipoUsuario;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -51,6 +55,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     private UsuarioController usuarioControl = new UsuarioController(this);
     private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
     private PosicaoController posicaoControl = new PosicaoController(this);
+    private LoginController loginControl = new LoginController(this);
 
     private Funcoes funcoes = new Funcoes(this);
     Usuario user = new Usuario();
@@ -84,12 +89,12 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         txtCelular.addTextChangedListener(celularMask);
 
         try {
-            TelephonyManager tm = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+            TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
             String teste = tm.getLine1Number();
             txtCelular.setText(tm.getLine1Number());
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Falha ao tentar pegar o telefone automaticamente");
-            funcoes.mostrarDialogAlert(3,e.getMessage());
+            funcoes.mostrarDialogAlert(3, e.getMessage());
         }
 
 
@@ -108,30 +113,15 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         spnTipoUsuario.setSelection(1);
         spnTipoUsuario.setVisibility(View.VISIBLE);
 
-       /* spnPosicao = (Spinner) findViewById((R.id.cadastro_usuario_spinner_posicao));
-        ArrayList<Posicao> posicao = posicaoControl.selectPosicoes();
-        ArrayList<String> posicoes = new ArrayList<>();
-
-        for (int i = 0; i < posicao.size(); i++) {
-            posicoes.add(posicao.get(i).getNome().trim());
-        }
-        //abc_list_menu_item_checkbox
-        ArrayAdapter<String> arrayAdapterPosicao = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1,
-                posicoes);
-        spnPosicao.setAdapter(arrayAdapterPosicao);
-        spnPosicao.setVisibility(View.VISIBLE);*/
-
-        //final String spinVal = String.valueOf(spin.getSelectedItem());
-
         btnCadastrar = (Button) findViewById(R.id.cadastroUsuario_btnRegistrar);
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 if (inserir()) {
-                    if (tipoAcesso.equals("edit")){
+                    if (tipoAcesso.equals("edit")) {
                         Toast toast = Toast.makeText(getApplicationContext(), "Cadastro atualizado com sucesso!", Toast.LENGTH_LONG);
                         toast.show();
                         mudarTela(NewMainActivity.class);
-                    }else {
+                    } else {
                         Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
                         toast.show();
                         mudarTela(LoginActivity.class);
@@ -155,49 +145,53 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             //Aqui tratamos parametros enviados para a tela de cadastro de usuario
             tipoAcesso = params.getString("tipoAcesso");
 
-            if (params.getInt("id_usuario") > 0) {
-                carregarRegistro(params.getInt("id_usuario"));
+            if (!params.getString("id_usuario").isEmpty()) {
+                carregarRegistro(params.getString("id_usuario"));
             }
         }
     }
 
-    private void carregarRegistro (int id_usuario){
-       // ArrayList<Usuario> teste = usuarioControl.selectUsuarios();
+    private void carregarRegistro(String id_usuario) {
 
-        this.user = usuarioControl.selectUsuarioPorId(id_usuario).get(0);
+        //ArrayList<Usuario> usuarioCad = new ArrayList<Usuario>();
+        //usuarioCad = usuarioControl.selectUsuarioPorId(0, id_usuario);
 
-        txtNome.setText(this.user.getNome());
-        txtSenha.setText(this.user.getSenha());
-        txtConfirmarSenha.setText(this.user.getSenha());
-        txtEmail.setText(this.user.getEmail());
-        //spnPosicao.setSelection(this.user.getId_posicao() - 1);
-        spnTipoUsuario.setSelection(this.user.getId_tipo() - 1);
-        txtApelido.setText(this.user.getApelido());
-        txtCelular.setText(this.user.getCelular());
+        if (Constantes.getUsuarioLogado() != null) {
+            this.user = Constantes.getUsuarioLogado();
+            txtNome.setText(this.user.getNome());
+            txtSenha.setText(this.user.getSenha());
+            txtConfirmarSenha.setText(this.user.getSenha());
+            txtEmail.setText(this.user.getEmail());
+            //spnPosicao.setSelection(this.user.getId_posicao() - 1);
+            spnTipoUsuario.setSelection(this.user.getId_tipo() - 1);
+            txtApelido.setText(this.user.getApelido());
+            txtCelular.setText(this.user.getCelular());
+            txtSenha.setText(this.user.getSenha().trim());
+            txtConfirmarSenha.setText(this.user.getSenha().trim());
 
-        if (tipoAcesso.equals("edit")){
-            btnCadastrar.setText("Atualizar");
-        }
+            if (tipoAcesso.equals("edit")) {
+                btnCadastrar.setText("Atualizar");
+            }
 
-        if (tipoAcesso.equals("read")){
-            txtNome.setEnabled(false);
-            txtApelido.setEnabled(false);
-            txtEmail.setEnabled(false);
-            txtCelular.setEnabled(false);
-            //spnPosicao.setEnabled(false);
-            spnTipoUsuario.setEnabled(false);
-            txtSenha.setEnabled(false);
-            txtSenha.setText("auhaushausausaushaushaushaushaush");
-            txtConfirmarSenha.setText("auhaushausausaushaushaushaushaush");
-            txtConfirmarSenha.setEnabled(false);
-            btnCadastrar.setEnabled(false);
+            if (tipoAcesso.equals("read")) {
+                txtNome.setEnabled(false);
+                txtApelido.setEnabled(false);
+                txtEmail.setEnabled(false);
+                txtCelular.setEnabled(false);
+                spnTipoUsuario.setEnabled(false);
+                txtSenha.setEnabled(false);
+                txtSenha.setText("auhaushausausaushaushaushaushaush");
+                txtConfirmarSenha.setText("auhaushausausaushaushaushaushaush");
+                txtConfirmarSenha.setEnabled(false);
+                btnCadastrar.setEnabled(false);
+            }
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-       // getMenuInflater().inflate(R.menu.menu_cadastro_usuario, menu);
+        // getMenuInflater().inflate(R.menu.menu_cadastro_usuario, menu);
         return true;
     }
 
@@ -226,14 +220,24 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             String celular = Mask.unmask(txtCelular.getText().toString());
             String apelido = txtApelido.getText().toString();
 
-            if (tipoAcesso.equals("edit")){
-                usuarioControl.alterar(this.user.getId(), nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
-            }else {
-                usuarioControl.inserir(nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido);
+            Usuario usuario = new Usuario
+                    (nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido, "");
+
+            if (tipoAcesso.equals("edit")) {
+                usuario.setId(this.user.getId());
+                usuario.setIdParse(this.user.getIdParse().trim());
+                Long retorno = usuarioControl.alterar(usuario, true);
+                if (retorno < 0) {
+                    funcoes.mostrarDialogAlert(3, "");
+                } else {
+                    usuarioControl.alterar(usuario, false);
+                }
+            } else {
+                usuarioControl.inserir(usuario, true);
             }
             return true;
         } else {
-            funcoes.mostrarDialogAlert(1,ret);
+            funcoes.mostrarDialogAlert(1, ret);
             return false;
         }
     }
@@ -245,16 +249,16 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         }
         if (txtEmail.getText().toString().isEmpty()) {
             return "E-mail não informado.";
-        }else{
-            if (!usuarioControl.validarEmail(txtEmail.getText().toString().trim())){
+        } else {
+            if (!usuarioControl.validarEmail(txtEmail.getText().toString().trim())) {
                 return "Endereço de e-mail inválido.";
             }
         }
         if (txtApelido.getText().toString().isEmpty()) {
             return "Nome de usuário não informado.";
-        }else{
-            if (!usuarioControl.selectUsuarioPorApelido(txtApelido.getText().toString()).isEmpty()
-                    && !tipoAcesso.equals("edit")){
+        } else {
+            if (!usuarioControl.selectUsuarioPorApelido(txtApelido.getText().toString(), true).isEmpty()
+                    && !tipoAcesso.equals("edit")) {
                 return "Ops... Esse nome de usuario já está em uso.";
             }
         }
@@ -263,12 +267,12 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         String validacaoSenhas = usuarioControl.validarSenha(txtSenha.getText().toString(),
                 txtConfirmarSenha.getText().toString());
 
-        if (!validacaoSenhas.isEmpty()){
+        if (!validacaoSenhas.isEmpty()) {
             return validacaoSenhas.trim();
         }
 
         if (!usuarioControl.selectUsuarioPorEmail(txtEmail.getText().
-                toString()).isEmpty() && !tipoAcesso.equals("edit")){
+                toString(), true).isEmpty() && !tipoAcesso.equals("edit")) {
             return "Ops... Já existe um usuário cadastrado com este endereco de e-mail.";
         }
         return "";

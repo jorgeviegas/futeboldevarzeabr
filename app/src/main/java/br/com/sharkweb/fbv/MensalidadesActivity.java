@@ -81,7 +81,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
-            time = timeControl.selectTimePorId(params.getInt("id_time")).get(0);
+            time = timeControl.selectTimePorId(params.getInt("id_time"),"").get(0);
         } else {
             caixa = null;
             time = null;

@@ -10,20 +10,35 @@ import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 
 public class Usuario {
 
-    public int id;
-    public String nome;
-    public String codigo;
-    public String email;
-    public String senha;
-    public int id_tipo;
-    public int id_posicao;
-    public int id_time;
-    public String celular;
-    public String apelido;
-    public Time time;
+    private int id;
+    private String nome;
+    private String codigo;
+    private String email;
+    private String senha;
+    private int id_tipo;
+    private int id_posicao;
+    private int id_time;
+    private String celular;
+    private String apelido;
+    private Time time;
+    private String idParse;
 
-    public Usuario(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido) {
+    public Usuario(int id, String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido, String id_parse) {
         this.id = id;
+        this.nome = nome;
+        this.codigo = codigo;
+        this.id_posicao = id_posicao;
+        this.id_time = id_time;
+        this.email = email;
+        this.senha = senha;
+        this.id_tipo = id_tipo;
+        this.celular = celular;
+        this.apelido = apelido;
+        this.idParse = id_parse;
+    }
+
+    public Usuario(String nome, String codigo, String email, String senha, int id_tipo, int id_posicao, int id_time, String celular, String apelido, String id_parse) {
+        this.idParse = id_parse;
         this.nome = nome;
         this.codigo = codigo;
         this.id_posicao = id_posicao;
@@ -124,5 +139,13 @@ public class Usuario {
 
     public void setApelido(String apelido) {
         this.apelido = apelido;
+    }
+
+    public String getIdParse() {
+        return idParse;
+    }
+
+    public void setIdParse(String idParse) {
+        this.idParse = idParse;
     }
 }

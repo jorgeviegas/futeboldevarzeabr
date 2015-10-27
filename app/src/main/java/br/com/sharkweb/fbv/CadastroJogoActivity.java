@@ -105,7 +105,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
             tipoAcesso = params.getString("tipoAcesso");
 
             if (tipoAcesso.equals("write")) {
-                time = timecontrol.selectTimePorId(params.getInt("id_time")).get(0);
+                time = timecontrol.selectTimePorId(params.getInt("id_time"),"").get(0);
                 data = params.getString("data");
             } else {
                 //Obviamente vai ser modo read ou edit.
@@ -252,7 +252,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
         Integer id_local = data.getExtras().getInt("id_local");
 
         if (id_time != null && id_time > 0) {
-            Time timeret = timecontrol.selectTimePorId(id_time).get(0);
+            Time timeret = timecontrol.selectTimePorId(id_time,"").get(0);
             switch (requestCode) {
                 case 1:
                     this.time = timeret;
@@ -263,7 +263,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
                     tvTime2.setText(this.time2.getNome().trim().toUpperCase());
             }
         } else if (id_usuario != null && id_usuario > 0 && requestCode == 3) {
-            Usuario user = userControl.selectUsuarioPorId(id_usuario).get(0);
+            Usuario user = userControl.selectUsuarioPorId(id_usuario,"").get(0);
             this.juiz = user;
             tvJuiz.setText(this.juiz.getNome().toString().trim().toUpperCase());
         } else if (id_local != null && id_local > 0 && requestCode == 4) {
@@ -303,10 +303,10 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
     private void carregarRegistro() {
         if (jogo != null) {
-            time = timecontrol.selectTimePorId(jogo.getId_time()).get(0);
-            time2 = timecontrol.selectTimePorId(jogo.getId_time2()).get(0);
+            time = timecontrol.selectTimePorId(jogo.getId_time(),"").get(0);
+            time2 = timecontrol.selectTimePorId(jogo.getId_time2(),"").get(0);
             if (jogo.getId_juiz() > 0) {
-                juiz = userControl.selectUsuarioPorId(jogo.getId_juiz()).get(0);
+                juiz = userControl.selectUsuarioPorId(jogo.getId_juiz(),"").get(0);
                 tvJuiz.setText(juiz.getNome().trim().toUpperCase());
             }
             local = localControl.selectLocalPorId(jogo.getId_local()).get(0);

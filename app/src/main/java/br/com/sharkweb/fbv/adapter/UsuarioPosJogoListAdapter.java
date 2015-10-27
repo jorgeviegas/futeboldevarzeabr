@@ -80,7 +80,7 @@ public class UsuarioPosJogoListAdapter extends BaseAdapter {
         }
 
         PosJogoUsuarios posJogoUsers = usuarios.get(position);
-        Usuario user = userControl.selectUsuarioPorId(posJogoUsers.getId_usuario()).get(0);
+        Usuario user = userControl.selectUsuarioPorId(posJogoUsers.getId_usuario(),"").get(0);
         itemHolder.tvNomeUsuario.setText(user.getNome().trim().toUpperCase());
         itemHolder.tvGols.setText(String.valueOf(posJogoUsers.getQtd_gol()));
         itemHolder.tvCartoesAmarelos.setText(String.valueOf(posJogoUsers.getQtd_cartao_amarelo()));

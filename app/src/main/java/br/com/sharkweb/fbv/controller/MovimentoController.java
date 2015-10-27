@@ -61,7 +61,7 @@ public class MovimentoController {
             caixa.setSaldo(caixa.getSaldo() + valor);
             historico = "Pgto. Mensalidade";
             if (id_usuario > 0) {
-                Usuario user = userControl.selectUsuarioPorId(id_usuario).get(0);
+                Usuario user = userControl.selectUsuarioPorId(id_usuario,"").get(0);
                 historico = historico + ": \n" + user.getNome().trim();
             }
         }

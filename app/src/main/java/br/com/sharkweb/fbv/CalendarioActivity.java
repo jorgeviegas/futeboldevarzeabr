@@ -68,7 +68,7 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
-            time = timecontrol.selectTimePorId(params.getInt("id_time")).get(0);
+            time = timecontrol.selectTimePorId(params.getInt("id_time"),"").get(0);
         } else {
             time = null;
         }

@@ -6,11 +6,18 @@ package br.com.sharkweb.fbv.model;
 public class Login {
 
     private int id;
-    private int id_usuario;
+    private String idParse;
 
-    public Login(int id, int id_usuario) {
+    public Login(int id, String idParse) {
         this.id = id;
-        this.id_usuario = id_usuario;
+        this.idParse = idParse;
+    }
+
+    public Login(String idParse) {
+        this.idParse = idParse;
+    }
+
+    public Login() {
     }
 
     public int getId() {
@@ -21,11 +28,11 @@ public class Login {
         this.id = id;
     }
 
-    public int getId_usuario() {
-        return id_usuario;
+    public String getIdParse() {
+        return idParse;
     }
 
-    public void setId_usuario(int id_usuario) {
-        this.id_usuario = id_usuario;
+    public void setIdParse(String idParse) {
+        this.idParse = idParse;
     }
 }

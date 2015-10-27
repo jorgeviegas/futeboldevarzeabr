@@ -58,9 +58,9 @@ public class TimeUsuarioDAO {
     public long inativarUsuario(int id_time, int id_usuario) {
         ContentValues valores = new ContentValues();
         valores.put(INATIVO, 1);
-        String[] whereArgs = {Integer.toString(id_usuario),Integer.toString(id_time)};
+        String[] whereArgs = {Integer.toString(id_usuario), Integer.toString(id_time)};
 
-        int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID_USUARIO + " = ? AND "+ID_TIME+" = ? ", whereArgs);
+        int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID_USUARIO + " = ? AND " + ID_TIME + " = ? ", whereArgs);
         fbvdao.close();
         return retorno;
     }
@@ -68,9 +68,9 @@ public class TimeUsuarioDAO {
     public long ativarUsuario(int id_time, int id_usuario) {
         ContentValues valores = new ContentValues();
         valores.put(INATIVO, 0);
-        String[] whereArgs = {Integer.toString(id_usuario),Integer.toString(id_time)};
+        String[] whereArgs = {Integer.toString(id_usuario), Integer.toString(id_time)};
 
-        int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID_USUARIO + " = ? AND "+ID_TIME+" = ? ", whereArgs);
+        int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID_USUARIO + " = ? AND " + ID_TIME + " = ? ", whereArgs);
         fbvdao.close();
         return retorno;
     }
@@ -80,9 +80,9 @@ public class TimeUsuarioDAO {
 
         int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
         valores.put(ID_TIPO_USUARIO, tipo_usuario);
-        String[] whereArgs = {Integer.toString(id_usuario),Integer.toString(id_time)};
+        String[] whereArgs = {Integer.toString(id_usuario), Integer.toString(id_time)};
 
-        int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID_USUARIO + " = ? AND "+ID_TIME+" = ? ", whereArgs);
+        int retorno = fbvdao.getWritableDatabase().update(NOME_TABELA, valores, ID_USUARIO + " = ? AND " + ID_TIME + " = ? ", whereArgs);
         fbvdao.close();
         return retorno;
     }
@@ -100,13 +100,13 @@ public class TimeUsuarioDAO {
     }
 
     public ArrayList<TimeUsuario> selectTimeUsuarioPorIdTime(int id_time) {
-        ArrayList<TimeUsuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID_TIME + " = " + id_time + " AND "+INATIVO + " = 0  ORDER BY " + ID, null));
+        ArrayList<TimeUsuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID_TIME + " = " + id_time + " AND " + INATIVO + " = 0  ORDER BY " + ID, null));
         fbvdao.close();
         return c;
     }
 
     public ArrayList<TimeUsuario> selectTimeUsuarioPorIdTimeeIdUsuario(int id_time, int id_usuario) {
-        ArrayList<TimeUsuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID_TIME + " = " + id_time + " AND " + ID_USUARIO +" = " +id_usuario+ " ORDER BY " + ID, null));
+        ArrayList<TimeUsuario> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID_TIME + " = " + id_time + " AND " + ID_USUARIO + " = " + id_usuario + " ORDER BY " + ID, null));
         fbvdao.close();
         return c;
     }
@@ -130,9 +130,9 @@ public class TimeUsuarioDAO {
     }
 
     public long excluirTimeUsuarioPorIdUsuario(int id_usuario, int id_time) {
-        String[] whereArgs = {Integer.toString(id_usuario),Integer.toString(id_time)};
+        String[] whereArgs = {Integer.toString(id_usuario), Integer.toString(id_time)};
         long retorno;
-        retorno = fbvdao.getReadableDatabase().delete(NOME_TABELA, ID_USUARIO + " = ? AND "+ID_TIME+" = ? ", whereArgs);
+        retorno = fbvdao.getReadableDatabase().delete(NOME_TABELA, ID_USUARIO + " = ? AND " + ID_TIME + " = ? ", whereArgs);
         fbvdao.close();
         return retorno;
     }
@@ -141,7 +141,7 @@ public class TimeUsuarioDAO {
         ArrayList<TimeUsuario> timeUsuario = new ArrayList<TimeUsuario>();
 
         while (c.moveToNext()) {
-            timeUsuario.add(new TimeUsuario(c.getInt(0), c.getInt(1), c.getInt(2),c.getInt(3),c.getString(4),c.getInt(5)));
+            timeUsuario.add(new TimeUsuario(c.getInt(0), c.getString(1), c.getString(2), c.getInt(3), c.getString(4), c.getInt(5), c.getString(6)));
         }
         return timeUsuario;
     }

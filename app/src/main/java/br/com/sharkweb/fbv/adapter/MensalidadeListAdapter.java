@@ -79,7 +79,7 @@ public class MensalidadeListAdapter extends BaseAdapter {
 
         Mensalidade mensalidade = mensalidades.get(position);
         if (mensalidade != null && mensalidade.getId() > 0) {
-            Usuario user = usuarioControl.selectUsuarioPorId(mensalidade.getId_usuario()).get(0);
+            Usuario user = usuarioControl.selectUsuarioPorId(mensalidade.getId_usuario(),"").get(0);
 
             itemHolder.tvData.setText(mensalidade.getData().trim());
             itemHolder.tvUsuario.setText(user.getNome().trim());

@@ -23,16 +23,20 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.adapter.UsuarioListAdapter;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
+import br.com.sharkweb.fbv.controllerParse.TimeControllerParse;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.TimeUsuario;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -47,6 +51,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     private ArrayList<TimeUsuario> listaTimesUsuario;
 
     private TimeController timeControl = new TimeController(this);
+    private TimeControllerParse timeControlParse = new TimeControllerParse(this);
     private Time time;
     private ListView listaJogadores;
     private UsuarioListAdapter adapterUsuarios;
@@ -67,7 +72,12 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         Bundle params = getIntent().getExtras();
         if (params != null) {
             //Aqui tratamos parametros enviados para a tela principal
-            this.time = timeControl.selectTimePorId(params.getInt("id_time"),"").get(0);
+            ParseObject retorno = timeControlParse.buscarTimePorId(params.getString("id_time"));
+            if (retorno != null) {
+                this.time = timeControlParse.ParseObjectToTimeObject(retorno);
+            } else {
+                this.time = new Time("Time nao encontrado", "", 0);
+            }
         } else {
             this.time = new Time("Time nao encontrado", "", 0);
         }
@@ -123,12 +133,12 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         }
 
         for (int i = 0; i < listaTimesUsuario.size(); i++) {
-            listaUsuarios.add(usuarioControl.selectUsuarioPorId(listaTimesUsuario.get(i).getId(),"").get(0));
+            listaUsuarios.add(usuarioControl.selectUsuarioPorId(listaTimesUsuario.get(i).getId(), "").get(0));
         }
 
         if (listaUsuarios.size() == 0) {
             ArrayList<Usuario> listaVazia = new ArrayList<Usuario>();
-            listaVazia.add(new Usuario(0, "Nenhum jogador encontrado.", "", "", "", 0, 0, 0, "", "",""));
+            listaVazia.add(new Usuario(0, "Nenhum jogador encontrado.", "", "", "", 0, 0, 0, "", "", ""));
             adapterUsuarios = new UsuarioListAdapter(this, listaVazia, time, 1);
         } else
             adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios, time, 1);
@@ -137,12 +147,12 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     }
 
     public void inserirJogador(int id_usuario) {
-        Usuario user = usuarioControl.selectUsuarioPorId(id_usuario,"").get(0);
+        Usuario user = usuarioControl.selectUsuarioPorId(id_usuario, "").get(0);
         if (user != null) {
             if (timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(
                     time.getId(), user.getId()).isEmpty()) {
                 int tipo_usuario = tipouserControl.selectTiposUsuariosPorTipo("Jogador").get(0).getId();
-                TimeUsuario timeUser = new TimeUsuario(time.getId_parse(), user.getIdParse(), 0, "", tipo_usuario,"");
+                TimeUsuario timeUser = new TimeUsuario(time.getId_parse(), user.getIdParse(), 0, "", tipo_usuario, "");
                 timeusuarioControl.inserir(timeUser);
                 atualizarLista();
             }

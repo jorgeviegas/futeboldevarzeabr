@@ -14,6 +14,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
 import java.util.IllegalFormatCodePointException;
 
@@ -67,6 +69,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         esperaRetorno = true;
 
         this.user = Constantes.getUsuarioLogado();
+
         atualizarLista();
         times.setCacheColorHint(Color.TRANSPARENT);
     }
@@ -148,12 +151,14 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     public void atualizarLista() {
+        timesControl.excluirTodosTimes();
 
         if (this.user != null) {
-            //listaTimes = timesControl.selectTimePorIdUsuario(this.user.getId(), false);
-            ArrayList<TimeUsuario> retorno = timeUsuarioControlParse.buscarTimesUsuario(this.user.getIdParse());
-            if (retorno !=null && retorno.size() > 0){
-            }
+            listaTimes = timesControl.selectTimePorIdUsuario(this.user.getId(), false);
+            //timesControlParse.buscarTimes();
+            //ArrayList<TimeUsuario> retorno = timeUsuarioControlParse.buscarTimesUsuario(this.user.getIdParse());
+            //if (retorno !=null && retorno.size() > 0){
+            //}
             //listaTimes = timesControlParse.selectTimePorIdUsuario("");
         } else {
             listaTimes = timesControl.selectTimes(false);

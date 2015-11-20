@@ -8,6 +8,8 @@ import br.com.sharkweb.fbv.model.Usuario;
 public class Constantes {
 
     public static Usuario usuarioLogado;
+    public static String PARSE_APPLICATION_ID;
+    public static String PARSE_CLIENT_KEY;
 
     public Constantes() {
     }
@@ -18,5 +20,21 @@ public class Constantes {
 
     public static void setUsuarioLogado(Usuario usuarioLogado) {
         Constantes.usuarioLogado = usuarioLogado;
+    }
+
+    public static String getParseApplicationId() {
+        return PARSE_APPLICATION_ID;
+    }
+
+    public static void setParseApplicationId(String parseApplicationId) {
+        PARSE_APPLICATION_ID = parseApplicationId;
+    }
+
+    public static String getParseClientKey() {
+        return PARSE_CLIENT_KEY;
+    }
+
+    public static void setParseClientKey(String parseClientKey) {
+        PARSE_CLIENT_KEY = parseClientKey;
     }
 }

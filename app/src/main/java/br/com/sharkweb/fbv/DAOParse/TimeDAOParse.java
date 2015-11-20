@@ -83,15 +83,6 @@ public class TimeDAOParse {
         return time;
     }
 
-    private ArrayList<Time> listToArray(List listTimes) {
-        ArrayList<Time> times = new ArrayList<Time>();
-        for (int i = 0; i < listTimes.size(); i++) {
-            ParseObject p = (ParseObject) listTimes.get(i);
-            times.add(ParseObjectToTimeObject(p));
-        }
-        return times;
-    }
-
     private Time ParseObjectToTimeObject(ParseObject p) {
         String objectId = p.getObjectId();
         String nome = p.getString("nome").trim();

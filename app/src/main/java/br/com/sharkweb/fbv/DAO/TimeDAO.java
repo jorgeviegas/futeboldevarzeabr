@@ -65,7 +65,6 @@ public class TimeDAO {
         return c;
     }
 
-
     public void excluirTodosTimes() {
         fbvdao.getReadableDatabase().delete(NOME_TABELA, null, null);
     }

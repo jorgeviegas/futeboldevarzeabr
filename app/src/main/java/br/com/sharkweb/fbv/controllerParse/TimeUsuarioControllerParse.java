@@ -18,7 +18,7 @@ public class TimeUsuarioControllerParse {
         timeUsuarioDAOParse = new TimeUsuarioDAOParse(context);
     }
 
-    public ParseObject inserir(TimeUsuario timeUsuario) {
+    public ParseObject salvar(TimeUsuario timeUsuario) {
         return timeUsuarioDAOParse.salvar(timeUsuario);
     }
 

@@ -271,31 +271,20 @@ public class CadastroTimeActivity extends ActionBarActivity {
             timeParse.put("nome", timeSalvar.getNome().trim());
             timeParse.put("cidade", timeSalvar.getCidade().trim());
             timeParse.put("id_uf", timeSalvar.getId_uf());
+
+            //Criando timeUsuario
+            int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
+            ParseObject timeUsuario = new ParseObject("timeUsuario");
+            timeUsuario.getRelation("usuario").add(
+                    ParseObject.createWithoutData("usuario", Constantes.getUsuarioLogado().getIdParse()));
+
+            timeUsuario.put("inativo", 0);
+            timeUsuario.put("tipo_usuario", tipo_usuario);
+
             try {
                 timeParse.save();
-                // if (time != null && !tipoAcesso.equals("edit")) {
-                int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
-                ParseObject timeUsuarioParse = new ParseObject("time_usuario");
-                timeUsuarioParse.put("id_tipo_usuario", tipo_usuario);
-
-                timeUsuarioParse.put("usuario", ParseObject.createWithoutData("usuario",
-                        Constantes.getUsuarioLogado().getIdParse().trim()));
-                timeUsuarioParse.put("time", ParseObject.createWithoutData("time",
-                        timeParse.getObjectId().trim()));
-
-                timeUsuarioParse.put("inativo", 0);
-                timeUsuarioParse.put("posicao", "");
-                timeUsuarioParse.save();
-
-                //TENTAR USAR RELATION AO INVÉS DE POINTER NA TABELA
-
-                ParseQuery teste = new ParseQuery("time_usuario");
-                teste.whereEqualTo("time", ParseObject.createWithoutData("time",
-                        timeParse.getObjectId().trim()));
-                teste.find();
-                ParseObject retorno = teste.getFirst();
-                retorno.getObjectId();
-                //}
+                timeUsuario.getRelation("time").add(timeParse);
+                timeUsuario.save();
                 timeParse.put("salvo", true);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -310,9 +299,9 @@ public class CadastroTimeActivity extends ActionBarActivity {
                 progress.dismiss();
                 Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
                 toast.show();
-                //Bundle parametros = new Bundle();
-                //parametros.putString("id_time", time.getId_parse());
-                //mudarTela(TimeDetalheActivity.class, parametros);
+                Bundle parametros = new Bundle();
+                parametros.putString("id_time", time.getId_parse());
+                mudarTela(TimeDetalheActivity.class, parametros);
 
             } else {
                 progress.dismiss();

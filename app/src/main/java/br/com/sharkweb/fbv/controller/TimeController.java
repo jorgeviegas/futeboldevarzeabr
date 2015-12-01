@@ -44,7 +44,7 @@ public class TimeController {
 
     public ArrayList<Time> selectTimePorIdUsuario(int id_usuario, boolean parse) {
         if (parse) {
-            return timeDAOParse.buscarTimes("d", "", 0);
+            return timeDAOParse.buscarTimes("", "", 0);
         } else {
             return timeDAO.selectTimePorIdUsuario(id_usuario);
         }

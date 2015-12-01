@@ -1,10 +1,12 @@
 package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -13,14 +15,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 
 import java.util.ArrayList;
 import java.util.IllegalFormatCodePointException;
+import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
+import br.com.sharkweb.fbv.adapter.TimeListAdapterParse;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
@@ -35,7 +44,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
 
     private ListView times;
     private ArrayList<Time> listaTimes;
-    private TimeListAdapter adapterTimes;
+    private TimeListAdapterParse adapterTimes;
     private TimeController timesControl = new TimeController(this);
     private TimeControllerParse timesControlParse = new TimeControllerParse(this);
     private TimeUsuarioControllerParse timeUsuarioControlParse = new TimeUsuarioControllerParse(this);
@@ -70,7 +79,10 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
 
         this.user = Constantes.getUsuarioLogado();
 
-        atualizarLista();
+        //ParseObject ret = timeControlParse.salvar(timeInsert);
+        buscarTimes buscar = new buscarTimes(this.context);
+        buscar.execute();
+
         times.setCacheColorHint(Color.TRANSPARENT);
     }
 
@@ -150,27 +162,6 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         return super.onOptionsItemSelected(item);
     }
 
-    public void atualizarLista() {
-        timesControl.excluirTodosTimes();
-
-        if (this.user != null) {
-            listaTimes = timesControl.selectTimePorIdUsuario(this.user.getId(), false);
-            //timesControlParse.buscarTimes();
-            //ArrayList<TimeUsuario> retorno = timeUsuarioControlParse.buscarTimesUsuario(this.user.getIdParse());
-            //if (retorno !=null && retorno.size() > 0){
-            //}
-            //listaTimes = timesControlParse.selectTimePorIdUsuario("");
-        } else {
-            listaTimes = timesControl.selectTimes(false);
-        }
-        if (listaTimes.size() == 0) {
-            ArrayList<Time> listaVazia = new ArrayList<Time>();
-            listaVazia.add(new Time(0, "Nenhum time encontrado.", "", 0));
-            adapterTimes = new TimeListAdapter(this, listaVazia);
-        } else
-            adapterTimes = new TimeListAdapter(this, listaTimes);
-        times.setAdapter(adapterTimes);
-    }
 
     @SuppressWarnings({"rawtypes", "unused"})
     private void mudarTela(Class cls, Bundle parametros) {
@@ -186,13 +177,70 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Time time = adapterTimes.getItem(position);
-        if (time.getId() != 0) {
+//        Time time = adapterTimes.getItem(position);
+//        if (time.getId() != 0) {
+//
+//            if (esperaRetorno) {
+//                this.timeSelecionado = time;
+//                onBackPressed();
+//            }
+//        }
+    }
 
-            if (esperaRetorno) {
-                this.timeSelecionado = time;
-                onBackPressed();
+    private class buscarTimes extends AsyncTask<String, Void, ArrayList<ParseObject>> {
+
+        private ProgressDialog progress;
+        private Context context;
+
+        public buscarTimes(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            progress = new ProgressDialog(context);
+            progress.setTitle("Buscando...");
+            progress.setMessage("Aguarde");
+            progress.setCancelable(false);
+            progress.setCanceledOnTouchOutside(false);
+            progress.show();
+        }
+
+        @Override
+        protected ArrayList<ParseObject> doInBackground(String... params) {
+            ArrayList<ParseObject> retorno = new ArrayList<>();
+
+            ParseQuery objetoPesquisa = new ParseQuery("timeUsuario");
+
+            objetoPesquisa.whereEqualTo("usuario", ParseObject.createWithoutData("usuario",
+                    Constantes.getUsuarioLogado().getIdParse()));
+            try {
+                List<ParseObject> lista = objetoPesquisa.find();
+                retorno = FuncoesParse.listToArray(lista);
+
+                ArrayList<ParseObject> timesteste = new ArrayList<>();
+                for (int i = 0; i < retorno.size() ; i++) {
+                    try {
+                        timesteste.add(retorno.get(i).getRelation("time").getQuery().getFirst());
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+            return retorno;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<ParseObject> ret) {
+            if (ret.size() == 0) {
+                ArrayList<Time> listaVazia = new ArrayList<Time>();
+                listaVazia.add(new Time(0, "Nenhum time encontrado.", "", 0));
+                adapterTimes = new TimeListAdapterParse(context, ret);
+            } else
+                adapterTimes = new TimeListAdapterParse(context, ret);
+                times.setAdapter(adapterTimes);
         }
     }
 }

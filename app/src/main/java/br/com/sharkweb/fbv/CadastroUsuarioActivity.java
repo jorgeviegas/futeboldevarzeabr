@@ -1,6 +1,7 @@
 package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.telephony.CellLocation;
 import android.telephony.TelephonyManager;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,10 +21,15 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
+import com.parse.SignUpCallback;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.Util.Mask;
 import br.com.sharkweb.fbv.controller.LoginController;
 import br.com.sharkweb.fbv.controller.PosicaoController;
@@ -43,10 +50,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
     private EditText txtConfirmarSenha;
     private EditText txtCelular;
     private EditText txtApelido;
-
     private Spinner spnTipoUsuario;
-    private Spinner spnPosicao;
-
     private Button btnCadastrar;
     private Button btnCancelar;
     private TextWatcher celularMask;
@@ -54,11 +58,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
     private UsuarioController usuarioControl = new UsuarioController(this);
     private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
-    private PosicaoController posicaoControl = new PosicaoController(this);
-    private LoginController loginControl = new LoginController(this);
-
     private Funcoes funcoes = new Funcoes(this);
-    Usuario user = new Usuario();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,16 +88,6 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         celularMask = Mask.insert("(##)####-####", txtCelular);
         txtCelular.addTextChangedListener(celularMask);
 
-        try {
-            TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
-            String teste = tm.getLine1Number();
-            txtCelular.setText(tm.getLine1Number());
-        } catch (Exception e) {
-            System.out.println("Falha ao tentar pegar o telefone automaticamente");
-            funcoes.mostrarDialogAlert(3, e.getMessage());
-        }
-
-
         spnTipoUsuario = (Spinner) findViewById((R.id.cadastro_usuario_spinner));
         ArrayList<TipoUsuario> tipo_usuario = tipoUsuarioControl.selectTiposUsuarios();
         ArrayList<String> tipo_usuarios = new ArrayList<>();
@@ -116,25 +106,13 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         btnCadastrar = (Button) findViewById(R.id.cadastroUsuario_btnRegistrar);
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (inserir()) {
-                    if (tipoAcesso.equals("edit")) {
-                        Toast toast = Toast.makeText(getApplicationContext(), "Cadastro atualizado com sucesso!", Toast.LENGTH_LONG);
-                        toast.show();
-                        mudarTela(NewMainActivity.class);
-                    } else {
-                        Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
-                        toast.show();
-                        mudarTela(LoginActivity.class);
-                    }
-                }
+                salvar();
             }
         });
 
         btnCancelar = (Button) findViewById(R.id.cadastro_usuario_btnCancelar);
         btnCancelar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                //mudarTela(LoginActivity.class);
-                //funcoes.mostrarDialogAlert(0,"TESTE MAROTAO",String.valueOf(user.getId_tipo()));
                 onBackPressed();
             }
         });
@@ -144,47 +122,39 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         if (params != null) {
             //Aqui tratamos parametros enviados para a tela de cadastro de usuario
             tipoAcesso = params.getString("tipoAcesso");
-
-            if (!params.getString("id_usuario").isEmpty()) {
-                carregarRegistro(params.getString("id_usuario"));
-            }
+            if (tipoAcesso.equals("edit") || tipoAcesso.equals("read"))
+                carregarRegistro();
+            else
+                try {
+                    TelephonyManager tm = (TelephonyManager) getSystemService(TELEPHONY_SERVICE);
+                    String teste = tm.getLine1Number();
+                    txtCelular.setText(tm.getLine1Number());
+                } catch (Exception e) {
+                   // funcoes.mostrarDialogAlert(3, e.getMessage());
+                }
         }
     }
 
-    private void carregarRegistro(String id_usuario) {
+    private void carregarRegistro() {
 
-        //ArrayList<Usuario> usuarioCad = new ArrayList<Usuario>();
-        //usuarioCad = usuarioControl.selectUsuarioPorId(0, id_usuario);
+        txtNome.setText(ParseUser.getCurrentUser().get("nome").toString().trim());
+        txtSenha.setText("");
+        txtConfirmarSenha.setText("");
+        txtEmail.setText(ParseUser.getCurrentUser().getEmail().trim());
+        spnTipoUsuario.setSelection(Integer.valueOf(ParseUser.getCurrentUser().get("id_tipo").toString()) - 1);
+        txtApelido.setText(ParseUser.getCurrentUser().getUsername().trim());
+        txtCelular.setText(ParseUser.getCurrentUser().get("celular").toString().trim());
 
-        if (Constantes.getUsuarioLogado() != null) {
-            this.user = Constantes.getUsuarioLogado();
-            txtNome.setText(this.user.getNome());
-            txtSenha.setText(this.user.getSenha());
-            txtConfirmarSenha.setText(this.user.getSenha());
-            txtEmail.setText(this.user.getEmail());
-            //spnPosicao.setSelection(this.user.getId_posicao() - 1);
-            spnTipoUsuario.setSelection(this.user.getId_tipo() - 1);
-            txtApelido.setText(this.user.getApelido());
-            txtCelular.setText(this.user.getCelular());
-            txtSenha.setText(this.user.getSenha().trim());
-            txtConfirmarSenha.setText(this.user.getSenha().trim());
+        txtSenha.setEnabled(false);
+        txtConfirmarSenha.setEnabled(false);
 
-            if (tipoAcesso.equals("edit")) {
-                btnCadastrar.setText("Atualizar");
-            }
-
-            if (tipoAcesso.equals("read")) {
-                txtNome.setEnabled(false);
-                txtApelido.setEnabled(false);
-                txtEmail.setEnabled(false);
-                txtCelular.setEnabled(false);
-                spnTipoUsuario.setEnabled(false);
-                txtSenha.setEnabled(false);
-                txtSenha.setText("auhaushausausaushaushaushaushaush");
-                txtConfirmarSenha.setText("auhaushausausaushaushaushaushaush");
-                txtConfirmarSenha.setEnabled(false);
-                btnCadastrar.setEnabled(false);
-            }
+        if (tipoAcesso.equals("read")) {
+            txtNome.setEnabled(false);
+            txtApelido.setEnabled(false);
+            txtEmail.setEnabled(false);
+            txtCelular.setEnabled(false);
+            spnTipoUsuario.setEnabled(false);
+            btnCadastrar.setEnabled(false);
         }
     }
 
@@ -207,38 +177,47 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         startActivity(new Intent(this, cls));
     }
 
-    private Boolean inserir() {
+    private void salvar() {
         String ret = validarCampos();
         if (ret.isEmpty()) {
-            String nome = txtNome.getText().toString();
-            String email = txtEmail.getText().toString();
-            String senha = txtSenha.getText().toString();
-            String codigo = "";
-            int id_tipo = spnTipoUsuario.getSelectedItemPosition() + 1;
-            int id_posicao = 1;
-            int id_time = 0;
-            String celular = Mask.unmask(txtCelular.getText().toString());
-            String apelido = txtApelido.getText().toString();
+            final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando cadastro...");
 
-            Usuario usuario = new Usuario
-                    (nome, codigo, email, senha, id_tipo, id_posicao, id_time, celular, apelido, "");
+            final ParseUser user = new ParseUser();
+            user.setUsername(txtApelido.getText().toString());
+            user.setPassword(txtSenha.getText().toString());
+            user.setEmail(txtEmail.getText().toString());
+            user.put("celular", Mask.unmask(txtCelular.getText().toString()));
+            user.put("id_tipo", (spnTipoUsuario.getSelectedItemPosition() + 1));
+            user.put("nome", txtNome.getText().toString());
 
-            if (tipoAcesso.equals("edit")) {
-                usuario.setId(this.user.getId());
-                usuario.setIdParse(this.user.getIdParse().trim());
-                Long retorno = usuarioControl.alterar(usuario, true);
-                if (retorno < 0) {
-                    funcoes.mostrarDialogAlert(3, "");
-                } else {
-                    usuarioControl.alterar(usuario, false);
+            user.signUpInBackground(new SignUpCallback() {
+                @Override
+                public void done(com.parse.ParseException e) {
+                    if (e == null) {
+                        cadastroEfetuado();
+                    } else {
+                        falhaNoCadastro(e);
+                    }
+                    FuncoesParse.dismissProgressBar(progresso);
                 }
-            } else {
-                usuarioControl.inserir(usuario, true);
-            }
-            return true;
+            });
         } else {
             funcoes.mostrarDialogAlert(1, ret);
-            return false;
+        }
+    }
+
+    private void cadastroEfetuado() {
+        funcoes.mostrarToast(1);
+        mudarTela(LoginActivity.class);
+    }
+
+    private void falhaNoCadastro(com.parse.ParseException e) {
+        if (e.getCode() == 202) {
+            funcoes.mostrarDialogAlert(1, "Ops... Esse nome de usuario já está em uso.");
+        } else if (e.getCode() == 203) {
+            funcoes.mostrarDialogAlert(1, "Ops... Esse endereço de e-mail já está em uso.");
+        } else {
+            funcoes.mostrarToast(2);
         }
     }
 
@@ -256,11 +235,6 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         }
         if (txtApelido.getText().toString().isEmpty()) {
             return "Nome de usuário não informado.";
-        } else {
-            if (!usuarioControl.selectUsuarioPorApelido(txtApelido.getText().toString(), true).isEmpty()
-                    && !tipoAcesso.equals("edit")) {
-                return "Ops... Esse nome de usuario já está em uso.";
-            }
         }
 
         //VERIFICA SE AS SENHAS DIGITADAS SÃO IGUAIS.
@@ -269,11 +243,6 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
         if (!validacaoSenhas.isEmpty()) {
             return validacaoSenhas.trim();
-        }
-
-        if (!usuarioControl.selectUsuarioPorEmail(txtEmail.getText().
-                toString(), true).isEmpty() && !tipoAcesso.equals("edit")) {
-            return "Ops... Já existe um usuário cadastrado com este endereco de e-mail.";
         }
         return "";
     }

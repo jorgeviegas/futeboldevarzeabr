@@ -7,6 +7,7 @@ import android.content.Context;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -60,6 +61,21 @@ public class Funcoes {
         dialog.show();
     }
 
+    public void mostrarToast(int tipo) {
+        Toast toast = Toast.makeText(this.context, "", Toast.LENGTH_LONG);
+        switch (tipo) {
+            case 1:
+                toast.setText("Cadastro salvo com sucesso!");
+                break;
+            case 2:
+                toast.setText("Falha ao salvar. Por favor, tente novamente.");
+                break;
+            case 3:
+                toast.setText("Isso não deveria ter acontecido, vamos trabalhar duro para que isso não se repita!");
+                break;
+        }
+        toast.show();
+    }
 
     public String PrimeiraLetraMaiuscula(String s) {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
@@ -165,7 +181,7 @@ public class Funcoes {
         return String.valueOf(valor).format("%.2f", valor);
     }
 
-    public Date dataPorPeriodo(Date dat,int diaVencimento, int frequencia) {
+    public Date dataPorPeriodo(Date dat, int diaVencimento, int frequencia) {
         dat.setDate(diaVencimento);
         switch (frequencia) {
             case 0:

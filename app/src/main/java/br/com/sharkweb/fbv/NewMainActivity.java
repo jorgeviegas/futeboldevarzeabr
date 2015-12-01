@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.parse.Parse;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -75,15 +76,9 @@ public class NewMainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Bundle params = getIntent().getExtras();
-        if (params != null) {
-            //Aqui tratamos parametros enviados para a tela principal
-        }
-
         //INICIANDO DADOS FIXOS DO APLICATIVO E DADOS DE TESTE
         tipoUsuarioControl.IniciarTiposUsuarios();
         posicaoControl.IniciarPosicoes();
-        //usuarioControl.inicializarUsuarios();
         ufControl.inicializarUF();
 
         txtEmailUsuario = (TextView) findViewById(R.id.nav_header_main_email);
@@ -91,7 +86,16 @@ public class NewMainActivity extends AppCompatActivity
         imgPerfilUusario = (ImageView) findViewById(R.id.nav_header_main_imgperfil);
 
 
-        //DEFININDO O USUARIO LOGADO NO SISTEMA.
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            txtNomeUsuario.setText(currentUser.get("nome").toString().trim());
+            txtEmailUsuario.setText(currentUser.getEmail().trim());
+            imgPerfilUusario.setImageResource(R.drawable.profile4_68);
+        } else {
+            mudarTela(LoginActivity.class);
+        }
+
+       /* //DEFININDO O USUARIO LOGADO NO SISTEMA.
         if (!loginControl.selecLogin().isEmpty() &&
                 loginControl.selecLogin().get(0).getIdParse() != null) {
             Login login = loginControl.selecLogin().get(0);
@@ -104,14 +108,7 @@ public class NewMainActivity extends AppCompatActivity
         } else {
             loginControl.excluirTodosLogins();
             mudarTela(LoginActivity.class);
-        }
-
-        if (Constantes.getUsuarioLogado() != null) {
-            txtNomeUsuario.setText(Constantes.getUsuarioLogado().getNome().trim());
-            txtEmailUsuario.setText(Constantes.getUsuarioLogado().getEmail().trim());
-            imgPerfilUusario.setImageResource(R.drawable.profile4_68);
-        }
-
+        }*/
     }
 
     @Override
@@ -166,6 +163,7 @@ public class NewMainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_logoff) {
+            ParseUser.logOut();
             mudarTela(LoginActivity.class);
             return true;
         }
@@ -185,16 +183,9 @@ public class NewMainActivity extends AppCompatActivity
         int id = item.getItemId();
         Bundle parametros = new Bundle();
         if (id == R.id.main_estatisticas) {
-            // mTitle = "Inicial";
-            if (loginControl.selecLogin().isEmpty()) {
-                Bundle parametros2 = new Bundle();
-                parametros2.putBoolean("salvo", true);
-                mudarTela(LoginActivity.class, parametros2);
-            }
             funcoes.mostrarDialogAlert(1, "Função ainda não implementada! Estará disponível nas próximas versões.");
         } else if (id == R.id.main_meuperfil) {
             parametros.putString("tipoAcesso", "edit");
-            parametros.putString("id_usuario", Constantes.getUsuarioLogado().getIdParse().trim());
             mudarTela(CadastroUsuarioActivity.class, parametros);
 
         } else if (id == R.id.main_config) {

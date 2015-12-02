@@ -1,5 +1,6 @@
 package br.com.sharkweb.fbv;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -15,16 +16,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.parse.LogOutCallback;
 import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.UUID;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.controller.CaixaController;
 import br.com.sharkweb.fbv.controller.LoginController;
 import br.com.sharkweb.fbv.controller.PosicaoController;
@@ -163,17 +169,34 @@ public class NewMainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.action_logoff) {
-            ParseUser.logOut();
-            mudarTela(LoginActivity.class);
+            final Dialog progresso = FuncoesParse.showProgressBar(this, "Fazendo logoff...");
+            ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
+                @Override
+                public void done(ParseException e) {
+                    FuncoesParse.dismissProgressBar(progresso);
+                    if (e == null) {
+                        mudarTela(LoginActivity.class);
+                    } else {
+                        Toast toast = Toast.makeText(getApplicationContext(), "Sem conexão com internet. Você será desconectado automaticamente.", Toast.LENGTH_SHORT);
+                        toast.show();
+                        mudarTela(LoginActivity.class);
+                    }
+                }
+            });
             return true;
         }
 
-        if (id == R.id.action_sair) {
+        if (id == R.id.action_sair)
+
+        {
             finish();
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        return super.
+
+                onOptionsItemSelected(item);
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -187,24 +210,28 @@ public class NewMainActivity extends AppCompatActivity
         } else if (id == R.id.main_meuperfil) {
             parametros.putString("tipoAcesso", "edit");
             mudarTela(CadastroUsuarioActivity.class, parametros);
-
         } else if (id == R.id.main_config) {
             funcoes.mostrarDialogAlert(1, "Função ainda não implementada! Estará disponível nas próximas versões.");
         } else if (id == R.id.main_meustimes) {
-            parametros.putBoolean("cadastrar", true);
-            mudarTelaComRetorno(TeamActivity.class, parametros, 1);
+            funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
+            //parametros.putBoolean("cadastrar", true);
+            //mudarTelaComRetorno(TeamActivity.class, parametros, 1);
         } else if (id == R.id.main_calendario) {
-            parametros.putBoolean("cadastrar", false);
-            mudarTelaComRetorno(TeamActivity.class, parametros, 2);
+            funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
+            // parametros.putBoolean("cadastrar", false);
+            //mudarTelaComRetorno(TeamActivity.class, parametros, 2);
         } else if (id == R.id.main_caixa) {
-            parametros.putBoolean("cadastrar", false);
-            mudarTelaComRetorno(TeamActivity.class, parametros, 3);
+            funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
+            // parametros.putBoolean("cadastrar", false);
+            //mudarTelaComRetorno(TeamActivity.class, parametros, 3);
         } else if (id == R.id.main_movimento) {
-            parametros.putBoolean("cadastrar", false);
-            mudarTelaComRetorno(TeamActivity.class, parametros, 4);
+            funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
+            //parametros.putBoolean("cadastrar", false);
+            // mudarTelaComRetorno(TeamActivity.class, parametros, 4);
         } else if (id == R.id.main_mensalidade) {
-            parametros.putBoolean("cadastrar", false);
-            mudarTelaComRetorno(TeamActivity.class, parametros, 5);
+            funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
+            // parametros.putBoolean("cadastrar", false);
+            //mudarTelaComRetorno(TeamActivity.class, parametros, 5);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

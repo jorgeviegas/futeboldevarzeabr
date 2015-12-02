@@ -22,6 +22,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 import java.text.ParseException;
@@ -130,7 +131,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
                     String teste = tm.getLine1Number();
                     txtCelular.setText(tm.getLine1Number());
                 } catch (Exception e) {
-                   // funcoes.mostrarDialogAlert(3, e.getMessage());
+                    // funcoes.mostrarDialogAlert(3, e.getMessage());
                 }
         }
     }
@@ -140,6 +141,8 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         txtNome.setText(ParseUser.getCurrentUser().get("nome").toString().trim());
         txtSenha.setText("");
         txtConfirmarSenha.setText("");
+        txtSenha.setVisibility(View.GONE);
+        txtConfirmarSenha.setVisibility(View.GONE);
         txtEmail.setText(ParseUser.getCurrentUser().getEmail().trim());
         spnTipoUsuario.setSelection(Integer.valueOf(ParseUser.getCurrentUser().get("id_tipo").toString()) - 1);
         txtApelido.setText(ParseUser.getCurrentUser().getUsername().trim());
@@ -181,26 +184,44 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         String ret = validarCampos();
         if (ret.isEmpty()) {
             final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando cadastro...");
+            ParseUser user = new ParseUser();
 
-            final ParseUser user = new ParseUser();
-            user.setUsername(txtApelido.getText().toString());
-            user.setPassword(txtSenha.getText().toString());
-            user.setEmail(txtEmail.getText().toString());
-            user.put("celular", Mask.unmask(txtCelular.getText().toString()));
-            user.put("id_tipo", (spnTipoUsuario.getSelectedItemPosition() + 1));
-            user.put("nome", txtNome.getText().toString());
-
-            user.signUpInBackground(new SignUpCallback() {
-                @Override
-                public void done(com.parse.ParseException e) {
-                    if (e == null) {
-                        cadastroEfetuado();
-                    } else {
-                        falhaNoCadastro(e);
+            if (ParseUser.getCurrentUser() != null) {
+                ParseUser.getCurrentUser().setUsername(txtApelido.getText().toString());
+                ParseUser.getCurrentUser().setEmail(txtEmail.getText().toString());
+                ParseUser.getCurrentUser().put("celular", Mask.unmask(txtCelular.getText().toString()));
+                ParseUser.getCurrentUser().put("id_tipo", (spnTipoUsuario.getSelectedItemPosition() + 1));
+                ParseUser.getCurrentUser().put("nome", txtNome.getText().toString());
+                ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
+                    public void done(com.parse.ParseException e) {
+                        if (e == null) {
+                            cadastroEfetuado();
+                        } else {
+                            falhaNoCadastro(e);
+                        }
+                        FuncoesParse.dismissProgressBar(progresso);
                     }
-                    FuncoesParse.dismissProgressBar(progresso);
-                }
-            });
+                });
+            } else {
+                user.setPassword(txtSenha.getText().toString());
+                user.setUsername(txtApelido.getText().toString());
+                user.setEmail(txtEmail.getText().toString());
+                user.put("celular", Mask.unmask(txtCelular.getText().toString()));
+                user.put("id_tipo", (spnTipoUsuario.getSelectedItemPosition() + 1));
+                user.put("nome", txtNome.getText().toString());
+
+                user.signUpInBackground(new SignUpCallback() {
+                    @Override
+                    public void done(com.parse.ParseException e) {
+                        if (e == null) {
+                            cadastroEfetuado();
+                        } else {
+                            falhaNoCadastro(e);
+                        }
+                        FuncoesParse.dismissProgressBar(progresso);
+                    }
+                });
+            }
         } else {
             funcoes.mostrarDialogAlert(1, ret);
         }
@@ -208,7 +229,10 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
     private void cadastroEfetuado() {
         funcoes.mostrarToast(1);
-        mudarTela(LoginActivity.class);
+        if (ParseUser.getCurrentUser() == null)
+            mudarTela(LoginActivity.class);
+        else
+            mudarTela(NewMainActivity.class);
     }
 
     private void falhaNoCadastro(com.parse.ParseException e) {

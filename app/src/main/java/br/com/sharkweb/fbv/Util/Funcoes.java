@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.text.InputType;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -202,6 +203,31 @@ public class Funcoes {
                 break;
         }
         return dat;
+    }
+
+    /**
+     * Verifica a disponibilidade da rede  de dados<br>
+     * Tanto WIFI quanto 3G
+     *
+     * @return true ou false
+     * @see android.net.ConnectivityManager
+     */
+    public static boolean verificaConexao(Context cont) {
+        boolean conectado = false;
+        ConnectivityManager conmag;
+        conmag = (ConnectivityManager) cont.getSystemService(Context.CONNECTIVITY_SERVICE);
+        conmag.getActiveNetworkInfo();
+        //Verifica o WIFI
+        if (conmag.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected()) {
+            conectado = true;
+        }
+        //Verifica o 3G
+        else if (conmag.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected()) {
+            conectado = true;
+        } else {
+            conectado = false;
+        }
+        return conectado;
     }
 
 }

@@ -42,6 +42,7 @@ public class LoginActivity extends ActionBarActivity {
     private TextView txtCadastrar;
     private TextView txtEsqueceuSenha;
     private Button btnLogin;
+    private Funcoes funcoes = new Funcoes(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,21 +80,25 @@ public class LoginActivity extends ActionBarActivity {
             public void onClick(View v) {
                 boolean retV = validarCampos();
                 if (retV) {
-                    final Dialog progresso = FuncoesParse.showProgressBar(context, "Fazendo login...");
-                    ParseUser.logInInBackground(txtemail.getText().toString().trim(),
-                            txtSenha.getText().toString().trim(), new LogInCallback() {
-                                @Override
-                                public void done(ParseUser parseUser, com.parse.ParseException e) {
-                                    if (e == null && parseUser != null) {
-                                        loginSuccessful();
-                                    } else if (parseUser == null) {
-                                        usernameOrPasswordIsInvalid();
-                                    } else {
-                                        somethingWentWrong();
+                    if (funcoes.verificaConexao(context)) {
+                        final Dialog progresso = FuncoesParse.showProgressBar(context, "Fazendo login...");
+                        ParseUser.logInInBackground(txtemail.getText().toString().trim(),
+                                txtSenha.getText().toString().trim(), new LogInCallback() {
+                                    @Override
+                                    public void done(ParseUser parseUser, com.parse.ParseException e) {
+                                        if (e == null && parseUser != null) {
+                                            loginSuccessful();
+                                        } else if (parseUser == null) {
+                                            usernameOrPasswordIsInvalid();
+                                        } else {
+                                            somethingWentWrong(e);
+                                        }
+                                        FuncoesParse.dismissProgressBar(progresso);
                                     }
-                                    FuncoesParse.dismissProgressBar(progresso);
-                                }
-                            });
+                                });
+                    } else {
+                        funcoes.mostrarDialogAlert(1, "Sem conexão com internet!");
+                    }
                 }
             }
         });
@@ -112,9 +117,15 @@ public class LoginActivity extends ActionBarActivity {
         toast2.show();
     }
 
-    public void somethingWentWrong() {
-        Toast toast2 = Toast.makeText(getApplicationContext(), "Falha ao realizar login. Por favor, tente novamente.", Toast.LENGTH_SHORT);
-        toast2.show();
+    public void somethingWentWrong(com.parse.ParseException e) {
+        if (e.getCode() == 100) {
+            Toast toast = Toast.makeText(getApplicationContext(), "Ops... Houve algum problema de comunicação. Verifique sua conexão.", Toast.LENGTH_SHORT);
+            toast.show();
+        } else {
+            Toast toast = Toast.makeText(getApplicationContext(), "Falha ao realizar login. Por favor, tente novamente.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
     }
 
     @Override

@@ -1,6 +1,7 @@
 package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,10 +19,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.IllegalFormatCodePointException;
@@ -43,15 +48,10 @@ import br.com.sharkweb.fbv.model.Usuario;
 public class TeamActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private ListView times;
-    private ArrayList<Time> listaTimes;
     private TimeListAdapterParse adapterTimes;
-    private TimeController timesControl = new TimeController(this);
-    private TimeControllerParse timesControlParse = new TimeControllerParse(this);
-    private TimeUsuarioControllerParse timeUsuarioControlParse = new TimeUsuarioControllerParse(this);
     private TipoUsuarioController tipouserControl = new TipoUsuarioController(this);
-    private Usuario user;
     private boolean esperaRetorno;
-    private Time timeSelecionado;
+    private ParseObject timeSelecionado;
     private boolean podeCadastrar = true;
     final Context context = this;
 
@@ -70,19 +70,11 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         if (params != null) {
             esperaRetorno = params.getBoolean("esperaRetorno");
             podeCadastrar = params.getBoolean("cadastrar");
-        } else {
-            this.user = null;
         }
 
         //Agora essa tela sempre retorna
         esperaRetorno = true;
-
-        this.user = Constantes.getUsuarioLogado();
-
-        //ParseObject ret = timeControlParse.salvar(timeInsert);
-        buscarTimes buscar = new buscarTimes(this.context);
-        buscar.execute();
-
+        buscarTimes();
         times.setCacheColorHint(Color.TRANSPARENT);
     }
 
@@ -91,11 +83,38 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         if (this.esperaRetorno) {
             Intent it = new Intent();
             if (timeSelecionado != null)
-                it.putExtra("id_time", timeSelecionado.getId_parse());
+                it.putExtra("id_time", timeSelecionado.getObjectId().trim());
             else it.putExtra("id_time", "");
             setResult(1, it);
         }
         super.onBackPressed();
+    }
+
+    private void buscarTimes() {
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
+
+        //INSERINDO UM TIME NA RELAÇÃO COMO TESTE.
+        //ParseUser.getCurrentUser().getRelation("times").add(ParseObject.createWithoutData("time", "3bHcMMeMox"));
+      /*  try {
+            ParseUser.getCurrentUser().save();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }*/
+
+        //Pega a relação "times" que está dentro da tabela user e então traz os times que estão nessa relação.
+        // O comando getQuery retorna um objeto Query que é usado para fazer consultas. Como eu não quero adicionar
+        //nenuhum outro filtro adicional, chamei o findInBackgroud direto.
+        ParseUser.getCurrentUser().getRelation("times").getQuery().findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> timeList, ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    adapterTimes = new TimeListAdapterParse(context, timeList);
+                    times.setAdapter(adapterTimes);
+                } else {
+
+                }
+            }
+        });
     }
 
     @Override
@@ -103,8 +122,8 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         MenuItem m1 = menu.findItem(R.id.time_action_cadastrar);
 
         //Somente usuarios administradores podem usar o menu cadastrar
-        if (tipouserControl.selectTiposUsuariosPorId(Constantes.getUsuarioLogado().
-                getId_tipo()).get(0).getTipo().equals("Administrador") && this.podeCadastrar)
+        if (tipouserControl.selectTiposUsuariosPorId(ParseUser.getCurrentUser().getInt("id_tipo")).
+                get(0).getTipo().equals("Administrador") && this.podeCadastrar)
             m1.setVisible(true);
         else
             m1.setVisible(false);
@@ -177,70 +196,13 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//        Time time = adapterTimes.getItem(position);
-//        if (time.getId() != 0) {
-//
-//            if (esperaRetorno) {
-//                this.timeSelecionado = time;
-//                onBackPressed();
-//            }
-//        }
-    }
-
-    private class buscarTimes extends AsyncTask<String, Void, ArrayList<ParseObject>> {
-
-        private ProgressDialog progress;
-        private Context context;
-
-        public buscarTimes(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            progress = new ProgressDialog(context);
-            progress.setTitle("Buscando...");
-            progress.setMessage("Aguarde");
-            progress.setCancelable(false);
-            progress.setCanceledOnTouchOutside(false);
-            progress.show();
-        }
-
-        @Override
-        protected ArrayList<ParseObject> doInBackground(String... params) {
-            ArrayList<ParseObject> retorno = new ArrayList<>();
-
-            ParseQuery objetoPesquisa = new ParseQuery("timeUsuario");
-
-            objetoPesquisa.whereEqualTo("usuario", ParseObject.createWithoutData("usuario",
-                    Constantes.getUsuarioLogado().getIdParse()));
-            try {
-                List<ParseObject> lista = objetoPesquisa.find();
-                retorno = FuncoesParse.listToArray(lista);
-
-                ArrayList<ParseObject> timesteste = new ArrayList<>();
-                for (int i = 0; i < retorno.size() ; i++) {
-                    try {
-                        timesteste.add(retorno.get(i).getRelation("time").getQuery().getFirst());
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
+        ParseObject time = adapterTimes.getItem(position);
+        if (!time.getObjectId().isEmpty()) {
+            if (esperaRetorno) {
+                this.timeSelecionado = time;
+                //DESABILITADO TEMPORARIAMENTE.
+                //onBackPressed();
             }
-            return retorno;
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<ParseObject> ret) {
-            if (ret.size() == 0) {
-                ArrayList<Time> listaVazia = new ArrayList<Time>();
-                listaVazia.add(new Time(0, "Nenhum time encontrado.", "", 0));
-                adapterTimes = new TimeListAdapterParse(context, ret);
-            } else
-                adapterTimes = new TimeListAdapterParse(context, ret);
-                times.setAdapter(adapterTimes);
         }
     }
 }

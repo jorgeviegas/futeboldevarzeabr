@@ -100,21 +100,6 @@ public class NewMainActivity extends AppCompatActivity
         } else {
             mudarTela(LoginActivity.class);
         }
-
-       /* //DEFININDO O USUARIO LOGADO NO SISTEMA.
-        if (!loginControl.selecLogin().isEmpty() &&
-                loginControl.selecLogin().get(0).getIdParse() != null) {
-            Login login = loginControl.selecLogin().get(0);
-            ArrayList<Usuario> retorno = usuarioControl.selectUsuarioPorIdParse(login.getIdParse().trim(), false);
-            if (retorno != null && retorno.size() > 0) {
-                Constantes.setUsuarioLogado(retorno.get(0));
-            } else {
-                mudarTela(LoginActivity.class);
-            }
-        } else {
-            loginControl.excluirTodosLogins();
-            mudarTela(LoginActivity.class);
-        }*/
     }
 
     @Override
@@ -192,9 +177,7 @@ public class NewMainActivity extends AppCompatActivity
             finish();
             return true;
         }
-
         return super.
-
                 onOptionsItemSelected(item);
 
     }
@@ -213,9 +196,9 @@ public class NewMainActivity extends AppCompatActivity
         } else if (id == R.id.main_config) {
             funcoes.mostrarDialogAlert(1, "Função ainda não implementada! Estará disponível nas próximas versões.");
         } else if (id == R.id.main_meustimes) {
-            funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
-            //parametros.putBoolean("cadastrar", true);
-            //mudarTelaComRetorno(TeamActivity.class, parametros, 1);
+           // funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
+            parametros.putBoolean("cadastrar", true);
+            mudarTelaComRetorno(TeamActivity.class, parametros, 1);
         } else if (id == R.id.main_calendario) {
             funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
             // parametros.putBoolean("cadastrar", false);

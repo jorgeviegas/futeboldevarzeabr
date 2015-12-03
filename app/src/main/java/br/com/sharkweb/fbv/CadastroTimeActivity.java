@@ -1,6 +1,7 @@
 package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,16 +18,20 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
@@ -44,16 +49,11 @@ public class CadastroTimeActivity extends ActionBarActivity {
     private EditText txtNome;
     private EditText txtCidade;
     private Spinner spnUF;
-    private Time time;
     private String tipoAcesso;
     private Button btnCadastrar;
     private Button btnCancelar;
 
-    private TimeController timeControl = new TimeController(this);
-    private TimeControllerParse timeControlParse = new TimeControllerParse(this);
-    private TimeUsuarioController timeuserControl = new TimeUsuarioController(this);
-    private TimeUsuarioControllerParse timeuserControlParse = new TimeUsuarioControllerParse(this);
-    private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
+    private ParseObject time;
     private UFController ufControl = new UFController(this);
     private Funcoes funcoes = new Funcoes(this);
 
@@ -86,8 +86,6 @@ public class CadastroTimeActivity extends ActionBarActivity {
 
         spnUF.setAdapter(arrayAdapter2);
         spnUF.setVisibility(View.VISIBLE);
-        //txtEmail = (EditText) findViewById(R.id.cadastro_time_edtEmail);
-        //txtEmail.setVisibility(EditText.VISIBLE);
 
         btnCadastrar = (Button) findViewById(R.id.cadastro_time_btncadastrar);
         btnCadastrar.setOnClickListener(new View.OnClickListener() {
@@ -107,19 +105,13 @@ public class CadastroTimeActivity extends ActionBarActivity {
         if (params != null) {
             tipoAcesso = params.getString("tipoAcesso");
             if (!tipoAcesso.equals("write")) {
-                ParseObject retorno = timeControlParse.buscarTimePorId(params.getString("id_time"));
-                if (retorno != null) {
-                    this.time = timeControlParse.ParseObjectToTimeObject(retorno);
-                }
+                this.time.setObjectId(params.getString("ObjectId").trim());
+                carregarRegistro();
             }
         } else {
             tipoAcesso = "write";
             this.time = null;
             spnUF.setSelection(22);
-        }
-
-        if (this.time != null) {
-            carregarRegistro();
         }
     }
 
@@ -143,30 +135,45 @@ public class CadastroTimeActivity extends ActionBarActivity {
         startActivity(new Intent(this, cls));
     }
 
-    private boolean salvar() {
-        if (validarCampos().isEmpty()) {
-            String nome = txtNome.getText().toString().trim();
-            String cidade = txtCidade.getText().toString().trim().toUpperCase();
-            int id_uf = (int) spnUF.getSelectedItemId();
-            id_uf = id_uf - 1;
+    private void salvar() {
+        String validacao = validarCampos().trim();
+        if (validacao.isEmpty()) {
+            final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando cadastro...");
+            final ParseObject time = new ParseObject("time");
+            time.put("nome", txtNome.getText().toString().trim());
+            time.put("cidade", txtCidade.getText().toString().trim());
+            time.put("id_uf", spnUF.getSelectedItemId());
+            time.saveInBackground(new SaveCallback() {
+                public void done(com.parse.ParseException e) {
+                    if (e == null) {
+                        //Criando timeUsuario
+                        //int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
+                        // ParseObject timeUsuario = new ParseObject("timeUsuario");
+                        // timeUsuario.getRelation("usuario").add(
+                        //         ParseObject.createWithoutData("usuario", Constantes.getUsuarioLogado().getIdParse()));
 
-            Time timeInsert;
-            if (this.time == null) {
-                timeInsert = new Time(nome, cidade, id_uf);
-            } else {
-                timeInsert = new Time(this.time.getId(), nome, cidade, id_uf);
-            }
+                        //timeUsuario.put("inativo", 0);
+                        // timeUsuario.put("tipo_usuario", tipo_usuario);
+                        ParseUser.getCurrentUser().getRelation("times").add(time);
+                        ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
+                            public void done(com.parse.ParseException e) {
+                                if (e == null) {
+                                    cadastroEfetuado();
+                                } else {
+                                    falhaNoCadastro(e);
+                                }
+                                FuncoesParse.dismissProgressBar(progresso);
+                            }
+                        });
+                    } else {
+                        FuncoesParse.dismissProgressBar(progresso);
+                        falhaNoCadastro(e);
+                    }
+                }
+            });
 
-            if (tipoAcesso.equals("edit")) {
-                timeInsert.setId_parse(this.time.getId_parse());
-            }
-
-            //ParseObject ret = timeControlParse.salvar(timeInsert);
-            Salvar salvar = new Salvar(this.context, timeInsert);
-            salvar.execute();
-            return true;
         } else {
-            return false;
+            funcoes.mostrarDialogAlert(1, validacao);
         }
     }
 
@@ -181,21 +188,40 @@ public class CadastroTimeActivity extends ActionBarActivity {
     }
 
     private void carregarRegistro() {
-        txtNome.setText(this.time.getNome());
-        txtCidade.setText(this.time.getCidade());
-        int if_uf = this.time.getId_uf();
-        if_uf = if_uf + 1;
-        spnUF.setSelection(if_uf);
 
-        if (this.tipoAcesso.equals("read")) {
-            txtNome.setEnabled(false);
-            txtCidade.setEnabled(false);
-            spnUF.setEnabled(false);
-        }
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("time");
+        query.getInBackground(this.time.getObjectId().trim(), new GetCallback<ParseObject>() {
+            public void done(ParseObject object, ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    txtNome.setText(object.getString("nome").trim());
+                    txtCidade.setText(object.getString("cidade").trim());
+                    int if_uf = object.getInt("id_uf");
+                    if_uf = if_uf + 1;
+                    spnUF.setSelection(if_uf);
 
-        if (this.tipoAcesso.equals("edit")) {
-            btnCadastrar.setText("Atualizar");
-        }
+                    if (tipoAcesso.equals("read")) {
+                        txtNome.setEnabled(false);
+                        txtCidade.setEnabled(false);
+                        spnUF.setEnabled(false);
+                    }
+                } else {
+                    funcoes.mostrarDialogAlert(1, "");
+                }
+            }
+        });
+    }
+
+    private void cadastroEfetuado() {
+        funcoes.mostrarToast(1);
+        //mudarTela(TimeDetalheActivity.class);
+        //Até a tela de timeDetalhe ficar pronta ele vai levar pra tela de times.
+        mudarTela(TeamActivity.class);
+    }
+
+    private void falhaNoCadastro(com.parse.ParseException e) {
+        funcoes.mostrarToast(2);
     }
 
     @Override
@@ -240,73 +266,4 @@ public class CadastroTimeActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private class Salvar extends AsyncTask<String, Void, ParseObject> {
-
-        private ProgressDialog progress;
-        private Context context;
-        private Time timeSalvar;
-
-        public Salvar(Context context, Time timeInsert) {
-            this.context = context;
-            this.timeSalvar = timeInsert;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            progress = new ProgressDialog(context);
-            progress.setTitle("Salvando...");
-            progress.setMessage("Aguarde");
-            progress.setCancelable(false);
-            progress.setCanceledOnTouchOutside(false);
-            progress.show();
-        }
-
-        @Override
-        protected ParseObject doInBackground(String... params) {
-            final ParseObject timeParse = new ParseObject("time");
-
-            if (timeSalvar.getId_parse() != null && !timeSalvar.getId_parse().isEmpty()) {
-                timeParse.setObjectId(timeSalvar.getId_parse().trim());
-            }
-            timeParse.put("nome", timeSalvar.getNome().trim());
-            timeParse.put("cidade", timeSalvar.getCidade().trim());
-            timeParse.put("id_uf", timeSalvar.getId_uf());
-
-            //Criando timeUsuario
-            int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
-            ParseObject timeUsuario = new ParseObject("timeUsuario");
-            timeUsuario.getRelation("usuario").add(
-                    ParseObject.createWithoutData("usuario", Constantes.getUsuarioLogado().getIdParse()));
-
-            timeUsuario.put("inativo", 0);
-            timeUsuario.put("tipo_usuario", tipo_usuario);
-
-            try {
-                timeParse.save();
-                timeUsuario.getRelation("time").add(timeParse);
-                timeUsuario.save();
-                timeParse.put("salvo", true);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            return timeParse;
-        }
-
-        @Override
-        protected void onPostExecute(ParseObject ret) {
-            if (ret != null && ret.getBoolean("salvo")) {
-                time = timeControlParse.ParseObjectToTimeObject(ret);
-                progress.dismiss();
-                Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
-                toast.show();
-                Bundle parametros = new Bundle();
-                parametros.putString("id_time", time.getId_parse());
-                mudarTela(TimeDetalheActivity.class, parametros);
-
-            } else {
-                progress.dismiss();
-                funcoes.mostrarDialogAlert(1, "Não foi possível salvar. Por favor, tente mais tarde.");
-            }
-        }
-    }
 }

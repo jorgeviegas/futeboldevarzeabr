@@ -13,8 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.sharkweb.fbv.R;
 import br.com.sharkweb.fbv.Util.Constantes;
@@ -29,11 +31,11 @@ import br.com.sharkweb.fbv.model.Time;
 public class TimeListAdapterParse extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private ArrayList<ParseObject> times;
+    private List<ParseObject> times;
     private UFController ufControl;
     private Context context;
 
-    public TimeListAdapterParse(Context context, ArrayList<ParseObject> time) {
+    public TimeListAdapterParse(Context context, List<ParseObject> time) {
         mInflater = LayoutInflater.from(context);
         ufControl = new UFController(context);
         this.times = time;
@@ -68,18 +70,19 @@ public class TimeListAdapterParse extends BaseAdapter {
             itemHolder = (ItemSuporte) view.getTag();
         }
         itemHolder.tvEscolhaTimeNome.setText(times.get(position).getString("nome").toUpperCase());
+
         if (!times.get(position).getObjectId().isEmpty()) {
 
             itemHolder.ivSeparador.setBackgroundColor(context.getResources().getColor(R.color.AzulPrincipal));
             itemHolder.tvLocalTime.setText(times.get(position).getString("cidade").trim().toUpperCase() + " - " +
                     ufControl.selectUFPorId(times.get(position).getInt("id_uf")).get(0).getNome().trim());
 
-            if (Constantes.getUsuarioLogado().getId_time() > 0 &&
+            /*if (ParseUser.getCurrentUser().getRelation("timeFavorito"). > 0 &&
                     (Constantes.getUsuarioLogado().getId_time() == times.get(position).getInt("id_uf"))) {
                 itemHolder.ivFavorito.setImageResource(R.drawable.favorite_star);
             } else {
                 itemHolder.ivFavorito.setImageResource(IGNORE_ITEM_VIEW_TYPE);
-            }
+            }*/
 
         } else {
             itemHolder.ivFavorito.setImageResource(IGNORE_ITEM_VIEW_TYPE);

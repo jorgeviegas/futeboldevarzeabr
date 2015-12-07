@@ -16,16 +16,25 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.parse.GetCallback;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.controller.CaixaController;
 import br.com.sharkweb.fbv.controller.MovimentoController;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.model.Caixa;
 import br.com.sharkweb.fbv.model.Mensalidade;
 import br.com.sharkweb.fbv.model.Movimento;
+import br.com.sharkweb.fbv.model.ParseProxyObject;
 import br.com.sharkweb.fbv.model.Time;
 
 /**
@@ -36,15 +45,11 @@ public class FinanceiroActivity extends AppCompatActivity {
     final Context context = this;
     private Funcoes funcoes = new Funcoes(this);
     private MovimentoController movimentoControl = new MovimentoController(this);
-    private TimeController timeControl = new TimeController(this);
-    private CaixaController caixaControl = new CaixaController(this);
     private double valor = 0;
-    private Caixa caixa;
-    private Time time;
+    private ParseObject caixa;
+    private ParseProxyObject time;
 
     private TextView txtSaldo;
-    private Button btnMovimentos;
-    private Button btnMensalidades;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,33 +62,66 @@ public class FinanceiroActivity extends AppCompatActivity {
 
         txtSaldo = (TextView) findViewById(R.id.txtSaldo);
 
-        Bundle params = getIntent().getExtras();
-        if (params != null) {
-            time = timeControl.selectTimePorId(params.getInt("id_time"),"").get(0);
-        } else {
-            time = null;
+        Intent intent = getIntent();
+        ParseProxyObject ppo = (ParseProxyObject) intent.getSerializableExtra("parseObject");
+        if (ppo != null) {
+            this.time = ppo;
         }
 
         carregarRegistro();
-        atualizarSaldo();
     }
 
     private void carregarRegistro() {
-        ArrayList<Caixa> caixa = caixaControl.selectJogosPorIdTime(time.getId());
-        if (caixa.size() > 0) {
-            this.caixa = caixa.get(0);
-        } else {
-            Caixa caixa2 = new Caixa(time.getId(), 0, 0);
-            Long ret = caixaControl.inserir(caixa2);
-            if (ret > 0) {
-                caixa2.setId(Integer.valueOf(ret.toString()));
-                this.caixa = caixa2;
-            } else {
-                funcoes.mostrarDialogAlert(3, "");
-                return;
+        final Dialog progresso = FuncoesParse.showProgressBar(this.context, "Carregando...");
+        ParseQuery query = new ParseQuery("caixa");
+        query.whereEqualTo("time", ParseObject.createWithoutData("time", time.getObjectId().trim()));
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, com.parse.ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    caixa = parseObject;
+                    atualizarSaldo();
+                } else {
+                    if (e.getCode() == 101) {
+                        criarCaixa();
+                    } else {
+                        funcoes.mostrarToast(4);
+                    }
+                }
             }
-        }
+        });
     }
+
+    private void criarCaixa() {
+        final Dialog progresso = FuncoesParse.showProgressBar(this.context, "Criando novo caixa...");
+        final ParseObject caixaParse = new ParseObject("caixa");
+        caixaParse.put("time", ParseObject.createWithoutData("time", time.getObjectId().trim()));
+        caixaParse.put("saldo", 0.00);
+        caixaParse.put("visivel", true);
+        caixaParse.saveInBackground(new SaveCallback() {
+            public void done(com.parse.ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    caixa = caixaParse;
+                    cadastroEfetuado();
+                    atualizarSaldo();
+                } else {
+                    falhaNoCadastro(e);
+                }
+            }
+        });
+
+    }
+
+    private void cadastroEfetuado() {
+        funcoes.mostrarToast(1);
+    }
+
+    private void falhaNoCadastro(com.parse.ParseException e) {
+        funcoes.mostrarToast(2);
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -127,9 +165,9 @@ public class FinanceiroActivity extends AppCompatActivity {
             btnconfirmar.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     valor = Double.valueOf(tvValor.getText().toString());
+                    dialog.dismiss();
                     movimentoControl.criarMovimento("E", caixa, valor, 0, tvObs.getText().toString().trim());
                     atualizarSaldo();
-                    dialog.dismiss();
                 }
             });
 
@@ -149,9 +187,9 @@ public class FinanceiroActivity extends AppCompatActivity {
             btnconfirmar.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     valor = Double.valueOf(tvValor.getText().toString());
+                    dialog.dismiss();
                     movimentoControl.criarMovimento("R", caixa, valor, 0, tvObs.getText().toString().trim());
                     atualizarSaldo();
-                    dialog.dismiss();
                 }
             });
 
@@ -170,6 +208,6 @@ public class FinanceiroActivity extends AppCompatActivity {
     }
 
     private void atualizarSaldo() {
-        txtSaldo.setText("R$ " + funcoes.formatarNumeroComVirgula(caixa.getSaldo()));
+        txtSaldo.setText("R$ " + funcoes.formatarNumeroComVirgula(caixa.getDouble("saldo")));
     }
 }

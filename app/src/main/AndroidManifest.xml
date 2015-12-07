@@ -1,24 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.com.sharkweb.fbv" >
+    package="br.com.sharkweb.fbv">
 
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <meta-data
+        android:name="com.parse.push.gcm_sender_id"
+        android:value="id:YOUR_SENDER_ID" />
+
     <application
         android:name=".StarterApplication"
         android:allowBackup="true"
         android:icon="@mipmap/icon_ball"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
         <activity
             android:name=".TeamActivity"
             android:label="Selecione um Time" />
         <activity
             android:name=".CadastroTimeActivity"
-            android:label="Cadastro do time" >
+            android:label="Cadastro do time">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".TimeDetalheActivity" />
@@ -36,14 +40,14 @@
 
         <activity
             android:name=".TimeDetalheActivity"
-            android:label="Time" >
+            android:label="Time">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".NewMainActivity" />
         </activity>
         <activity
             android:name=".CalendarioActivity"
-            android:label="Calendario do Time" >
+            android:label="Calendario do Time">
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -51,7 +55,7 @@
         </activity>
         <activity
             android:name=".CadastroJogoActivity"
-            android:label="Jogo" >
+            android:label="Jogo">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".CalendarioActivity" />
@@ -64,35 +68,35 @@
             android:label="@string/title_activity_local" />
         <activity
             android:name=".CadastroLocalActivity"
-            android:label="Local" >
+            android:label="Local">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".LocalActivity" />
         </activity>
         <activity
             android:name=".PosJogoActivity"
-            android:label="@string/title_activity_pos_jogo" >
+            android:label="@string/title_activity_pos_jogo">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".CadastroJogoActivity" />
         </activity>
         <activity
             android:name=".FinanceiroActivity"
-            android:label="Financeiro" >
+            android:label="Financeiro">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".NewMainActivity" />
         </activity>
         <activity
             android:name=".MovimentosActivity"
-            android:label="Histórico de Movimentos" >
+            android:label="Histórico de Movimentos">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".NewMainActivity" />
         </activity>
         <activity
             android:name=".MensalidadesActivity"
-            android:label="Mensalidades" >
+            android:label="Mensalidades">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".NewMainActivity" />
@@ -100,7 +104,7 @@
         <activity
             android:name=".NewMainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

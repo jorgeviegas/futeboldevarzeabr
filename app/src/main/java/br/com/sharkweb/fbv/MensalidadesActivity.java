@@ -274,7 +274,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     double valorMov = Double.valueOf(input.getText().toString());
-                    movimentoControl.criarMovimento("M", caixa, valorMov, mensalidade.getId_usuario(),"");
+                   // movimentoControl.criarMovimento("M", caixa, valorMov, mensalidade.getId_usuario(),"");
 
                     mensalidade.setValor_pago(mensalidade.getValor_pago() +
                             Double.valueOf(input.getText().toString()));

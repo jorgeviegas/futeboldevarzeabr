@@ -13,7 +13,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.sharkweb.fbv.R;
 import br.com.sharkweb.fbv.Util.Funcoes;
@@ -30,12 +33,12 @@ import br.com.sharkweb.fbv.model.Movimento;
 public class MovimentoListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private ArrayList<Movimento> movimentos;
+    private List<ParseObject> movimentos;
     private MovimentoController movimentoControl;
     private Funcoes funcoes;
     private Context context;
 
-    public MovimentoListAdapter(Context context, ArrayList<Movimento> listaMovimentos) {
+    public MovimentoListAdapter(Context context, List<ParseObject> listaMovimentos) {
         this.movimentos = listaMovimentos;
         mInflater = LayoutInflater.from(context);
         movimentoControl = new MovimentoController(context);
@@ -47,7 +50,7 @@ public class MovimentoListAdapter extends BaseAdapter {
         return movimentos.size();
     }
 
-    public Movimento getItem(int position) {
+    public ParseObject getItem(int position) {
         return movimentos.get(position);
     }
 
@@ -71,17 +74,16 @@ public class MovimentoListAdapter extends BaseAdapter {
             itemHolder = (ItemSuporte) view.getTag();
         }
 
-        Movimento movimento = movimentos.get(position);
-        if (movimento != null && movimento.getId() > 0) {
-            itemHolder.tvData.setText(movimento.getData().trim());
-            itemHolder.tvHistorico.setText(movimento.getHistorico().trim());
-            itemHolder.tvValor.setText(funcoes.formatarNumeroComVirgula(movimento.getValor()).trim());
+        if (movimentos.size() > 0) {
+            itemHolder.tvData.setText(movimentos.get(position).getCreatedAt().toString().trim());
+            itemHolder.tvHistorico.setText(movimentos.get(position).getString("historico").trim());
+            itemHolder.tvValor.setText(funcoes.formatarNumeroComVirgula(movimentos.get(position).getDouble("valor")).trim());
 
-            if (movimento.getTipo().equals("E") ||
-                    movimento.getTipo().equals("M")) {
+            if (movimentos.get(position).getString("tipo").equals("E") ||
+                    movimentos.get(position).getString("tipo").equals("M")) {
                 itemHolder.ivTipoMov.setImageResource(R.drawable.plus_blue32);
                 itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.AzulPrincipal));
-            } else if (movimento.getTipo().equals("R")) {
+            } else if (movimentos.get(position).getString("tipo").equals("R")) {
                 itemHolder.ivTipoMov.setImageResource(R.drawable.minus_red_32);
                 itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.vermelhoEscuro));
             }

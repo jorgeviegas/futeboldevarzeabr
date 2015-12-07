@@ -41,6 +41,7 @@ import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.controllerParse.TimeControllerParse;
 import br.com.sharkweb.fbv.controllerParse.TimeUsuarioControllerParse;
+import br.com.sharkweb.fbv.model.ParseProxyObject;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.TimeUsuario;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -82,9 +83,8 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     public void onBackPressed() {
         if (this.esperaRetorno) {
             Intent it = new Intent();
-            if (timeSelecionado != null)
-                it.putExtra("id_time", timeSelecionado.getObjectId().trim());
-            else it.putExtra("id_time", "");
+            ParseProxyObject ppo = new ParseProxyObject(timeSelecionado);
+            it.putExtra("parseObject", ppo);
             setResult(1, it);
         }
         super.onBackPressed();
@@ -201,7 +201,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
             if (esperaRetorno) {
                 this.timeSelecionado = time;
                 //DESABILITADO TEMPORARIAMENTE.
-                //onBackPressed();
+                onBackPressed();
             }
         }
     }

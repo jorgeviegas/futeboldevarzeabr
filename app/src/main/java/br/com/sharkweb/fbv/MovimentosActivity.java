@@ -1,6 +1,7 @@
 package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -18,12 +19,22 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.MovimentoListAdapter;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
+import br.com.sharkweb.fbv.adapter.TimeListAdapterParse;
 import br.com.sharkweb.fbv.controller.CaixaController;
 import br.com.sharkweb.fbv.controller.MovimentoController;
 import br.com.sharkweb.fbv.controller.TimeController;
@@ -32,6 +43,7 @@ import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Caixa;
 import br.com.sharkweb.fbv.model.Movimento;
+import br.com.sharkweb.fbv.model.ParseProxyObject;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
 
@@ -41,11 +53,8 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
     private Spinner spnFiltro;
     private ArrayList<Movimento> listaMovimentos;
     private MovimentoListAdapter adapterMovimentos;
-    private MovimentoController movimentosControl = new MovimentoController(this);
-    private CaixaController caixaControl = new CaixaController(this);
-    private TimeController timeControl = new TimeController(this);
-    private Caixa caixa;
-    private Time time;
+    private ParseObject caixa;
+    private ParseProxyObject time;
     private Funcoes funcoes = new Funcoes();
     final Context context = this;
 
@@ -72,33 +81,37 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
 
         spnFiltro.setAdapter(arrayAdapter2);
         spnFiltro.setVisibility(View.GONE);
-        Bundle params = getIntent().getExtras();
-        if (params != null) {
-            this.time = timeControl.selectTimePorId(params.getInt("id_time"),"").get(0);
-        } else {
-            this.caixa = null;
+
+        Intent intent = getIntent();
+        ParseProxyObject ppo = (ParseProxyObject) intent.getSerializableExtra("parseObject");
+        if (ppo != null) {
+            this.time = ppo;
         }
 
         carregarRegistro();
-        atualizarLista();
         movimentos.setCacheColorHint(Color.TRANSPARENT);
     }
 
     private void carregarRegistro() {
-        ArrayList<Caixa> caixa = caixaControl.selectJogosPorIdTime(time.getId());
-        if (caixa.size() > 0) {
-            this.caixa = caixa.get(0);
-        } else {
-            Caixa caixa2 = new Caixa(time.getId(), 0, 0);
-            Long ret = caixaControl.inserir(caixa2);
-            if (ret > 0) {
-                caixa2.setId(Integer.valueOf(ret.toString()));
-                this.caixa = caixa2;
-            } else {
-                funcoes.mostrarDialogAlert(3, "");
-                return;
+        final Dialog progresso = FuncoesParse.showProgressBar(this.context, "Carregando...");
+        ParseQuery query = new ParseQuery("caixa");
+        query.whereEqualTo("time", ParseObject.createWithoutData("time", time.getObjectId().trim()));
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, com.parse.ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    caixa = parseObject;
+                    atualizarLista();
+                } else {
+                    if (e.getCode() == 101) {
+                        funcoes.mostrarDialogAlert(1, "Não há movimentações até o momento.");
+                    } else {
+                        funcoes.mostrarToast(4);
+                    }
+                }
             }
-        }
+        });
     }
 
     @Override
@@ -135,19 +148,21 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
     }
 
     public void atualizarLista() {
-        if (caixa != null) {
-            listaMovimentos = movimentosControl.selectMovimentosPorIdCaixa(caixa.getId());
-        } else {
-            listaMovimentos = movimentosControl.selectMovimentos();
-        }
-
-        if (listaMovimentos.size() == 0) {
-            ArrayList<Movimento> listaVazia = new ArrayList<Movimento>();
-            listaVazia.add(new Movimento(0, 0, "Nenhum movimento encontrado.", "", 0, "", 0));
-            adapterMovimentos = new MovimentoListAdapter(this, listaVazia);
-        } else
-            adapterMovimentos = new MovimentoListAdapter(this, listaMovimentos);
-        movimentos.setAdapter(adapterMovimentos);
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
+        this.caixa.getRelation("movimentos").getQuery().findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> movimentoList, ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    if (movimentoList.size() == 0) {
+                        //funcoes.mostrarDialogAlert(1, "Não há movimentações até o momento.");
+                    }
+                    adapterMovimentos = new MovimentoListAdapter(context, movimentoList);
+                    movimentos.setAdapter(adapterMovimentos);
+                } else {
+                    funcoes.mostrarToast(4);
+                }
+            }
+        });
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
@@ -164,8 +179,8 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Movimento movimento = adapterMovimentos.getItem(position);
-        if (movimento.getId() != 0) {
+        ParseObject movimento = adapterMovimentos.getItem(position);
+        if (!movimento.getObjectId().isEmpty()) {
 
         }
     }

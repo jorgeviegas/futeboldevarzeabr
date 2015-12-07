@@ -25,6 +25,7 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -39,6 +40,7 @@ import br.com.sharkweb.fbv.controller.UFController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Caixa;
 import br.com.sharkweb.fbv.model.Login;
+import br.com.sharkweb.fbv.model.ParseProxyObject;
 import br.com.sharkweb.fbv.model.Usuario;
 
 public class NewMainActivity extends AppCompatActivity
@@ -49,11 +51,8 @@ public class NewMainActivity extends AppCompatActivity
     private ImageView imgPerfilUusario;
 
     private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
-    private CaixaController caixaControl = new CaixaController(this);
     private PosicaoController posicaoControl = new PosicaoController(this);
-    private LoginController loginControl = new LoginController(this);
     private Funcoes funcoes = new Funcoes(this);
-    private UsuarioController usuarioControl = new UsuarioController(this);
     private UFController ufControl = new UFController(this);
 
     @Override
@@ -104,25 +103,23 @@ public class NewMainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        String id_time = data.getExtras().getString("id_time");
-        Bundle parametros = new Bundle();
-        parametros.putString("id_time", id_time);
-        if (id_time != null && !id_time.isEmpty()) {
+        ParseProxyObject ppo = (ParseProxyObject) data.getSerializableExtra("parseObject");
+        if (ppo != null) {
             switch (requestCode) {
                 case 1:
-                    mudarTela(TimeDetalheActivity.class, parametros);
+                    mudarTela(TimeDetalheActivity.class, ppo);
                     break;
                 case 2:
-                    mudarTela(CalendarioActivity.class, parametros);
+                    mudarTela(CalendarioActivity.class, ppo);
                     break;
                 case 3:
-                    mudarTela(FinanceiroActivity.class, parametros);
+                    mudarTela(FinanceiroActivity.class, ppo);
                     break;
                 case 4:
-                    mudarTela(MovimentosActivity.class, parametros);
+                    mudarTela(MovimentosActivity.class, ppo);
                     break;
                 case 5:
-                    mudarTela(MensalidadesActivity.class, parametros);
+                    mudarTela(MensalidadesActivity.class, ppo);
                     break;
             }
         }
@@ -196,7 +193,7 @@ public class NewMainActivity extends AppCompatActivity
         } else if (id == R.id.main_config) {
             funcoes.mostrarDialogAlert(1, "Função ainda não implementada! Estará disponível nas próximas versões.");
         } else if (id == R.id.main_meustimes) {
-           // funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
+            // funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
             parametros.putBoolean("cadastrar", true);
             mudarTelaComRetorno(TeamActivity.class, parametros, 1);
         } else if (id == R.id.main_calendario) {
@@ -204,13 +201,13 @@ public class NewMainActivity extends AppCompatActivity
             // parametros.putBoolean("cadastrar", false);
             //mudarTelaComRetorno(TeamActivity.class, parametros, 2);
         } else if (id == R.id.main_caixa) {
-            funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
-            // parametros.putBoolean("cadastrar", false);
-            //mudarTelaComRetorno(TeamActivity.class, parametros, 3);
+            //funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
+            parametros.putBoolean("cadastrar", false);
+            mudarTelaComRetorno(TeamActivity.class, parametros, 3);
         } else if (id == R.id.main_movimento) {
-            funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
-            //parametros.putBoolean("cadastrar", false);
-            // mudarTelaComRetorno(TeamActivity.class, parametros, 4);
+            //funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
+            parametros.putBoolean("cadastrar", false);
+            mudarTelaComRetorno(TeamActivity.class, parametros, 4);
         } else if (id == R.id.main_mensalidade) {
             funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
             // parametros.putBoolean("cadastrar", false);
@@ -229,6 +226,13 @@ public class NewMainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    @SuppressWarnings({"rawtypes", "unused"})
+    private void mudarTela(Class cls, ParseProxyObject obj) {
+        Intent intent = new Intent(this, cls);
+        intent.putExtra("parseObject", obj);
+        startActivity(intent);
+    }
+
     @SuppressWarnings("rawtypes")
     private void mudarTela(Class cls) {
         startActivity(new Intent(this, cls));
@@ -239,6 +243,7 @@ public class NewMainActivity extends AppCompatActivity
         Intent intent = new Intent(this, cls);
         startActivityForResult(intent, key);
     }
+
 
     @SuppressWarnings({"rawtypes", "unused"})
     private void mudarTelaComRetorno(Class cls, Bundle parametros, int key) {

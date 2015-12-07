@@ -74,6 +74,9 @@ public class Funcoes {
             case 3:
                 toast.setText("Isso não deveria ter acontecido, vamos trabalhar duro para que isso não se repita!");
                 break;
+            case 4:
+                toast.setText("Falha ao carregar. Por favor, tente novamente.");
+                break;
         }
         toast.show();
     }

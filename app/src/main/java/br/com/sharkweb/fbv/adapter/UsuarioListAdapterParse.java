@@ -13,10 +13,18 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseObject;
+import com.parse.ParseUser;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import br.com.sharkweb.fbv.R;
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
@@ -26,27 +34,24 @@ import br.com.sharkweb.fbv.model.Usuario;
 
 /**
  * @author Tiago Klein
- * Monta os itens da lista de Escolha de loja.
+ *         Monta os itens da lista de Escolha de loja.
  */
 public class UsuarioListAdapterParse extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private List<Usuario> usuarios;
+    private List<ParseObject> usuarios;
     private PosicaoController posicaoControl;
     private TipoUsuarioController tipousuarioControl;
-    private TimeUsuarioController timeUserControl;
-    private Time time;
     private int modelo;
     private Context context;
 
-    public UsuarioListAdapterParse(Context context, List<Usuario> listaUsuarios, Time time, int modelo) {
+    public UsuarioListAdapterParse(Context context, List<ParseObject> listaUsuarios, int modelo) {
+
         this.usuarios = listaUsuarios;
         this.context = context;
         mInflater = LayoutInflater.from(context);
         posicaoControl = new PosicaoController(context);
         tipousuarioControl = new TipoUsuarioController(context);
-        timeUserControl = new TimeUsuarioController(context);
-        this.time = time;
 
         //MODELOS DE ADAPTER:
         //1 - Exibe informarções como jogador;
@@ -59,7 +64,7 @@ public class UsuarioListAdapterParse extends BaseAdapter {
         return usuarios.size();
     }
 
-    public Usuario getItem(int position) {
+    public ParseObject getItem(int position) {
         return usuarios.get(position);
     }
 
@@ -79,50 +84,51 @@ public class UsuarioListAdapterParse extends BaseAdapter {
             itemHolder.ivImagemUsuario = ((ImageView) view.findViewById(R.id.usuariolist_imagemUsuario));
 
             view.setTag(itemHolder);
-        }
-        else {
+        } else {
             itemHolder = (ItemSuporte) view.getTag();
         }
+        if (!this.usuarios.get(position).getObjectId().isEmpty()) {
+            itemHolder.tvUsuarioNome.setText(this.usuarios.get(position).getString("nome").trim());
 
-        Usuario user = usuarios.get(position);
-        itemHolder.tvUsuarioNome.setText(user.getNome());
+            //USUARIO INATIVO NESSE TIME
+            ArrayList<String> configsTimes = (ArrayList<String>) this.usuarios.get(position).get("configTimes");
+            if (configsTimes != null && configsTimes.size() > 0) {
+                for (int i = 0; i < configsTimes.size(); i++) {
+                    Object object = (Object) configsTimes.get(i);
+                    String time = ((ArrayList<String>) object).get(0);
 
-        if (user.getId() > 0) {
+                    if (Constantes.getTimeSelecionado().getObjectId().equals(time)) {
+                        String inativo = ((ArrayList<String>) object).get(1);
+                        String tipoUsuario = ((ArrayList<String>) object).get(2);
 
-            if (time !=null){
-                //USUARIO INATIVO NESSE TIME
-                ArrayList<TimeUsuario> timeUser = timeUserControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(),user.getId());
+                        if (Integer.valueOf(inativo) == 1) {
+                            itemHolder.tvUsuarioNome.setTextColor(Color.RED);
+                        }
+                        itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(
+                                Integer.valueOf(tipoUsuario)).get(0).getTipo().trim());
 
-                if (!timeUser.isEmpty() && timeUser.get(0).getInativo() > 0){
-                    itemHolder.tvUsuarioNome.setTextColor(Color.RED);
+                        if (tipousuarioControl.selectTiposUsuariosPorId(Integer.valueOf(tipoUsuario))
+                                .get(0).getTipo().equals("Administrador"))
+                            itemHolder.tvTipoUsuario.setTextColor(context.getResources().getColor(R.color.greengreen));
+                    }
                 }
-                if (!timeUser.isEmpty()){
-                    itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(
-                            timeUser.get(0).getId_tipo_usuario()).get(0).getTipo());
-
-                    if (tipousuarioControl.selectTiposUsuariosPorId(
-                            timeUser.get(0).getId_tipo_usuario()).get(0).getTipo().equals("Administrador"))
-                    itemHolder.tvTipoUsuario.setTextColor(context.getResources().getColor(R.color.greengreen));
-                }else {
-                    itemHolder.tvTipoUsuario.setText("");
-                    //itemHolder.tvTipoUsuario.setText(tipousuarioControl.selectTiposUsuariosPorId(user.getId_tipo()).get(0).getTipo());
-                }
-            }else {
-                itemHolder.tvTipoUsuario.setText("");
+            } else {
+                itemHolder.tvTipoUsuario.setText("Pendente");
+                itemHolder.tvTipoUsuario.setTextColor(Color.RED);
             }
 
-            switch (modelo){
-                case 1:
-                    itemHolder.tvUsuarioPosicao.setText(posicaoControl.selectPosicaoPorId(user.getId_posicao()).get(0).getNome());
-                case 2:
-                    itemHolder.tvUsuarioPosicao.setText(user.getApelido());
-            }
-
-            itemHolder.ivImagemUsuario.setImageResource(R.drawable.parson);
-        }else{
-            itemHolder.tvUsuarioPosicao.setText("");
+        } else {
             itemHolder.tvTipoUsuario.setText("");
         }
+
+        switch (modelo) {
+            case 1:
+                // itemHolder.tvUsuarioPosicao.setText(posicaoControl.selectPosicaoPorId(user.getId_posicao()).get(0).getNome());
+            case 2:
+                itemHolder.tvUsuarioPosicao.setText(this.usuarios.get(position).getString("username").trim());
+        }
+        itemHolder.ivImagemUsuario.setImageResource(R.drawable.parson);
+
         return view;
     }
 
@@ -131,6 +137,7 @@ public class UsuarioListAdapterParse extends BaseAdapter {
         public TextView tvUsuarioPosicao;
         public TextView tvTipoUsuario;
         public ImageView ivImagemUsuario;
-
     }
 }
+
+

@@ -197,10 +197,12 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ParseObject time = adapterTimes.getItem(position);
+
+        //Setando o time selecionado na pesquisa.
+        Constantes.setTimeSelecionado(time);
         if (!time.getObjectId().isEmpty()) {
             if (esperaRetorno) {
                 this.timeSelecionado = time;
-                //DESABILITADO TEMPORARIAMENTE.
                 onBackPressed();
             }
         }

@@ -57,16 +57,16 @@ public class MovimentoController {
         return movimentoDAO.selectMovimentosPorIdCaixa(id_caixa);
     }
 
-    public void criarMovimento(String tipo, final ParseObject caixa, double valor, int id_usuario, String obs) {
+    public void criarMovimento(String tipo, final ParseObject time, double valor, int id_usuario, String obs) {
         String historico = "";
         if (tipo.equals("R")) {
             historico = "Retirada manual";
-            caixa.put("saldo", caixa.getDouble("saldo") - valor);
+            time.put("valorEmCaixa", time.getDouble("valorEmCaixa") - valor);
         } else if (tipo.equals("E")) {
             historico = "Entrada manual";
-            caixa.put("saldo", caixa.getDouble("saldo") + valor);
+            time.put("valorEmCaixa", time.getDouble("valorEmCaixa") + valor);
         } else if (tipo.equals("M")) {
-            caixa.put("saldo", caixa.getDouble("saldo") + valor);
+            time.put("valorEmCaixa", time.getDouble("valorEmCaixa") + valor);
             historico = "Pgto. Mensalidade";
             if (id_usuario > 0) {
                 historico = historico + ": \n" + ParseUser.getCurrentUser().getString("nome").trim();
@@ -78,7 +78,7 @@ public class MovimentoController {
 
         final Dialog progresso = FuncoesParse.showProgressBar(this.context, "Criando movimento...");
         final ParseObject movimento = new ParseObject("movimento");
-        movimento.put("caixa", caixa);
+        movimento.put("time", time);
         movimento.put("historico", historico);
         movimento.put("valor", valor);
         movimento.put("tipo", tipo);
@@ -86,8 +86,8 @@ public class MovimentoController {
         movimento.saveInBackground(new SaveCallback() {
             public void done(com.parse.ParseException e) {
                 if (e == null) {
-                    caixa.getRelation("movimentos").add(movimento);
-                    caixa.saveInBackground(new SaveCallback() {
+                    time.getRelation("movimentos").add(movimento);
+                    time.saveInBackground(new SaveCallback() {
                         public void done(com.parse.ParseException e) {
                             FuncoesParse.dismissProgressBar(progresso);
                             if (e == null) {

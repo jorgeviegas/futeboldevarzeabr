@@ -25,13 +25,22 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.MensalidadeListAdapter;
 import br.com.sharkweb.fbv.adapter.MovimentoListAdapter;
 import br.com.sharkweb.fbv.controller.CaixaController;
@@ -42,6 +51,7 @@ import br.com.sharkweb.fbv.model.Caixa;
 import br.com.sharkweb.fbv.model.Jogo;
 import br.com.sharkweb.fbv.model.Mensalidade;
 import br.com.sharkweb.fbv.model.Movimento;
+import br.com.sharkweb.fbv.model.ParseProxyObject;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
 
@@ -54,9 +64,8 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
     private MovimentoController movimentoControl = new MovimentoController(this);
     private CaixaController caixaControl = new CaixaController(this);
     private TimeController timeControl = new TimeController(this);
-    private Usuario user;
-    private Time time;
-    private Caixa caixa;
+    private ParseObject time;
+    private ParseObject caixa;
     private Funcoes funcoes = new Funcoes(this);
     final Context context = this;
 
@@ -79,15 +88,9 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
         mensalidades = (ListView) findViewById(R.id.mensalidadeslist_listviewmensalidades);
         mensalidades.setOnItemClickListener(this);
 
-        Bundle params = getIntent().getExtras();
-        if (params != null) {
-            time = timeControl.selectTimePorId(params.getInt("id_time"),"").get(0);
-        } else {
-            caixa = null;
-            time = null;
-        }
+        //Setando o objeto ParseObject do time.
+        this.time = Constantes.getTimeSelecionado();
 
-        carregarRegistro();
         atualizarLista();
         mensalidades.setCacheColorHint(Color.TRANSPARENT);
     }
@@ -120,7 +123,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-       // getMenuInflater().inflate(R.menu.menu_mensalidade, menu);
+        // getMenuInflater().inflate(R.menu.menu_mensalidade, menu);
         return true;
     }
 
@@ -143,34 +146,45 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
         return super.onOptionsItemSelected(item);
     }
 
-    private void carregarRegistro() {
-        ArrayList<Caixa> caixa = caixaControl.selectJogosPorIdTime(time.getId());
-        if (caixa.size() > 0) {
-            this.caixa = caixa.get(0);
-        } else {
-            Caixa caixa2 = new Caixa(time.getId(), 0, 0);
-            Long ret = caixaControl.inserir(caixa2);
-            if (ret > 0) {
-                caixa2.setId(Integer.valueOf(ret.toString()));
-                this.caixa = caixa2;
-            } else {
-                funcoes.mostrarDialogAlert(3, "");
-                return;
+   /* private void carregarRegistro() {
+        final Dialog progresso = FuncoesParse.showProgressBar(this.context, "Carregando...");
+        ParseQuery query = new ParseQuery("caixa");
+        query.whereEqualTo("time", ParseObject.createWithoutData("time", time.getObjectId().trim()));
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, com.parse.ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    caixa = parseObject;
+                    atualizarLista();
+                } else {
+                    if (e.getCode() == 101) {
+                        funcoes.mostrarDialogAlert(1, "Não há movimentações até o momento.");
+                    } else {
+                        funcoes.mostrarToast(4);
+                    }
+                }
             }
-        }
-    }
+        });
+    }*/
 
     public void atualizarLista() {
 
-        listaMensalidades = mensalidadeControl.selectMensalidadesPorIdTime(this.time.getId());
-
-        if (listaMensalidades.size() == 0) {
-            ArrayList<Mensalidade> listaVazia = new ArrayList<Mensalidade>();
-            listaVazia.add(new Mensalidade(0, 0, "", 0, 0, 0, 0));
-            adapterMensalidade = new MensalidadeListAdapter(this, listaVazia);
-        } else
-            adapterMensalidade = new MensalidadeListAdapter(this, listaMensalidades);
-        mensalidades.setAdapter(adapterMensalidade);
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
+        this.time.getRelation("mensalidades").getQuery().findInBackground(new FindCallback<ParseObject>() {
+            public void done(List<ParseObject> mensalidadeList, ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    if (mensalidadeList.size() == 0) {
+                        //funcoes.mostrarDialogAlert(1, "Não há movimentações até o momento.");
+                    }
+                    adapterMensalidade = new MensalidadeListAdapter(context, mensalidadeList);
+                    mensalidades.setAdapter(adapterMensalidade);
+                } else {
+                    funcoes.mostrarToast(4);
+                }
+            }
+        });
     }
 
     private void inserirUsuario(final int id_usuario) {
@@ -221,13 +235,13 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
                             data = funcoes.transformarDataEmString(ret);
                         }
 
-                        Mensalidade mensalidade = new Mensalidade(time.getId(), id_usuario, data,
+                        Mensalidade mensalidade = new Mensalidade(time.getInt(""), id_usuario, data,
                                 frequencia.getSelectedItemPosition(), valor, 0, diaVencimento);
                         mensalidadeControl.inserir(mensalidade);
                         atualizarLista();
                         dialog.dismiss();
-                       // Snackbar.make(v, "Mensalidade criada com sucesso.", Snackbar.LENGTH_SHORT)
-                         //       .setAction("Action", null).show();
+                        // Snackbar.make(v, "Mensalidade criada com sucesso.", Snackbar.LENGTH_SHORT)
+                        //       .setAction("Action", null).show();
                     } else {
                         funcoes.mostrarDialogAlert(1, "O valor não pode ser menor ou igual à zero.");
                     }
@@ -254,7 +268,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-        final Mensalidade mensalidade = adapterMensalidade.getItem(position);
+        /*final Mensalidade mensalidade = adapterMensalidade.getItem(position);
 
         if (mensalidade.getId() != 0 && mensalidade.getValor() != mensalidade.getValor_pago()) {
             double valorFaltante = mensalidade.getValor() - mensalidade.getValor_pago();
@@ -266,7 +280,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
                     InputType.TYPE_NUMBER_FLAG_DECIMAL |
                     InputType.TYPE_NUMBER_FLAG_SIGNED);
 
-            input.setText(String.valueOf(funcoes.formatarNumeroComVirgula(valorFaltante)).replace(",","."));
+            input.setText(String.valueOf(funcoes.formatarNumeroComVirgula(valorFaltante)).replace(",", "."));
             builder.setView(input);
             input.setHint("Valor:");
 
@@ -274,7 +288,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     double valorMov = Double.valueOf(input.getText().toString());
-                   // movimentoControl.criarMovimento("M", caixa, valorMov, mensalidade.getId_usuario(),"");
+                    // movimentoControl.criarMovimento("M", caixa, valorMov, mensalidade.getId_usuario(),"");
 
                     mensalidade.setValor_pago(mensalidade.getValor_pago() +
                             Double.valueOf(input.getText().toString()));
@@ -303,7 +317,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
             });
 
             builder.show();
-        }
+        }*/
     }
 
     @SuppressWarnings({"rawtypes", "unused"})

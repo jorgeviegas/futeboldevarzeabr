@@ -26,7 +26,9 @@ import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
@@ -53,6 +55,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
     private Button btnCadastrar;
     private Button btnCancelar;
 
+    private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
     private ParseObject time;
     private UFController ufControl = new UFController(this);
     private Funcoes funcoes = new Funcoes(this);
@@ -139,30 +142,32 @@ public class CadastroTimeActivity extends ActionBarActivity {
         String validacao = validarCampos().trim();
         if (validacao.isEmpty()) {
             final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando cadastro...");
+
+            final int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
+
             final ParseObject time = new ParseObject("time");
             time.put("nome", txtNome.getText().toString().trim());
             time.put("cidade", txtCidade.getText().toString().trim());
             time.put("id_uf", spnUF.getSelectedItemId());
+            time.getRelation("usuarios").add(ParseUser.getCurrentUser());
             time.saveInBackground(new SaveCallback() {
                 public void done(com.parse.ParseException e) {
                     if (e == null) {
-                        //Criando timeUsuario
-                        //int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
-                        // ParseObject timeUsuario = new ParseObject("timeUsuario");
-                        // timeUsuario.getRelation("usuario").add(
-                        //         ParseObject.createWithoutData("usuario", Constantes.getUsuarioLogado().getIdParse()));
-
-                        //timeUsuario.put("inativo", 0);
-                        // timeUsuario.put("tipo_usuario", tipo_usuario);
                         ParseUser.getCurrentUser().getRelation("times").add(time);
+                        ArrayList<String> configs = new ArrayList<String>();
+                        configs.add(time.getObjectId());
+                        configs.add("0");
+                        configs.add(String.valueOf(tipo_usuario));
+                        ParseUser.getCurrentUser().add("configTimes", configs);
                         ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
                             public void done(com.parse.ParseException e) {
+                                FuncoesParse.dismissProgressBar(progresso);
+                                Constantes.setTimeSelecionado(time);
                                 if (e == null) {
                                     cadastroEfetuado();
                                 } else {
                                     falhaNoCadastro(e);
                                 }
-                                FuncoesParse.dismissProgressBar(progresso);
                             }
                         });
                     } else {
@@ -171,7 +176,6 @@ public class CadastroTimeActivity extends ActionBarActivity {
                     }
                 }
             });
-
         } else {
             funcoes.mostrarDialogAlert(1, validacao);
         }
@@ -215,9 +219,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
 
     private void cadastroEfetuado() {
         funcoes.mostrarToast(1);
-        //mudarTela(TimeDetalheActivity.class);
-        //Até a tela de timeDetalhe ficar pronta ele vai levar pra tela de times.
-        mudarTela(TeamActivity.class);
+        mudarTela(TimeDetalheActivity.class);
     }
 
     private void falhaNoCadastro(com.parse.ParseException e) {

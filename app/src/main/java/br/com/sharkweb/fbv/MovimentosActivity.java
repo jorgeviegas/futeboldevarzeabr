@@ -51,10 +51,8 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
 
     private ListView movimentos;
     private Spinner spnFiltro;
-    private ArrayList<Movimento> listaMovimentos;
     private MovimentoListAdapter adapterMovimentos;
-    private ParseObject caixa;
-    private ParseProxyObject time;
+    private ParseObject time;
     private Funcoes funcoes = new Funcoes();
     final Context context = this;
 
@@ -82,36 +80,10 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
         spnFiltro.setAdapter(arrayAdapter2);
         spnFiltro.setVisibility(View.GONE);
 
-        Intent intent = getIntent();
-        ParseProxyObject ppo = (ParseProxyObject) intent.getSerializableExtra("parseObject");
-        if (ppo != null) {
-            this.time = ppo;
-        }
+        this.time = Constantes.getTimeSelecionado();
 
-        carregarRegistro();
+        atualizarLista();
         movimentos.setCacheColorHint(Color.TRANSPARENT);
-    }
-
-    private void carregarRegistro() {
-        final Dialog progresso = FuncoesParse.showProgressBar(this.context, "Carregando...");
-        ParseQuery query = new ParseQuery("caixa");
-        query.whereEqualTo("time", ParseObject.createWithoutData("time", time.getObjectId().trim()));
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, com.parse.ParseException e) {
-                FuncoesParse.dismissProgressBar(progresso);
-                if (e == null) {
-                    caixa = parseObject;
-                    atualizarLista();
-                } else {
-                    if (e.getCode() == 101) {
-                        funcoes.mostrarDialogAlert(1, "Não há movimentações até o momento.");
-                    } else {
-                        funcoes.mostrarToast(4);
-                    }
-                }
-            }
-        });
     }
 
     @Override
@@ -149,7 +121,7 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
 
     public void atualizarLista() {
         final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
-        this.caixa.getRelation("movimentos").getQuery().findInBackground(new FindCallback<ParseObject>() {
+        this.time.getRelation("movimentos").getQuery().findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> movimentoList, ParseException e) {
                 FuncoesParse.dismissProgressBar(progresso);
                 if (e == null) {

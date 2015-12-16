@@ -13,8 +13,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import br.com.sharkweb.fbv.R;
 import br.com.sharkweb.fbv.Util.Funcoes;
@@ -32,13 +35,13 @@ import br.com.sharkweb.fbv.model.Usuario;
 public class MensalidadeListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private ArrayList<Mensalidade> mensalidades;
+    private List<ParseObject> mensalidades;
     private MensalidadeController mensalidadeControl;
     private UsuarioController usuarioControl;
     private Funcoes funcoes;
     private Context context;
 
-    public MensalidadeListAdapter(Context context, ArrayList<Mensalidade> listaMensalidades) {
+    public MensalidadeListAdapter(Context context, List<ParseObject> listaMensalidades) {
         this.mensalidades = listaMensalidades;
         mInflater = LayoutInflater.from(context);
         mensalidadeControl = new MensalidadeController(context);
@@ -51,7 +54,7 @@ public class MensalidadeListAdapter extends BaseAdapter {
         return mensalidades.size();
     }
 
-    public Mensalidade getItem(int position) {
+    public ParseObject getItem(int position) {
         return mensalidades.get(position);
     }
 
@@ -77,17 +80,15 @@ public class MensalidadeListAdapter extends BaseAdapter {
             itemHolder = (ItemSuporte) view.getTag();
         }
 
-        Mensalidade mensalidade = mensalidades.get(position);
-        if (mensalidade != null && mensalidade.getId() > 0) {
-            Usuario user = usuarioControl.selectUsuarioPorId(mensalidade.getId_usuario(),"").get(0);
+        if (!mensalidades.get(position).getObjectId().isEmpty()) {
 
-            itemHolder.tvData.setText(mensalidade.getData().trim());
-            itemHolder.tvUsuario.setText(user.getNome().trim());
-            itemHolder.tvValor.setText(funcoes.formatarNumeroComVirgula(mensalidade.getValor()).trim());
-            itemHolder.tvValorPago.setText(funcoes.formatarNumeroComVirgula(mensalidade.getValor_pago()).trim());
+            itemHolder.tvData.setText(mensalidades.get(position).getDate("data").toString());
+            itemHolder.tvUsuario.setText("");
+            itemHolder.tvValor.setText(funcoes.formatarNumeroComVirgula(mensalidades.get(position).getDouble("valor")).trim());
+            itemHolder.tvValorPago.setText(funcoes.formatarNumeroComVirgula(mensalidades.get(position).getDouble("valorPago")).trim());
             itemHolder.ivVencido.setBackgroundColor(context.getResources().getColor(R.color.AzulPrincipal));
 
-            if (mensalidade.getValor() == mensalidade.getValor_pago()) {
+            if (mensalidades.get(position).getDouble("valor") == mensalidades.get(position).getDouble("valorPago")) {
                 itemHolder.ivCheck.setImageResource(R.drawable.check_green_oval_48);
                 itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.AzulPrincipal));
                 itemHolder.tvValorPago.setTextColor(context.getResources().getColor(R.color.AzulPrincipal));
@@ -96,7 +97,7 @@ public class MensalidadeListAdapter extends BaseAdapter {
                 itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.AzulPrincipal));
                 itemHolder.tvValorPago.setTextColor(context.getResources().getColor(R.color.vermelhoEscuro));
                 try {
-                    if (funcoes.transformarStringEmData(mensalidade.getData()).before(funcoes.getDate())) {
+                    if (mensalidades.get(position).getDate("data").before(funcoes.getDate())) {
                         itemHolder.ivVencido.setBackgroundColor(context.getResources().getColor(R.color.vermelhoEscuro));
                     }
                 } catch (Exception e) {

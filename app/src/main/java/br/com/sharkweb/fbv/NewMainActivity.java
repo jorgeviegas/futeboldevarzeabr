@@ -208,7 +208,7 @@ public class NewMainActivity extends AppCompatActivity
             parametros.putBoolean("cadastrar", false);
             mudarTelaComRetorno(TeamActivity.class, parametros, 4);
         } else if (id == R.id.main_mensalidade) {
-            funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
+            //funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
             // parametros.putBoolean("cadastrar", false);
            // mudarTela(BuscaTimesActivity.class);
             mudarTelaComRetorno(TeamActivity.class, parametros, 5);

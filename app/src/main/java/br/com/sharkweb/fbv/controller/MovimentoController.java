@@ -57,7 +57,7 @@ public class MovimentoController {
         return movimentoDAO.selectMovimentosPorIdCaixa(id_caixa);
     }
 
-    public void criarMovimento(String tipo, final ParseObject time, double valor, int id_usuario, String obs) {
+    public void criarMovimento(String tipo, final ParseObject time, double valor, String nomeUsuario, String obs) {
         String historico = "";
         if (tipo.equals("R")) {
             historico = "Retirada manual";
@@ -68,8 +68,8 @@ public class MovimentoController {
         } else if (tipo.equals("M")) {
             time.put("valorEmCaixa", time.getDouble("valorEmCaixa") + valor);
             historico = "Pgto. Mensalidade";
-            if (id_usuario > 0) {
-                historico = historico + ": \n" + ParseUser.getCurrentUser().getString("nome").trim();
+            if (!nomeUsuario.isEmpty()) {
+                historico = historico + ": \n" + nomeUsuario.trim();
             }
         }
         if (!obs.isEmpty()) {

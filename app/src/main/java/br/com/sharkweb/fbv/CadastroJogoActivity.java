@@ -1,55 +1,35 @@
 package br.com.sharkweb.fbv;
 
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.content.DialogInterface;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.MaskFilter;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.parse.GetCallback;
-import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
-import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.controller.JogoController;
 import br.com.sharkweb.fbv.controller.LocalController;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
-import br.com.sharkweb.fbv.model.Jogo;
 import br.com.sharkweb.fbv.model.Local;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -284,7 +264,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
     }
 
     private void carregarJogo(String objectId) {
-        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando...");
+       /* final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando...");
         ParseQuery busca = new ParseQuery("jogo");
         busca.getInBackground(objectId.trim(), new GetCallback() {
             @Override
@@ -296,7 +276,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
                     funcoes.mostrarToast(4);
                 }
             }
-        });
+        });*/
     }
 
     public void EscolheTime(int key) {
@@ -309,7 +289,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
     public void EscolheUsuario(int key) {
         Bundle parametros = new Bundle();
         parametros.putBoolean("esperaRetorno", true);
-        mudarTelaComRetorno(UsuariosActivity.class, parametros, key);
+        mudarTelaComRetorno(UsuariosTimeActivity.class, parametros, key);
     }
 
     public void EscolheLocal(int key) {

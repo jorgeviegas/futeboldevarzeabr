@@ -60,7 +60,6 @@ public class FuncoesParse {
         return retorno;
     }
 
-
     public static void enviarConviteTime(String username) {
        /* ParseInstallation installation = ParseInstallation.getCurrentInstallation();
         installation.put("username", username);

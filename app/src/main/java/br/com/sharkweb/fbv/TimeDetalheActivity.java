@@ -185,13 +185,13 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         //ArrayList<String> configsTimes = (ArrayList<String>) ParseUser.getCurrentUser().get("configTimes");
 
         //Somente usuarios administradores do time podem usar o menu inserir jogador
-       /* if (timeusuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
+        if (FuncoesParse.isAdmin()) {
             m1.setVisible(true);
             m2.setVisible(true);
         } else {
             m2.setVisible(false);
             m1.setVisible(false);
-        }*/
+        }
         return true;
     }
 

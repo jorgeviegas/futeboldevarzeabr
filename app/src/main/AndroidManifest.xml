@@ -69,7 +69,7 @@
                 android:value=".CalendarioActivity" />
         </activity>
         <activity
-            android:name=".UsuariosActivity"
+            android:name=".UsuariosTimeActivity"
             android:label="Selecione um usuario" />
         <activity
             android:name=".LocalActivity"

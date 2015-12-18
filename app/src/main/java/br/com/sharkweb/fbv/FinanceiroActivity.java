@@ -109,7 +109,7 @@ public class FinanceiroActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     valor = Double.valueOf(tvValor.getText().toString());
                     dialog.dismiss();
-                    movimentoControl.criarMovimento("E", time, valor, 0, tvObs.getText().toString().trim());
+                    movimentoControl.criarMovimento("E", time, valor, "", tvObs.getText().toString().trim());
                     atualizarSaldo();
                 }
             });
@@ -131,7 +131,7 @@ public class FinanceiroActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     valor = Double.valueOf(tvValor.getText().toString());
                     dialog.dismiss();
-                    movimentoControl.criarMovimento("R", time, valor, 0, tvObs.getText().toString().trim());
+                    movimentoControl.criarMovimento("R", time, valor, "", tvObs.getText().toString().trim());
                     atualizarSaldo();
                 }
             });

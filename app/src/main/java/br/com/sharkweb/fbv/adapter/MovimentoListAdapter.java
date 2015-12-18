@@ -77,10 +77,7 @@ public class MovimentoListAdapter extends BaseAdapter {
 
         if (movimentos.size() > 0) {
 
-            //GregorianCalendar teste= new GregorianCalendar();
-            //teste.getTimeZone();
-
-            itemHolder.tvData.setText(movimentos.get(position).getCreatedAt().toGMTString());
+            itemHolder.tvData.setText(funcoes.transformarDataEmString(movimentos.get(position).getCreatedAt()).trim());
             itemHolder.tvHistorico.setText(movimentos.get(position).getString("historico").trim());
             itemHolder.tvValor.setText(funcoes.formatarNumeroComVirgula(movimentos.get(position).getDouble("valor")).trim());
 

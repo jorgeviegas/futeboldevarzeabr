@@ -82,8 +82,8 @@ public class MensalidadeListAdapter extends BaseAdapter {
 
         if (!mensalidades.get(position).getObjectId().isEmpty()) {
 
-            itemHolder.tvData.setText(mensalidades.get(position).getDate("data").toString());
-            itemHolder.tvUsuario.setText("");
+            itemHolder.tvData.setText(funcoes.transformarDataEmString(mensalidades.get(position).getDate("data")).trim());
+            itemHolder.tvUsuario.setText(mensalidades.get(position).getString("nomeUsuario").trim());
             itemHolder.tvValor.setText(funcoes.formatarNumeroComVirgula(mensalidades.get(position).getDouble("valor")).trim());
             itemHolder.tvValorPago.setText(funcoes.formatarNumeroComVirgula(mensalidades.get(position).getDouble("valorPago")).trim());
             itemHolder.ivVencido.setBackgroundColor(context.getResources().getColor(R.color.AzulPrincipal));

@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
+import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.adapter.TimeListAdapterParse;
@@ -30,15 +31,16 @@ import br.com.sharkweb.fbv.adapter.UsuarioListAdapterParse;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
+import br.com.sharkweb.fbv.model.Sessao;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
 
-public class UsuariosActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class UsuariosTimeActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private ListView usuarios;
-    private ArrayList<Usuario> listaUsuarios;
     private UsuarioListAdapterParse adapterUsuarios;
     private ParseObject time;
+    private Funcoes funcoes = new Funcoes(this);
     private ParseObject usuarioSelecionado;
     final Context context = this;
 
@@ -105,23 +107,19 @@ public class UsuariosActivity extends ActionBarActivity implements AdapterView.O
     }
 
     public void atualizarLista() {
-
-        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando...");
-
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.findInBackground(new FindCallback<ParseUser>() {
-            public void done(List<ParseUser> usuarioList, ParseException e) {
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Buscando Jogadores...");
+        this.time.getRelation("usuarios").getQuery().findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
                 FuncoesParse.dismissProgressBar(progresso);
                 if (e == null) {
-                    // adapterUsuarios = new UsuarioListAdapterParse(context, usuarioList, 1);
-                    //usuarios.setAdapter(adapterUsuarios);
+                    adapterUsuarios = new UsuarioListAdapterParse(context, list, 2);
+                    usuarios.setAdapter(adapterUsuarios);
                 } else {
-
+                    funcoes.mostrarToast(3);
                 }
             }
         });
-
-
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
@@ -141,6 +139,8 @@ public class UsuariosActivity extends ActionBarActivity implements AdapterView.O
         ParseObject user = adapterUsuarios.getItem(position);
         if (!user.getObjectId().isEmpty()) {
             this.usuarioSelecionado = user;
+            Sessao sessao = new Sessao(1, user, "User");
+            Constantes.setSessao(sessao);
             onBackPressed();
         }
     }

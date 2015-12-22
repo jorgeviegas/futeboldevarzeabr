@@ -17,7 +17,11 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.parse.GetCallback;
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -25,6 +29,7 @@ import java.util.Locale;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.controller.JogoController;
 import br.com.sharkweb.fbv.controller.LocalController;
@@ -39,19 +44,16 @@ import static android.app.TimePickerDialog.*;
 public class CadastroJogoActivity extends ActionBarActivity {
 
     private ParseObject time;
-    private Time time2;
-    private Usuario juiz;
-    private Local local;
+    private ParseObject time2;
+    private ParseObject local;
+    private ParseObject juiz;
+
     private String data;
-    private TimeController timecontrol = new TimeController(this);
-    private JogoController jogoControl = new JogoController(this);
-    private UsuarioController userControl = new UsuarioController(this);
-    private LocalController localControl = new LocalController(this);
     private Funcoes funcoes = new Funcoes(this);
     private String tipoAcesso;
     private ParseObject jogo;
     final Context context = this;
-    private TimeListAdapter adapterTimeList;
+    private LocalController localControl = new LocalController(this);
 
     private EditText tvTime1;
     private EditText tvTime2;
@@ -93,20 +95,16 @@ public class CadastroJogoActivity extends ActionBarActivity {
             if (tipoAcesso.equals("write")) {
                 time = Constantes.getTimeSelecionado();
                 data = params.getString("data");
+                jogo = new ParseObject("jogo");
             } else {
-                carregarJogo(params.getString("jogo"));
+                this.jogo = Constantes.getSessao().getObjeto();
+                Constantes.setSessao(null);
             }
 
         } else {
-            time = null;
-            time2 = null;
             data = null;
-            jogo = null;
-            juiz = null;
             local = null;
-
         }
-
 
         tvTime1 = (EditText) findViewById(R.id.cadastrojogo_time1);
         tvTime1.setVisibility(EditText.VISIBLE);
@@ -199,7 +197,6 @@ public class CadastroJogoActivity extends ActionBarActivity {
             }
         });
 
-
         btnSearchLocal = (Button) findViewById(R.id.cadastro_jogo_btnlocal);
         btnSearchLocal.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -233,56 +230,52 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        Integer id_time = data.getExtras().getInt("id_time");
-        Integer id_usuario = data.getExtras().getInt("id_usuario");
-        Integer id_local = data.getExtras().getInt("id_local");
-
-      /*  if (id_time != null && id_time > 0) {
-            Time timeret = timecontrol.selectTimePorId(id_time, "").get(0);
-            switch (requestCode) {
-                case 1:
-                    this.time = timeret;
-                    tvTime1.setText(this.time.getNome().trim().toUpperCase());
-                    break;
-                case 2:
-                    this.time2 = timeret;
-                    tvTime2.setText(this.time2.getNome().trim().toUpperCase());
-            }
-        } else if (id_usuario != null && id_usuario > 0 && requestCode == 3) {
-            Usuario user = userControl.selectUsuarioPorId(id_usuario, "").get(0);
-            this.juiz = user;
-            tvJuiz.setText(this.juiz.getNome().toString().trim().toUpperCase());
-        } else if (id_local != null && id_local > 0 && requestCode == 4) {
-            Local loc = localControl.selectLocalPorId(id_local).get(0);
-            this.local = loc;
-            tvLocal.setText(this.local.getNome());
-            tvEnderecoLocal.setText(localControl.getEnderecoCompleto(this.local));
-        }
-*/
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    private void carregarJogo(String objectId) {
-       /* final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando...");
-        ParseQuery busca = new ParseQuery("jogo");
-        busca.getInBackground(objectId.trim(), new GetCallback() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                FuncoesParse.dismissProgressBar(progresso);
-                if (e == null) {
-                    jogo = parseObject;
+        switch (requestCode) {
+            case 1:
+                if (Constantes.getSessao() != null) {
+                    this.time = Constantes.getSessao().getObjeto();
+                    tvTime1.setText(this.time.getString("nome").trim().toUpperCase());
+                    Constantes.setSessao(null);
+                    tvTime1.setEnabled(false);
                 } else {
-                    funcoes.mostrarToast(4);
+                    tvTime1.setEnabled(true);
+                    tvTime1.setText("");
                 }
-            }
-        });*/
+                break;
+            case 2:
+                if (Constantes.getSessao() != null) {
+                    this.time2 = Constantes.getSessao().getObjeto();
+                    tvTime2.setText(this.time2.getString("nome").trim().toUpperCase());
+                    Constantes.setSessao(null);
+                    tvTime2.setEnabled(false);
+                } else {
+                    tvTime2.setEnabled(true);
+                    tvTime2.setText("");
+                }
+                break;
+            case 3:
+                //Usuario user = userControl.selectUsuarioPorId(id_usuario, "").get(0);
+                //this.juiz = user;
+                break;
+            case 4:
+                if (Constantes.getSessao() != null) {
+                    this.local = Constantes.getSessao().getObjeto();
+                    Constantes.setSessao(null);
+                    tvLocal.setText(this.local.getString("nome"));
+                    tvEnderecoLocal.setText(localControl.getEnderecoCompleto(this.local));
+                } else {
+
+                }
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     public void EscolheTime(int key) {
         Bundle parametros = new Bundle();
         parametros.putBoolean("esperaRetorno", true);
         parametros.putBoolean("cadastrar", false);
+        parametros.putBoolean("buscarTodosTimes", true);
         mudarTelaComRetorno(TeamActivity.class, parametros, key);
     }
 
@@ -294,7 +287,6 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
     public void EscolheLocal(int key) {
         Bundle parametros = new Bundle();
-        parametros.putBoolean("esperaRetorno", true);
         mudarTelaComRetorno(LocalActivity.class, parametros, key);
     }
 
@@ -305,24 +297,24 @@ public class CadastroJogoActivity extends ActionBarActivity {
     }
 
     private void carregarRegistro() {
-        /*if (jogo != null) {
-            time = timecontrol.selectTimePorId(jogo.getId_time(), "").get(0);
-            time2 = timecontrol.selectTimePorId(jogo.getId_time2(), "").get(0);
-            if (jogo.getId_juiz() > 0) {
-                juiz = userControl.selectUsuarioPorId(jogo.getId_juiz(), "").get(0);
-                tvJuiz.setText(juiz.getNome().trim().toUpperCase());
+        if (jogo != null) {
+            if (jogo.getString("nomeJuiz") != null) {
+                tvJuiz.setText(jogo.getString("nomeJuiz").trim().toUpperCase());
             }
-            local = localControl.selectLocalPorId(jogo.getId_local()).get(0);
-            tvEnderecoLocal.setText(localControl.getEnderecoCompleto(this.local));
+            if (jogo.getString("enderecoCompletoLocal") != null) {
+                tvEnderecoLocal.setText(jogo.getString("enderecoCompletoLocal").trim().toUpperCase());
+            }
+            if (jogo.getString("nomeLocal") != null){
+                tvLocal.setText(jogo.getString("nomeLocal").trim().toUpperCase());
+            }
 
-            tvLocal.setText(local.getNome().trim().toUpperCase());
-            tvTime1.setText(time.getNome().trim().toUpperCase());
+            tvTime1.setText(jogo.getString("nomeTime").trim().toUpperCase());
             btnSearchTime1.setEnabled(false);
-            tvTime2.setText(time2.getNome().trim().toUpperCase());
-            tvData.setText(jogo.getData().trim());
-            tvHora.setText(jogo.getHora().trim());
-            tvHorafinal.setText(jogo.getHoraFinal().trim());
-        }*/
+            tvTime2.setText(jogo.getString("nomeTime2").trim().toUpperCase());
+            tvData.setText(funcoes.transformarDataEmString(jogo.getDate("data")).trim());
+            tvHora.setText(jogo.getString("hora").trim());
+            tvHorafinal.setText(jogo.getString("horaFinal").trim());
+        }
 
         if (tipoAcesso.equals("read")) {
             tvHora.setEnabled(false);
@@ -343,16 +335,53 @@ public class CadastroJogoActivity extends ActionBarActivity {
     private void salvar() {
         String validacao = validar();
         if (validacao.isEmpty()) {
-            int juiz = 0;
-            if (this.juiz != null) {
-                juiz = this.juiz.getId();
-            }
 
-            //Snackbar.make(getCurrentFocus(), "Cadastro salvo com sucesso.", Snackbar.LENGTH_SHORT)
-            //       .setAction("Action", null).show();
-            Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
-            toast.show();
-            onBackPressed();
+            final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando jogo...");
+            if (this.time != null) {
+                this.jogo.put("time", this.time);
+            }
+            if (this.time2 != null) {
+                this.jogo.put("time2", this.time2);
+            }
+            if (this.juiz != null) {
+                this.jogo.put("juiz", this.juiz);
+            }
+            this.jogo.put("nomeTime", tvTime1.getText().toString().trim());
+            this.jogo.put("nomeTime2", tvTime2.getText().toString().trim());
+            this.jogo.put("nomeLocal", tvLocal.getText().toString().trim());
+            this.jogo.put("nomeJuiz", tvJuiz.getText().toString().trim());
+            this.jogo.put("enderecoCompletoLocal", tvEnderecoLocal.getText().toString().trim());
+            try {
+                this.jogo.put("data", funcoes.transformarStringEmData(tvData.getText().toString().trim()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            this.jogo.put("hora", tvHora.getText().toString().trim());
+            this.jogo.put("horaFinal", tvHorafinal.getText().toString().trim());
+            this.jogo.put("inativo", false);
+            this.jogo.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        Constantes.getTimeSelecionado().getRelation("jogos").add(jogo);
+                        Constantes.getTimeSelecionado().saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                FuncoesParse.dismissProgressBar(progresso);
+                                if (e == null) {
+                                    funcoes.mostrarToast(1);
+                                    onBackPressed();
+                                } else {
+                                    funcoes.mostrarToast(2);
+                                }
+                            }
+                        });
+                    } else {
+                        FuncoesParse.dismissProgressBar(progresso);
+                        funcoes.mostrarToast(2);
+                    }
+                }
+            });
         } else {
             funcoes.mostrarDialogAlert(1, validacao);
         }
@@ -424,10 +453,10 @@ public class CadastroJogoActivity extends ActionBarActivity {
     };
 
     private String validar() {
-        if (time == null) {
+        if (time == null && tvTime1.getText().toString().trim().isEmpty()) {
             return "Ops.. Faltou informar quem é o time da casa!";
         }
-        if (time2 == null) {
+        if (time2 == null && tvTime2.getText().toString().trim().isEmpty()) {
             return "Ops.. Faltou informar quem é o time visitante!";
         }
         if (tvData.getText().toString().trim().equals("")) {
@@ -451,7 +480,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem m1 = menu.findItem(R.id.cadastro_jogo_action_excluir);
         MenuItem m2 = menu.findItem(R.id.cadastro_jogo_action_abrirposjogo);
-        if (this.jogo != null && !this.jogo.getObjectId().isEmpty()) {
+        if (this.jogo != null) {
             m1.setVisible(true);
             m2.setVisible(true);
         } else {
@@ -495,9 +524,9 @@ public class CadastroJogoActivity extends ActionBarActivity {
         //CHAMANDO TELA DE PÓS JOGO
         if (id == R.id.cadastro_jogo_action_abrirposjogo) {
             //funcoes.mostrarDialogAlert(1, "Está quase pronto! Estamos com essa função no forno!");
-            Bundle parametros = new Bundle();
+            //Bundle parametros = new Bundle();
             //parametros.putInt("id_jogo", jogo.getId());
-            mudarTela(PosJogoActivity.class, parametros);
+            //mudarTela(PosJogoActivity.class, parametros);
             return true;
         }
 

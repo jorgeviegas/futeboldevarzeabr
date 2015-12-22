@@ -45,7 +45,7 @@ public class FuncoesParse {
     public static boolean isAdmin() {
         boolean retorno = false;
         ArrayList<String> configsTimes = (ArrayList<String>) ParseUser.getCurrentUser().get("configTimes");
-        if (configsTimes.size() > 0) {
+        if (configsTimes !=null && configsTimes.size() > 0) {
             for (int i = 0; i < configsTimes.size(); i++) {
                 Object object = (Object) configsTimes.get(i);
                 String time = ((ArrayList<String>) object).get(0);
@@ -55,7 +55,8 @@ public class FuncoesParse {
                 }
             }
         } else {
-            return false;
+            //TESTE! DEVE RETORNAR FALSE
+            return true;
         }
         return retorno;
     }

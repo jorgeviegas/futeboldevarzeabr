@@ -1,5 +1,7 @@
 package br.com.sharkweb.fbv;
 
+import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,13 +15,19 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.SaveCallback;
+
 import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.controller.LocalController;
 import br.com.sharkweb.fbv.controller.UFController;
 import br.com.sharkweb.fbv.model.Local;
@@ -37,9 +45,9 @@ public class CadastroLocalActivity extends ActionBarActivity {
     private Button btnCancelar;
 
     private String tipoAcesso;
-    private Local local;
+    private ParseObject local;
+    private Context context = this;
 
-    private LocalController localControl = new LocalController(this);
     private UFController ufControl = new UFController(this);
     private Funcoes funcoes = new Funcoes(this);
 
@@ -101,11 +109,13 @@ public class CadastroLocalActivity extends ActionBarActivity {
 
             switch (tipoAcesso) {
                 case "edit":
-                    this.local = localControl.selectLocalPorId(params.getInt("id_local")).get(0);
-                    carregarRegistro();
-
+                    if (Constantes.getSessao() != null && Constantes.getSessao().getNomeObjeto().equals("local")) {
+                        this.local = Constantes.getSessao().getObjeto();
+                        Constantes.setSessao(null);
+                        carregarRegistro();
+                    }
                 case "write":
-                    this.local = null;
+                    this.local = new ParseObject("local");
                     spnUF.setSelection(22);
             }
         }
@@ -114,24 +124,19 @@ public class CadastroLocalActivity extends ActionBarActivity {
     @Override
     public void onBackPressed() {
         Intent it = new Intent();
-        if (this.local != null)
-            it.putExtra("id_local", this.local.getId());
-        else it.putExtra("id_local", 0);
         setResult(1, it);
         super.onBackPressed();
     }
 
     private void carregarRegistro() {
-        tvtNome.setText(this.local.getNome().trim());
-        tvEndereco.setText(this.local.getEndereco().trim());
-        tvCidade.setText(this.local.getCidade().trim().toUpperCase());
-        tvNumero.setText(this.local.getNumero());
+        tvtNome.setText(this.local.getString("nome").trim());
+        tvEndereco.setText(this.local.getString("endereco").trim());
+        tvCidade.setText(this.local.getString("cidade").trim().toUpperCase());
+        tvNumero.setText(String.valueOf(this.local.getInt("numero")));
 
-        int if_uf = this.local.getId_uf();
+        int if_uf = this.local.getInt("id_uf");
         if_uf = if_uf + 1;
         spnUF.setSelection(if_uf);
-
-        //tvEnderecoLocal.setText(this.);
     }
 
     private void salvar() {
@@ -144,34 +149,27 @@ public class CadastroLocalActivity extends ActionBarActivity {
             if (!tvNumero.getText().toString().isEmpty()) {
                 numero = Integer.valueOf(tvNumero.getText().toString().trim());
             }
-            
-            Local localinsert = new Local(tvtNome.getText().toString().trim(),
-                    tvEndereco.getText().toString().trim(),
-                    numero,
-                    tvCidade.getText().toString().trim(),
-                    id_uf);
 
-            Long retorno = null;
-            switch (tipoAcesso) {
-                case "edit":
-                    localinsert.setId(this.local.getId());
-                    retorno = localControl.alterar(localinsert);
-                case "write":
-                    retorno = localControl.inserir(localinsert);
-            }
-
-            if (retorno > 0) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
-                toast.show();
-                this.local = localinsert;
-                onBackPressed();
-            } else {
-                Toast toast = Toast.makeText(getApplicationContext(), "Erro ao cadastrar o local", Toast.LENGTH_LONG);
-                toast.show();
-            }
-
+            final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando local...");
+            local.put("nome", tvtNome.getText().toString().trim());
+            local.put("endereco", tvEndereco.getText().toString().trim());
+            local.put("numero", numero);
+            local.put("municipio", tvCidade.getText().toString().trim());
+            local.put("id_uf", id_uf);
+            local.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    FuncoesParse.dismissProgressBar(progresso);
+                    if (e == null) {
+                        funcoes.mostrarToast(1);
+                        onBackPressed();
+                    } else {
+                        funcoes.mostrarToast(2);
+                    }
+                }
+            });
         } else {
-            funcoes.mostrarDialogAlert(1,ret);
+            funcoes.mostrarDialogAlert(1, ret);
         }
     }
 

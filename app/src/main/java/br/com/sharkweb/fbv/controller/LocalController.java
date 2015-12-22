@@ -2,6 +2,8 @@ package br.com.sharkweb.fbv.controller;
 
 import android.content.Context;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
 
 import br.com.sharkweb.fbv.DAO.LocalDAO;
@@ -44,16 +46,16 @@ public class LocalController {
         localDAO.excluirTodosLocais();
     }
 
-    public String getEnderecoCompleto(Local local) {
+    public String getEnderecoCompleto(ParseObject local) {
         String endereco = "";
-        if (!local.getEndereco().isEmpty()){
-            endereco = endereco +funcoes.PrimeiraLetraMaiuscula(local.getEndereco().trim())+", ";
+        if (!local.getString("endereco").isEmpty()) {
+            endereco = endereco + funcoes.PrimeiraLetraMaiuscula(local.getString("endereco").trim()) + ", ";
         }
-        if (local.getNumero() > 0){
-            endereco = endereco +String.valueOf(local.getNumero()).trim()+", ";
+        if (local.getInt("numero") > 0) {
+            endereco = endereco + String.valueOf(local.getInt("numero")).trim() + ", ";
         }
-        if (!local.getCidade().isEmpty()){
-            endereco = endereco +local.getCidade().trim().toUpperCase();
+        if (!local.getString("municipio").isEmpty()) {
+            endereco = endereco + local.getString("municipio").trim().toUpperCase();
         }
 
         return endereco;

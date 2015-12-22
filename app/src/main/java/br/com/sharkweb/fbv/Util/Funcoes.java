@@ -132,6 +132,20 @@ public class Funcoes {
         return null;
     }
 
+    public Date getFirstDayOfTheMonth(Date data) {
+        Calendar c = Calendar.getInstance();   // this takes current date
+        c.setTime(data);
+        c.set(Calendar.DAY_OF_MONTH, 1);
+        return c.getTime();
+    }
+
+    public Date getLastDayOfTheMonth(Date data) {
+        Calendar c = Calendar.getInstance();
+        c.setTime(data);
+        c.set(Calendar.DAY_OF_MONTH, c.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return c.getTime();
+    }
+
     public Date setDateTime(String data) throws ParseException {
         return new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").parse(data);
     }

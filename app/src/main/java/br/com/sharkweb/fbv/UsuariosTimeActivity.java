@@ -1,5 +1,6 @@
 package br.com.sharkweb.fbv;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -11,27 +12,36 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
+import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
+import br.com.sharkweb.fbv.adapter.TimeListAdapterParse;
 import br.com.sharkweb.fbv.adapter.UsuarioListAdapter;
+import br.com.sharkweb.fbv.adapter.UsuarioListAdapterParse;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
+import br.com.sharkweb.fbv.model.Sessao;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
 
-public class UsuariosActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class UsuariosTimeActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private ListView usuarios;
-    private ArrayList<Usuario> listaUsuarios;
-    private UsuarioListAdapter adapterUsuarios;
-    private TimeController timesControl = new TimeController(this);
-    private TipoUsuarioController tipouserControl = new TipoUsuarioController(this);
-    private Usuario user;
-    private UsuarioController userControl = new UsuarioController(this);
-    private Usuario usuarioSelecionado;
+    private UsuarioListAdapterParse adapterUsuarios;
+    private ParseObject time;
+    private Funcoes funcoes = new Funcoes(this);
+    private ParseObject usuarioSelecionado;
     final Context context = this;
 
     @Override
@@ -45,14 +55,7 @@ public class UsuariosActivity extends ActionBarActivity implements AdapterView.O
         usuarios = (ListView) findViewById(R.id.usuarioslist_listviewusuarios);
         usuarios.setOnItemClickListener(this);
 
-        Bundle params = getIntent().getExtras();
-        if (params != null) {
-
-        } else {
-            this.user = null;
-        }
-
-        this.user = userControl.selectUsuarioPorId(Constantes.getUsuarioLogado().getId(),"").get(0);
+        this.time = Constantes.getTimeSelecionado();
 
         atualizarLista();
         usuarios.setBackgroundColor(Color.WHITE);
@@ -60,24 +63,24 @@ public class UsuariosActivity extends ActionBarActivity implements AdapterView.O
 
     @Override
     public void onBackPressed() {
-            Intent it = new Intent();
-            if (usuarioSelecionado != null)
-                it.putExtra("id_usuario",usuarioSelecionado.getId());
-            else it.putExtra("id_usuario",0);
-            setResult(1, it);
+        Intent it = new Intent();
+        if (usuarioSelecionado != null)
+            it.putExtra("usuario", usuarioSelecionado.getObjectId());
+        else it.putExtra("usuario", "");
+        setResult(1, it);
         super.onBackPressed();
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-       // MenuItem m1 = menu.findItem(R.id.time_action_cadastrar);
+        // MenuItem m1 = menu.findItem(R.id.time_action_cadastrar);
         return true;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-       // getMenuInflater().inflate(R.menu.menu_team, menu);
+        // getMenuInflater().inflate(R.menu.menu_team, menu);
         return true;
     }
 
@@ -89,10 +92,10 @@ public class UsuariosActivity extends ActionBarActivity implements AdapterView.O
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-       // if (id == R.id.time_action_cancelar) {
+        // if (id == R.id.time_action_cancelar) {
         //    onBackPressed();
-       //     return true;
-       // }
+        //     return true;
+        // }
 
         if (id == android.R.id.home) {
             onBackPressed();
@@ -103,18 +106,20 @@ public class UsuariosActivity extends ActionBarActivity implements AdapterView.O
         return super.onOptionsItemSelected(item);
     }
 
-    public void atualizarLista(){
-
-       listaUsuarios = userControl.selectUsuarios(false);
-
-        if(listaUsuarios.size() == 0){
-            ArrayList<Usuario> listaVazia = new ArrayList<Usuario>();
-            listaVazia.add(new Usuario(0, "Nenhum usuário encontrado.", "", "","", 0, 0, 0, "", "",""));
-            adapterUsuarios = new UsuarioListAdapter(this, listaVazia,null,2);
-        }
-        else
-            adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios,null,2);
-            usuarios.setAdapter(adapterUsuarios);
+    public void atualizarLista() {
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Buscando Jogadores...");
+        this.time.getRelation("usuarios").getQuery().findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    adapterUsuarios = new UsuarioListAdapterParse(context, list, 2);
+                    usuarios.setAdapter(adapterUsuarios);
+                } else {
+                    funcoes.mostrarToast(3);
+                }
+            }
+        });
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
@@ -128,12 +133,15 @@ public class UsuariosActivity extends ActionBarActivity implements AdapterView.O
     private void mudarTela(Class cls) {
         startActivity(new Intent(this, cls));
     }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Usuario user = adapterUsuarios.getItem(position);
-        if(user.getId() != 0){
-             this.usuarioSelecionado = user;
-                onBackPressed();
+        ParseObject user = adapterUsuarios.getItem(position);
+        if (!user.getObjectId().isEmpty()) {
+            this.usuarioSelecionado = user;
+            Sessao sessao = new Sessao(1, user, "User");
+            Constantes.setSessao(sessao);
+            onBackPressed();
         }
     }
 }

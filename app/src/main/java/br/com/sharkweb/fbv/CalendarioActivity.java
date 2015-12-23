@@ -2,6 +2,7 @@ package br.com.sharkweb.fbv;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -19,9 +20,11 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.JogoListAdapter;
 import br.com.sharkweb.fbv.controller.JogoController;
 import br.com.sharkweb.fbv.controller.TimeController;
@@ -32,6 +35,10 @@ import br.com.sharkweb.fbv.model.Time;
 
 import android.widget.CalendarView.OnDateChangeListener;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+
 import static android.graphics.Color.WHITE;
 
 public class CalendarioActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
@@ -41,16 +48,13 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
     private Date dataSelecionada;
     private Button btnHoje;
     private Button btnNovoJogo;
-    private Time time;
+    private ParseObject time;
     private ListView listaDeJogos;
-    private ArrayList<Jogo> listaJogos;
+    private List<ParseObject> listaDeJogosDoTime;
     private JogoListAdapter adapterJogos;
 
     final Context context = this;
     private Funcoes funcoes = new Funcoes(this);
-    private TimeController timecontrol = new TimeController(this);
-    private JogoController jogoControl = new JogoController(this);
-    private TipoUsuarioController tipoUserControl = new TipoUsuarioController(this);
     private TimeUsuarioController timeUsuarioControl = new TimeUsuarioController(this);
 
     @Override
@@ -60,18 +64,9 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
 
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        // actionBar.setIcon(R.drawable.calendar);
-        // actionBar.setDisplayShowHomeEnabled(true);
 
         jogos = (ListView) findViewById(R.id.calendario_listaJogos);
-        //jogos.setOnItemClickListener(this);
-
-        Bundle params = getIntent().getExtras();
-        if (params != null) {
-            time = timecontrol.selectTimePorId(params.getInt("id_time"),"").get(0);
-        } else {
-            time = null;
-        }
+        this.time = Constantes.getTimeSelecionado();
 
         listaDeJogos = (ListView) findViewById(R.id.calendario_listaJogos);
         listaDeJogos.setBackgroundColor(Color.WHITE);
@@ -94,8 +89,7 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         btnNovoJogo.setVisibility(View.VISIBLE);
         btnNovoJogo.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (timeUsuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
-
+                if (FuncoesParse.isAdmin()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
                     builder.setTitle("Pergunta");
@@ -106,7 +100,7 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                             Bundle parametros = new Bundle();
-                            parametros.putInt("id_time", time.getId());
+                            //parametros.putInt("id_time", time.getId());
                             parametros.putString("data", funcoes.transformarDataEmString(dataSelecionada));
                             parametros.putString("tipoAcesso", "write");
                             mudarTelaComRetorno(CadastroJogoActivity.class, parametros, 1);
@@ -126,7 +120,7 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         });
 
         initializeCalendar();
-        atualizarLista();
+        buscarJogos();
     }
 
     @Override
@@ -139,20 +133,35 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+    public void buscarJogos() {
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando...");
+
+        this.time.getRelation("jogos").getQuery().findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> listJogos, ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    listaDeJogosDoTime = listJogos;
+                } else {
+                    funcoes.mostrarToast(4);
+                    listaDeJogosDoTime = null;
+                }
+                atualizarLista();
+            }
+        });
+    }
 
     public void atualizarLista() {
-
-        //ArrayList<Jogo> teste = jogoControl.selectJogos();
-
-        listaJogos = jogoControl.selectJogosPorIdTimeEData(time.getId(), funcoes.transformarDataEmString(dataSelecionada));
-
-        if (listaJogos.size() == 0) {
-            ArrayList<Jogo> listaVazia = new ArrayList<Jogo>();
-            listaVazia.add(new Jogo(0, 0, 0, 0, "", "", "", 0, 0));
-            adapterJogos = new JogoListAdapter(this, listaVazia);
-        } else
-            adapterJogos = new JogoListAdapter(this, listaJogos);
-        listaDeJogos.setAdapter(adapterJogos);
+        List<ParseObject> lista = null;
+        for (int i = 0; i < listaDeJogosDoTime.size(); i++) {
+            if (listaDeJogosDoTime.get(i).getDate("data").equals(funcoes.getDate())) {
+                lista.add(listaDeJogosDoTime.get(i));
+            }
+        }
+        if (lista != null) {
+            adapterJogos = new JogoListAdapter(this, lista);
+            listaDeJogos.setAdapter(adapterJogos);
+        }
     }
 
     @SuppressLint("NewApi")
@@ -175,14 +184,6 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                //Toast.makeText(getApplicationContext(), dataSelecionada.toString(), Toast.LENGTH_SHORT).show();
-                //setSelected(view);
-                //Toast.makeText(getApplicationContext(), day + "/" + month + "/" + year, Toast.LENGTH_LONG).show();
-            }
-        });
-        calendario.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                System.out.println("alo amigo ligado");
             }
         });
 
@@ -254,16 +255,16 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Jogo jogo = adapterJogos.getItem(position);
-        if (jogo != null && jogo.getId() > 0) {
+        ParseObject jogo = adapterJogos.getItem(position);
+        if (jogo != null && !jogo.getObjectId().isEmpty()) {
             String tipoAcesso = "read";
             //Somente usuarios administradores podem usar o menu cadastrar
-            if (timeUsuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
+            if (timeUsuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), 0)) {
                 tipoAcesso = "edit";
             }
             Bundle parametros = new Bundle();
             parametros.putString("tipoAcesso", tipoAcesso);
-            parametros.putInt("id_jogo", jogo.getId());
+            //parametros.putInt("id_jogo", jogo.getId());
             mudarTelaComRetorno(CadastroJogoActivity.class, parametros, 1);
         }
     }

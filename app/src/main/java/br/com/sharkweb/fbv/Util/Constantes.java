@@ -1,5 +1,8 @@
 package br.com.sharkweb.fbv.Util;
 
+import com.parse.ParseObject;
+
+import br.com.sharkweb.fbv.model.Sessao;
 import br.com.sharkweb.fbv.model.Usuario;
 
 /**
@@ -10,6 +13,8 @@ public class Constantes {
     public static Usuario usuarioLogado;
     public static String PARSE_APPLICATION_ID;
     public static String PARSE_CLIENT_KEY;
+    public static ParseObject timeSelecionado;
+    public static Sessao sessao;
 
     public Constantes() {
     }
@@ -36,5 +41,21 @@ public class Constantes {
 
     public static void setParseClientKey(String parseClientKey) {
         PARSE_CLIENT_KEY = parseClientKey;
+    }
+
+    public static ParseObject getTimeSelecionado() {
+        return timeSelecionado;
+    }
+
+    public static void setTimeSelecionado(ParseObject timeSelecionado) {
+        Constantes.timeSelecionado = timeSelecionado;
+    }
+
+    public static Sessao getSessao() {
+        return sessao;
+    }
+
+    public static void setSessao(Sessao sessao) {
+        Constantes.sessao = sessao;
     }
 }

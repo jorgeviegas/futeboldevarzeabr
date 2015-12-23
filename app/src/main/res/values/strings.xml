@@ -29,4 +29,5 @@
     <string name="title_activity_usuario_detalhe">Detalhe</string>
     <string name="title_activity_financeiro2">Financeiro</string>
     <string name="title_activity_new_main">NewMainActivity</string>
+    <string name="title_activity_busca_times">Map</string>
 </resources>

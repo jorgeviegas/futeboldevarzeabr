@@ -46,8 +46,7 @@ public class FinanceiroActivity extends AppCompatActivity {
     private Funcoes funcoes = new Funcoes(this);
     private MovimentoController movimentoControl = new MovimentoController(this);
     private double valor = 0;
-    private ParseObject caixa;
-    private ParseProxyObject time;
+    private ParseObject time;
 
     private TextView txtSaldo;
 
@@ -62,66 +61,10 @@ public class FinanceiroActivity extends AppCompatActivity {
 
         txtSaldo = (TextView) findViewById(R.id.txtSaldo);
 
-        Intent intent = getIntent();
-        ParseProxyObject ppo = (ParseProxyObject) intent.getSerializableExtra("parseObject");
-        if (ppo != null) {
-            this.time = ppo;
-        }
+        this.time = Constantes.getTimeSelecionado();
 
-        carregarRegistro();
+        atualizarSaldo();
     }
-
-    private void carregarRegistro() {
-        final Dialog progresso = FuncoesParse.showProgressBar(this.context, "Carregando...");
-        ParseQuery query = new ParseQuery("caixa");
-        query.whereEqualTo("time", ParseObject.createWithoutData("time", time.getObjectId().trim()));
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, com.parse.ParseException e) {
-                FuncoesParse.dismissProgressBar(progresso);
-                if (e == null) {
-                    caixa = parseObject;
-                    atualizarSaldo();
-                } else {
-                    if (e.getCode() == 101) {
-                        criarCaixa();
-                    } else {
-                        funcoes.mostrarToast(4);
-                    }
-                }
-            }
-        });
-    }
-
-    private void criarCaixa() {
-        final Dialog progresso = FuncoesParse.showProgressBar(this.context, "Criando novo caixa...");
-        final ParseObject caixaParse = new ParseObject("caixa");
-        caixaParse.put("time", ParseObject.createWithoutData("time", time.getObjectId().trim()));
-        caixaParse.put("saldo", 0.00);
-        caixaParse.put("visivel", true);
-        caixaParse.saveInBackground(new SaveCallback() {
-            public void done(com.parse.ParseException e) {
-                FuncoesParse.dismissProgressBar(progresso);
-                if (e == null) {
-                    caixa = caixaParse;
-                    cadastroEfetuado();
-                    atualizarSaldo();
-                } else {
-                    falhaNoCadastro(e);
-                }
-            }
-        });
-
-    }
-
-    private void cadastroEfetuado() {
-        funcoes.mostrarToast(1);
-    }
-
-    private void falhaNoCadastro(com.parse.ParseException e) {
-        funcoes.mostrarToast(2);
-    }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -166,7 +109,7 @@ public class FinanceiroActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     valor = Double.valueOf(tvValor.getText().toString());
                     dialog.dismiss();
-                    movimentoControl.criarMovimento("E", caixa, valor, 0, tvObs.getText().toString().trim());
+                    movimentoControl.criarMovimento("E", time, valor, "", tvObs.getText().toString().trim());
                     atualizarSaldo();
                 }
             });
@@ -188,7 +131,7 @@ public class FinanceiroActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     valor = Double.valueOf(tvValor.getText().toString());
                     dialog.dismiss();
-                    movimentoControl.criarMovimento("R", caixa, valor, 0, tvObs.getText().toString().trim());
+                    movimentoControl.criarMovimento("R", time, valor, "", tvObs.getText().toString().trim());
                     atualizarSaldo();
                 }
             });
@@ -208,6 +151,6 @@ public class FinanceiroActivity extends AppCompatActivity {
     }
 
     private void atualizarSaldo() {
-        txtSaldo.setText("R$ " + funcoes.formatarNumeroComVirgula(caixa.getDouble("saldo")));
+        txtSaldo.setText("R$ " + funcoes.formatarNumeroComVirgula(this.time.getDouble("valorEmCaixa")));
     }
 }

@@ -29,7 +29,11 @@ import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseRelation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import org.xml.sax.helpers.ParserAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +43,7 @@ import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.adapter.UsuarioListAdapter;
+import br.com.sharkweb.fbv.adapter.UsuarioListAdapterParse;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
@@ -55,14 +60,12 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     private TextView tvNomeTime;
     private CheckBox chkInativo;
     private Funcoes funcoes = new Funcoes(this);
-    private ArrayList<Usuario> listaUsuarios;
-    private ArrayList<TimeUsuario> listaTimesUsuario;
+    private List<ParseObject> listaUsuarios;
 
-    private ParseProxyObject time;
+    private ParseObject time;
     private ListView listaJogadores;
-    private UsuarioListAdapter adapterUsuarios;
+    private UsuarioListAdapterParse adapterUsuarios;
     final Context context = this;
-    private UsuarioController usuarioControl = new UsuarioController(this);
     private String m_Text = "";
 
     @Override
@@ -73,12 +76,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-        ParseProxyObject ppo = (ParseProxyObject) intent.getSerializableExtra("parseObject");
-        if (ppo != null) {
-            this.time = ppo;
-        }
-
         tvNomeTime = (TextView) findViewById(R.id.timeDetalhe_tvNomeTime);
         tvNomeTime.setVisibility(TextView.VISIBLE);
 
@@ -87,9 +84,12 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         chkInativo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                atualizarLista();
+                //atualizarLista();
             }
         });
+
+        //Setando o objeto ParseObject do time.
+        this.time = Constantes.getTimeSelecionado();
 
         tvNomeTime.setText(" " + funcoes.PrimeiraLetraMaiuscula(this.time.getString("nome").trim()));
         listaJogadores = (ListView) findViewById(R.id.timeDetalhe_listJogadores);
@@ -98,7 +98,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         listaJogadores.setOnItemClickListener(this);
         listaJogadores.setOnItemLongClickListener(this);
         //listaJogadores.setCacheColorHint(Color.TRANSPARENT);
-
 
         buscarUsuarios();
 
@@ -109,9 +108,9 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
         switch (requestCode) {
             case 1:
-                Integer id_usuario = data.getExtras().getInt("id_usuario");
-                if (id_usuario != null && id_usuario > 0) {
-                    inserirJogador(id_usuario);
+                String objectIdUsuario = data.getExtras().getString("usuario");
+                if (!objectIdUsuario.isEmpty()) {
+                    inserirJogador(objectIdUsuario);
                 }
                 break;
         }
@@ -120,54 +119,55 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
     private void buscarUsuarios() {
         final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
-
-        ParseQuery buscaTime = new ParseQuery("time");
-        buscaTime.getInBackground(this.time.getObjectId().trim(), new GetCallback<ParseObject>() {
+        this.time.getRelation("usuarios").getQuery().findInBackground(new FindCallback<ParseObject>() {
             @Override
-            public void done(ParseObject parseObject, ParseException e) {
+            public void done(List<ParseObject> list, ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
                 if (e == null) {
-                    parseObject.getRelation("usuarios").getQuery().findInBackground(new FindCallback<ParseObject>() {
-                        public void done(List<ParseObject> usuarioList, ParseException e) {
-                            FuncoesParse.dismissProgressBar(progresso);
-                            if (e == null) {
-
-                            } else {
-
-                            }
-                        }
-                    });
+                    listaUsuarios = list;
+                    atualizarLista();
                 } else {
-                    FuncoesParse.dismissProgressBar(progresso);
+                    funcoes.mostrarToast(3);
                 }
             }
         });
     }
 
     public void atualizarLista() {
-        listaUsuarios = new ArrayList<Usuario>();
-
-        if (!chkInativo.isChecked()) {
-            //listaTimesUsuario = timeusuarioControl.selectTimeUsuarioPorIdTime(this.time.getId());
-        } else {
-            //listaTimesUsuario = timeusuarioControl.selectTimeUsuarioPorIdTimeComInativos(this.time.getId());
-        }
-
-        for (int i = 0; i < listaTimesUsuario.size(); i++) {
-            listaUsuarios.add(usuarioControl.selectUsuarioPorId(listaTimesUsuario.get(i).getId(), "").get(0));
-        }
-
-        if (listaUsuarios.size() == 0) {
-            ArrayList<Usuario> listaVazia = new ArrayList<Usuario>();
-            listaVazia.add(new Usuario(0, "Nenhum jogador encontrado.", "", "", "", 0, 0, 0, "", "", ""));
-            // adapterUsuarios = new UsuarioListAdapter(this, listaVazia, time, 1);
-        } else
-            // adapterUsuarios = new UsuarioListAdapter(this, listaUsuarios, time, 1);
-            listaJogadores.setAdapter(adapterUsuarios);
+        adapterUsuarios = new UsuarioListAdapterParse(this.context, this.listaUsuarios, 2);
+        listaJogadores.setAdapter(adapterUsuarios);
 
     }
 
-    public void inserirJogador(int id_usuario) {
+    public void inserirJogador(String username) {
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando...");
 
+        ParseQuery<ParseUser> query = ParseUser.getQuery();
+        query.whereEqualTo("username", username);
+        query.getFirstInBackground(new GetCallback<ParseUser>() {
+            @Override
+            public void done(final ParseUser parseUser, ParseException e) {
+                if (e == null) {
+                    time.getRelation("usuarios").add(parseUser);
+                    time.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                FuncoesParse.dismissProgressBar(progresso);
+                                listaUsuarios.add(parseUser);
+                                atualizarLista();
+                            } else {
+                                FuncoesParse.dismissProgressBar(progresso);
+                                funcoes.mostrarToast(2);
+                            }
+                        }
+                    });
+                } else {
+                    FuncoesParse.dismissProgressBar(progresso);
+                    funcoes.mostrarToast(2);
+                }
+            }
+        });
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
@@ -182,14 +182,16 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         MenuItem m1 = menu.findItem(R.id.timedetalhe_action_cadastrarJogador);
         MenuItem m2 = menu.findItem(R.id.timedetalhe_action_editar);
 
+        //ArrayList<String> configsTimes = (ArrayList<String>) ParseUser.getCurrentUser().get("configTimes");
+
         //Somente usuarios administradores do time podem usar o menu inserir jogador
-       /* if (timeusuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
+        if (FuncoesParse.isAdmin()) {
             m1.setVisible(true);
             m2.setVisible(true);
         } else {
             m2.setVisible(false);
             m1.setVisible(false);
-        }*/
+        }
         return true;
     }
 
@@ -201,9 +203,9 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         return true;
     }
 
-    public String PedirEmailApelido() {
+    public void pedirEmailApelido() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Informe o E-mail ou Nome de usuario do jogador");
+        builder.setTitle("Informe o Nome de usuario FBV do jogador");
 
 // Set up the input
         final EditText input = new EditText(this);
@@ -215,6 +217,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 m_Text = input.getText().toString();
+                inserirJogador(m_Text);
             }
         });
         builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
@@ -225,10 +228,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         });
 
         builder.show();
-        return m_Text;
-
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -257,7 +257,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             return true;
         }
 
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.timedetalhe_action_cadastrarJogador) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -269,7 +268,8 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    mudarTelaComRetorno(UsuariosActivity.class, 1);
+                    pedirEmailApelido();
+                    //mudarTelaComRetorno(UsuariosActivity.class, 1);
 
                 }
 
@@ -290,7 +290,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-        final Usuario user = adapterUsuarios.getItem(position);
+       /* final Usuario user = adapterUsuarios.getItem(position);
         if (user.getId() > 0) {
             //  final TimeUsuario tipoUser = timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(), user.getId()).get(0);
             //Menu de opções que o usuário pode fazer com os usuarios.
@@ -298,7 +298,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             arrayOpcoes[0] = "Informações de contato";
 
             //Diponível somente para usuarios administradores do time.
-           /* if (timeusuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
+           *//* if (timeusuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
                 arrayOpcoes = new String[3];
                 arrayOpcoes[0] = "Informações de contato";
                 arrayOpcoes[1] = "Tornar Admin do time";
@@ -307,7 +307,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                 } else {
                     arrayOpcoes[2] = "Inativar usuario";
                 }
-            }*/
+            }*//*
 
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setIcon(R.drawable.questionmark_64);
@@ -322,15 +322,15 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                             break;
                         case 1:
                             // timeusuarioControl.tornarAdmin(time.getId(), user.getId());
-                            atualizarLista();
+                            //atualizarLista();
                             break;
                         case 2:
-                           /* if (tipoUser.getInativo() > 0) {
+                           *//* if (tipoUser.getInativo() > 0) {
                                 //timeusuarioControl.ativarUsuario(time.getId(), user.getId());
                             } else {
                                // timeusuarioControl.inativarUsuario(time.getId(), user.getId());
-                            }*/
-                            atualizarLista();
+                            }*//*
+                            // atualizarLista();
                             break;
                     }
                 }
@@ -346,7 +346,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             AlertDialog dialogExportar = builder.create();
             dialogExportar.show();
 
-        }
+        }*/
         return true;
     }
 

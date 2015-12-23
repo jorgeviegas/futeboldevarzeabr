@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.parse.ParseObject;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import br.com.sharkweb.fbv.R;
@@ -75,7 +76,8 @@ public class MovimentoListAdapter extends BaseAdapter {
         }
 
         if (movimentos.size() > 0) {
-            itemHolder.tvData.setText(movimentos.get(position).getCreatedAt().toString().trim());
+
+            itemHolder.tvData.setText(funcoes.transformarDataEmString(movimentos.get(position).getCreatedAt()).trim());
             itemHolder.tvHistorico.setText(movimentos.get(position).getString("historico").trim());
             itemHolder.tvValor.setText(funcoes.formatarNumeroComVirgula(movimentos.get(position).getDouble("valor")).trim());
 

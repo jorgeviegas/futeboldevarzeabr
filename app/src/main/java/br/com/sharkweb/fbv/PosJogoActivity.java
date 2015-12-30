@@ -1,6 +1,10 @@
 package br.com.sharkweb.fbv;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -15,10 +19,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseRelation;
+import com.parse.SaveCallback;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.sharkweb.fbv.DAO.PosJogoDAO;
+import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.UsuarioPosJogoListAdapter;
 import br.com.sharkweb.fbv.controller.JogoController;
 import br.com.sharkweb.fbv.controller.PosJogoController;
@@ -36,25 +50,17 @@ import br.com.sharkweb.fbv.model.Usuario;
 public class PosJogoActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private ListView usuarios;
-    private Jogo jogo;
-    private Time time1;
-    private Time time2;
-    private PosJogo posJogo;
-    private ArrayList<PosJogoUsuarios> listaUsuarios;
+    private ParseObject jogo;
     private UsuarioPosJogoListAdapter adapterUsuarios;
     private Button btnCancelar;
     private Button btnSalvar;
     private TextView tvNomeTime1;
     private TextView tvNomeTime2;
     private TextView tvVersus;
+    private List<ParseObject> listaDePosJogo;
     final Context context = this;
 
-    private JogoController jogoControl = new JogoController(this);
-    private PosJogoUsuariosController posJogoUsuariosControl = new PosJogoUsuariosController(this);
     private PosJogoController posJogoControl = new PosJogoController(this);
-    private TimeUsuarioController timeUserControl = new TimeUsuarioController(this);
-    private UsuarioController userControl = new UsuarioController(this);
-    private TimeController timeControl = new TimeController(this);
     private Funcoes funcoes = new Funcoes(this);
 
     @Override
@@ -68,13 +74,13 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
         usuarios = (ListView) findViewById(R.id.pos_jogo_usuarioslist);
         usuarios.setOnItemClickListener(this);
 
-        Bundle params = getIntent().getExtras();
-        if (params != null) {
-            this.jogo = jogoControl.selectJogoPorId(params.getInt("id_jogo")).get(0);
+
+        if (Constantes.getSessao() != null) {
+            this.jogo = Constantes.getSessao().getObjeto();
+            Constantes.setSessao(null);
         } else {
             this.jogo = null;
         }
-        
         tvNomeTime1 = (TextView) findViewById(R.id.pos_jogo_nometime1);
         tvNomeTime1.setVisibility(View.VISIBLE);
         tvNomeTime1.setText("TM1");
@@ -88,14 +94,14 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
         tvVersus.setText("0 X 0");
         tvVersus.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                posJogoControl.exibirPlacarJogo(posJogo, context, tvVersus);
+                posJogoControl.exibirPlacarJogo(jogo, context, tvVersus);
 
             }
         });
         btnSalvar = (Button) findViewById(R.id.pos_jogo_btncadastrar);
         btnSalvar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                salvar();
+                // salvar();
             }
         });
 
@@ -106,86 +112,110 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
             }
         });
 
-        //posJogoControl.excluirTodosPosJogo();
-        //posJogoUsuariosControl.excluirTodosPosJogoUsuarios();
         carregarRegistro();
         atualizarLista();
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case 1:
+                ParseObject posJogo = new ParseObject("posJogoUser");
+                posJogo.put("jogo", jogo);
+                posJogo.put("usuario", Constantes.getSessao().getObjeto());
+                posJogo.put("nomeUsuario", Constantes.getSessao().getObjeto().getString("nome").trim());
+                Constantes.setSessao(null);
+
+                listaDePosJogo.add(posJogo);
+                adapterUsuarios = new UsuarioPosJogoListAdapter(context, listaDePosJogo, false);
+                usuarios.setAdapter(adapterUsuarios);
+                break;
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void carregarRegistro() {
         if (this.jogo != null) {
-            this.time1 = timeControl.selectTimePorId(this.jogo.getId_time(),"").get(0);
-            this.time2 = timeControl.selectTimePorId(this.jogo.getId_time2(),"").get(0);
-            tvNomeTime1.setText(this.time1.getNome().trim().toUpperCase().substring(0, 3));
-            tvNomeTime2.setText(this.time2.getNome().trim().toUpperCase().substring(0, 3));
+            tvNomeTime1.setText(this.jogo.getString("nomeTime").trim().toUpperCase().substring(0, 3));
+            tvNomeTime2.setText(this.jogo.getString("nomeTime2").trim().toUpperCase().substring(0, 3));
 
-            ArrayList<PosJogo> posJogo = posJogoControl.selectPosJogoPorIdJogo(this.jogo.getId());
-            if (posJogo.isEmpty()) {
-                this.posJogo = new PosJogo(this.jogo.getId(), 0, 0);
-            } else {
-                this.posJogo = posJogo.get(0);
-                String placar = String.valueOf(this.posJogo.getQtd_gol_time1()).trim() +
-                        " X " + String.valueOf(this.posJogo.getQtd_gol_time2()).trim();
-                tvVersus.setText(placar);
-            }
-        } else {
-            this.posJogo = new PosJogo(0, 0, 0);
+            String placar = String.valueOf(this.jogo.getInt("qtdGolsTime1")).trim() +
+                    " X " + String.valueOf(this.jogo.getInt("qtdGolsTime2")).trim();
+            tvVersus.setText(placar);
         }
     }
 
     private void atualizarLista() {
-
-        listaUsuarios = posJogoUsuariosControl.selectPosJogoUsuariosPorIdPosJogo(this.posJogo.getId());
-
-        if (listaUsuarios.size() > 0) {
-            adapterUsuarios = new UsuarioPosJogoListAdapter(this, listaUsuarios);
-            usuarios.setAdapter(adapterUsuarios);
-        } else {
-            ArrayList<TimeUsuario> usertime = timeUserControl.selectTimeUsuarioPorIdTime(this.jogo.getId_time());
-            ArrayList<PosJogoUsuarios> users = new ArrayList<>();
-            for (int i = 0; i < usertime.size(); i++) {
-                Usuario user = userControl.selectUsuarioPorId(usertime.get(i).getId(),"").get(0);
-                PosJogoUsuarios posjogo = new PosJogoUsuarios(0, user.getId(), 0, 0, 0, 0);
-                users.add(posjogo);
+        final Dialog progrsso = FuncoesParse.showProgressBar(context, "Carregando...");
+        this.jogo.getRelation("posJogoUser").getQuery().findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                FuncoesParse.dismissProgressBar(progrsso);
+                if (e == null) {
+                    listaDePosJogo = list;
+                    adapterUsuarios = new UsuarioPosJogoListAdapter(context, list, false);
+                    usuarios.setAdapter(adapterUsuarios);
+                    if (list.size() == 0) {
+                        perguntarSobreAvaliacao();
+                    }
+                } else {
+                    funcoes.mostrarToast(4);
+                }
             }
-            listaUsuarios = users;
-            adapterUsuarios = new UsuarioPosJogoListAdapter(this, users);
-            usuarios.setAdapter(adapterUsuarios);
-        }
+        });
     }
 
-    private void salvar() {
-        boolean isOk = true;
-        if (this.posJogo != null) {
-            Long ret;
-            if (this.posJogo.getId() > 0) {
-                ret = posJogoControl.alterar(this.posJogo);
-            } else {
-                ret = posJogoControl.inserir(this.posJogo);
-            }
+    private void perguntarSobreAvaliacao() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle("Pergunta");
+        builder.setIcon(R.drawable.questionmark_64);
+        builder.setMessage("Deseja avaliar os jogadores do seu time?");
 
-            if (ret > 0) {
-                for (int i = 0; i < listaUsuarios.size(); i++) {
-                    int id_pos_jogo = Integer.valueOf(ret.toString());
-                    listaUsuarios.get(i).setId_pos_jogo(id_pos_jogo);
-                    Long ret2 = posJogoUsuariosControl.veriricarEinserir(listaUsuarios.get(i));
-                    if (ret2 <= 0) {
-                        isOk = false;
-                        funcoes.mostrarDialogAlert(3, "");
-                        break;
-                    }
-                }
-                if (isOk) {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Cadastro salvo com sucesso!", Toast.LENGTH_LONG);
-                    toast.show();
-                    onBackPressed();
-                }
-            } else {
-                isOk = false;
-                funcoes.mostrarDialogAlert(3, "");
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                carregarUsuarios();
             }
-        }
+        });
+        builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+
+    private void carregarUsuarios() {
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Buscando jogadores...");
+        Constantes.getTimeSelecionado().getRelation("usuarios").getQuery().findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    adapterUsuarios = new UsuarioPosJogoListAdapter(context, list, true);
+                    usuarios.setAdapter(adapterUsuarios);
+                } else {
+                    funcoes.mostrarToast(4);
+                }
+            }
+        });
+    }
+
+    //INUTILIZADO POR ENQUANTO.
+    private void salvar(List<ParseObject> lista) {
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando...");
+        ParseObject.saveAllInBackground(lista, new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    funcoes.mostrarToast(1);
+                } else {
+                    funcoes.mostrarToast(2);
+                }
+            }
+        });
     }
 
     @Override
@@ -209,7 +239,8 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
         }
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_adicionar_avaliacao) {
+            mudarTelaComRetorno(UsuariosTimeActivity.class, 1);
             return true;
         }
 
@@ -218,6 +249,12 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        posJogoControl.exibirFeedBackPosJogoJogador(adapterUsuarios.getItem(position),context);
+        posJogoControl.exibirFeedBackPosJogoJogador(adapterUsuarios.getItem(position), jogo, context);
+    }
+
+    @SuppressWarnings({"rawtypes", "unused"})
+    private void mudarTelaComRetorno(Class cls, int key) {
+        Intent intent = new Intent(this, cls);
+        startActivityForResult(intent, key);
     }
 }

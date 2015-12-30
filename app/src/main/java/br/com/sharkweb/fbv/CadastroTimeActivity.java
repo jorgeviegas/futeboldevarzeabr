@@ -141,6 +141,7 @@ public class CadastroTimeActivity extends ActionBarActivity {
     private void salvar() {
         String validacao = validarCampos().trim();
         if (validacao.isEmpty()) {
+
             final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando cadastro...");
 
             final int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();

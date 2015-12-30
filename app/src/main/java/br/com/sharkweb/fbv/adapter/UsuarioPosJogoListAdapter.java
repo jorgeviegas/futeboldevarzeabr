@@ -13,7 +13,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.sharkweb.fbv.R;
 import br.com.sharkweb.fbv.controller.PosicaoController;
@@ -32,26 +35,28 @@ import br.com.sharkweb.fbv.model.Usuario;
 public class UsuarioPosJogoListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private ArrayList<PosJogoUsuarios> usuarios;
+    private List<ParseObject> usuarios;
     private PosicaoController posicaoControl;
     private TipoUsuarioController tipousuarioControl;
     private TimeUsuarioController timeUserControl;
     private UsuarioController userControl;
+    private boolean criar;
 
-    public UsuarioPosJogoListAdapter(Context context, ArrayList<PosJogoUsuarios> listaUsuarios) {
+    public UsuarioPosJogoListAdapter(Context context, List<ParseObject> listaUsuarios, boolean paramCriar) {
         this.usuarios = listaUsuarios;
         mInflater = LayoutInflater.from(context);
         posicaoControl = new PosicaoController(context);
         tipousuarioControl = new TipoUsuarioController(context);
         timeUserControl = new TimeUsuarioController(context);
         userControl = new UsuarioController(context);
+        criar = paramCriar;
     }
 
     public int getCount() {
         return usuarios.size();
     }
 
-    public PosJogoUsuarios getItem(int position) {
+    public ParseObject getItem(int position) {
         return usuarios.get(position);
     }
 
@@ -79,13 +84,19 @@ public class UsuarioPosJogoListAdapter extends BaseAdapter {
             itemHolder = (ItemSuporte) view.getTag();
         }
 
-        PosJogoUsuarios posJogoUsers = usuarios.get(position);
-        Usuario user = userControl.selectUsuarioPorId(posJogoUsers.getId_usuario(),"").get(0);
-        itemHolder.tvNomeUsuario.setText(user.getNome().trim().toUpperCase());
-        itemHolder.tvGols.setText(String.valueOf(posJogoUsers.getQtd_gol()));
-        itemHolder.tvCartoesAmarelos.setText(String.valueOf(posJogoUsers.getQtd_cartao_amarelo()));
-        itemHolder.tvCartoesVermelhos.setText(String.valueOf(posJogoUsers.getQtd_cartao_vermelho()));
-        itemHolder.tvNota.setText("Nota: "+String.valueOf(posJogoUsers.getNota()).trim());
+        if (criar) {
+            itemHolder.tvNomeUsuario.setText(usuarios.get(position).getString("nome").trim().toUpperCase());
+            itemHolder.tvGols.setText("0");
+            itemHolder.tvCartoesAmarelos.setText("0");
+            itemHolder.tvCartoesVermelhos.setText("0");
+            itemHolder.tvNota.setText("Nota: ");
+        } else {
+            itemHolder.tvNomeUsuario.setText(usuarios.get(position).getString("nomeUsuario").trim().toUpperCase());
+            itemHolder.tvGols.setText(String.valueOf(usuarios.get(position).getInt("qtdGol")));
+            itemHolder.tvCartoesAmarelos.setText(String.valueOf(usuarios.get(position).getInt("qtdCartaoAmarelo")));
+            itemHolder.tvCartoesVermelhos.setText(String.valueOf(usuarios.get(position).getInt("qtdCartaoVermelho")));
+            itemHolder.tvNota.setText("Nota: " + String.valueOf(usuarios.get(position).getInt("nota")));
+        }
 
         return view;
     }

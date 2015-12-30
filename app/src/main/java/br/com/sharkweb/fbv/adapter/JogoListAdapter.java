@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.parse.ParseObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import br.com.sharkweb.fbv.R;
@@ -34,8 +35,6 @@ public class JogoListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
     private List<ParseObject> jogos;
-    private TimeController timeControl;
-    private JogoController jogoControl;
     private Context context;
     private Funcoes funcoes;
 
@@ -43,8 +42,6 @@ public class JogoListAdapter extends BaseAdapter {
         this.jogos = listaJogos;
         this.context = context;
         mInflater = LayoutInflater.from(context);
-        timeControl = new TimeController(context);
-        jogoControl = new JogoController(context);
         funcoes = new Funcoes(context);
     }
 
@@ -75,13 +72,10 @@ public class JogoListAdapter extends BaseAdapter {
             itemHolder = (ItemSuporte) view.getTag();
         }
 
-        if (jogos != null &&
-                !jogos.get(position).getString("time").isEmpty() &&
-                !jogos.get(position).getString("time1").isEmpty()) {
-
-            //itemHolder.tvNomeTimes.setText(time.getNome().trim().toUpperCase() + " X " + time2.getNome().trim().toUpperCase());
-
-            itemHolder.tvDataHora.setText(jogos.get(position).getDate("data").toLocaleString() + " - " +
+        if (jogos != null) {
+            itemHolder.tvNomeTimes.setText(jogos.get(position).getString("nomeTime").trim().toUpperCase() + " X " +
+                    jogos.get(position).getString("nomeTime2").trim().toUpperCase());
+            itemHolder.tvDataHora.setText(funcoes.transformarDataEmString(jogos.get(position).getDate("data")).trim() + " - " +
                     jogos.get(position).getString("hora").trim()
                     + " até " + jogos.get(position).getString("horaFinal").trim());
             itemHolder.ivJogo.setBackgroundColor(context.getResources().getColor(R.color.AzulPrincipal));
@@ -95,7 +89,6 @@ public class JogoListAdapter extends BaseAdapter {
             itemHolder.tvDataHora.setText("");
             itemHolder.ivJogo.setVisibility(View.GONE);
         }
-
 
         itemHolder.tvSeiLa.setText("");
 

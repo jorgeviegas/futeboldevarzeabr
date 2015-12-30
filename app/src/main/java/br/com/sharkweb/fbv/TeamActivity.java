@@ -42,6 +42,7 @@ import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.controllerParse.TimeControllerParse;
 import br.com.sharkweb.fbv.controllerParse.TimeUsuarioControllerParse;
 import br.com.sharkweb.fbv.model.ParseProxyObject;
+import br.com.sharkweb.fbv.model.Sessao;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.TimeUsuario;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -54,6 +55,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private boolean esperaRetorno;
     private ParseObject timeSelecionado;
     private boolean podeCadastrar = true;
+    private boolean buscarTodosTimes = false;
     final Context context = this;
 
     @Override
@@ -71,6 +73,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         if (params != null) {
             esperaRetorno = params.getBoolean("esperaRetorno");
             podeCadastrar = params.getBoolean("cadastrar");
+            buscarTodosTimes = params.getBoolean("buscarTodosTimes");
         }
 
         //Agora essa tela sempre retorna
@@ -82,9 +85,10 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     public void onBackPressed() {
         if (this.esperaRetorno) {
+            if (timeSelecionado == null) {
+                Constantes.setTimeSelecionado(null);
+            }
             Intent it = new Intent();
-            ParseProxyObject ppo = new ParseProxyObject(timeSelecionado);
-            it.putExtra("parseObject", ppo);
             setResult(1, it);
         }
         super.onBackPressed();
@@ -93,28 +97,35 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private void buscarTimes() {
         final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
 
-        //INSERINDO UM TIME NA RELAÇÃO COMO TESTE.
-        //ParseUser.getCurrentUser().getRelation("times").add(ParseObject.createWithoutData("time", "3bHcMMeMox"));
-      /*  try {
-            ParseUser.getCurrentUser().save();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }*/
-
         //Pega a relação "times" que está dentro da tabela user e então traz os times que estão nessa relação.
         // O comando getQuery retorna um objeto Query que é usado para fazer consultas. Como eu não quero adicionar
         //nenuhum outro filtro adicional, chamei o findInBackgroud direto.
-        ParseUser.getCurrentUser().getRelation("times").getQuery().findInBackground(new FindCallback<ParseObject>() {
-            public void done(List<ParseObject> timeList, ParseException e) {
-                FuncoesParse.dismissProgressBar(progresso);
-                if (e == null) {
-                    adapterTimes = new TimeListAdapterParse(context, timeList);
-                    times.setAdapter(adapterTimes);
-                } else {
-
+        if (buscarTodosTimes) {
+            ParseQuery queryTimes = new ParseQuery("time");
+            queryTimes.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (e == null) {
+                        FuncoesParse.dismissProgressBar(progresso);
+                        adapterTimes = new TimeListAdapterParse(context, list);
+                        times.setAdapter(adapterTimes);
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            ParseUser.getCurrentUser().getRelation("times").getQuery()
+                    .findInBackground(new FindCallback<ParseObject>() {
+                public void done(List<ParseObject> timeList, ParseException e) {
+                    FuncoesParse.dismissProgressBar(progresso);
+                    if (e == null) {
+                        adapterTimes = new TimeListAdapterParse(context, timeList);
+                        times.setAdapter(adapterTimes);
+                    } else {
+
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -197,9 +208,13 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         ParseObject time = adapterTimes.getItem(position);
-
         //Setando o time selecionado na pesquisa.
-        Constantes.setTimeSelecionado(time);
+        if (!buscarTodosTimes) {
+            Constantes.setTimeSelecionado(time);
+        } else {
+            Sessao sessao = new Sessao(3, time, "time");
+            Constantes.setSessao(sessao);
+        }
         if (!time.getObjectId().isEmpty()) {
             if (esperaRetorno) {
                 this.timeSelecionado = time;

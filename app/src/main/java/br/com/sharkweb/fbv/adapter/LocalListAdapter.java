@@ -13,7 +13,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.parse.ParseObject;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.sharkweb.fbv.R;
 import br.com.sharkweb.fbv.Util.Constantes;
@@ -25,18 +28,17 @@ import br.com.sharkweb.fbv.model.Time;
 
 /**
  * @author Tiago Klein
- * Monta os itens da lista de Escolha de loja.
+ *         Monta os itens da lista de Escolha de loja.
  */
 public class LocalListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
-    private ArrayList<Local> locais;
-    private LocalController localControl;
+    private List<ParseObject> locais;
     private UFController ufControl;
-    public LocalListAdapter(Context context, ArrayList<Local> listaLocais) {
+
+    public LocalListAdapter(Context context, List<ParseObject> listaLocais) {
         this.locais = listaLocais;
         mInflater = LayoutInflater.from(context);
-        localControl = new LocalController(context);
         ufControl = new UFController(context);
     }
 
@@ -44,7 +46,7 @@ public class LocalListAdapter extends BaseAdapter {
         return locais.size();
     }
 
-    public Local getItem(int position) {
+    public ParseObject getItem(int position) {
         return locais.get(position);
     }
 
@@ -60,24 +62,22 @@ public class LocalListAdapter extends BaseAdapter {
             itemHolder = new ItemSuporte();
             itemHolder.tvNomeLocal = ((TextView) view.findViewById(R.id.locallist_nomelocal));
             itemHolder.tvEndereco = ((TextView) view.findViewById(R.id.locallist_endereco));
-            itemHolder.ivSeparador  = ((ImageView) view.findViewById(R.id.locallist_imagemlocal));
+            itemHolder.ivSeparador = ((ImageView) view.findViewById(R.id.locallist_imagemlocal));
 
             view.setTag(itemHolder);
-        }
-        else {
+        } else {
             itemHolder = (ItemSuporte) view.getTag();
         }
 
-        Local local = locais.get(position);
-        itemHolder.tvNomeLocal.setText(local.getNome());
-
-        if (local.getId() > 0) {
+        if (locais != null && !locais.isEmpty()) {
+            itemHolder.tvNomeLocal.setText(locais.get(position).getString("nome").trim());
             itemHolder.ivSeparador.setBackgroundColor(Color.YELLOW);
-            itemHolder.tvEndereco.setText(local.getEndereco().trim().toUpperCase()
-                    +", "+local.getCidade().trim().toUpperCase()
-                    +", "+ufControl.selectUFPorId(local.getId_uf()).get(0).getNome().trim());
 
-        }else {
+            itemHolder.tvEndereco.setText(locais.get(position).getString("endereco").trim().toUpperCase()
+                    + ", " + locais.get(position).getString("municipio").trim().toUpperCase()
+                    + ", " + ufControl.selectUFPorId(locais.get(position).getInt("id_uf")).get(0).getNome().trim());
+
+        } else {
             itemHolder.ivSeparador.setImageResource(IGNORE_ITEM_VIEW_TYPE);
             itemHolder.tvEndereco.setText("");
         }

@@ -26,18 +26,15 @@ import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.JogoListAdapter;
-import br.com.sharkweb.fbv.controller.JogoController;
-import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TimeUsuarioController;
-import br.com.sharkweb.fbv.controller.TipoUsuarioController;
-import br.com.sharkweb.fbv.model.Jogo;
-import br.com.sharkweb.fbv.model.Time;
+import br.com.sharkweb.fbv.model.Sessao;
 
 import android.widget.CalendarView.OnDateChangeListener;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 import static android.graphics.Color.WHITE;
 
@@ -55,7 +52,6 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
 
     final Context context = this;
     private Funcoes funcoes = new Funcoes(this);
-    private TimeUsuarioController timeUsuarioControl = new TimeUsuarioController(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +67,6 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         listaDeJogos = (ListView) findViewById(R.id.calendario_listaJogos);
         listaDeJogos.setBackgroundColor(Color.WHITE);
         listaDeJogos.setOnItemClickListener(this);
-
 
         btnHoje = (Button) findViewById(R.id.calendario_botaoHoje);
         btnHoje.setVisibility(View.VISIBLE);
@@ -120,23 +115,31 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         });
 
         initializeCalendar();
-        buscarJogos();
+        buscarJogos(dataSelecionada);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case 1:
-                atualizarLista();
+                buscarJogos(dataSelecionada);
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void buscarJogos() {
+    public void buscarJogos(Date data) {
         final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando...");
 
-        this.time.getRelation("jogos").getQuery().findInBackground(new FindCallback<ParseObject>() {
+        ParseQuery queryJogos = this.time.getRelation("jogos").getQuery();
+        if (data == null) {
+            queryJogos.whereGreaterThanOrEqualTo("data", funcoes.getFirstDayOfTheMonth(dataSelecionada));
+            queryJogos.whereLessThanOrEqualTo("data", funcoes.getLastDayOfTheMonth(dataSelecionada));
+        } else {
+            queryJogos.whereEqualTo("data", data);
+        }
+
+        queryJogos.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> listJogos, ParseException e) {
                 FuncoesParse.dismissProgressBar(progresso);
@@ -152,14 +155,8 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
     }
 
     public void atualizarLista() {
-        List<ParseObject> lista = null;
-        for (int i = 0; i < listaDeJogosDoTime.size(); i++) {
-            if (listaDeJogosDoTime.get(i).getDate("data").equals(funcoes.getDate())) {
-                lista.add(listaDeJogosDoTime.get(i));
-            }
-        }
-        if (lista != null) {
-            adapterJogos = new JogoListAdapter(this, lista);
+        if (listaDeJogosDoTime != null) {
+            adapterJogos = new JogoListAdapter(this, listaDeJogosDoTime);
             listaDeJogos.setAdapter(adapterJogos);
         }
     }
@@ -180,7 +177,7 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
                 String data = day + "/" + month + "/" + year;
                 try {
                     dataSelecionada = funcoes.transformarStringEmData(data);
-                    atualizarLista();
+                    buscarJogos(dataSelecionada);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -258,13 +255,15 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         ParseObject jogo = adapterJogos.getItem(position);
         if (jogo != null && !jogo.getObjectId().isEmpty()) {
             String tipoAcesso = "read";
-            //Somente usuarios administradores podem usar o menu cadastrar
-            if (timeUsuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), 0)) {
+
+            if (FuncoesParse.isAdmin()) {
                 tipoAcesso = "edit";
             }
+
             Bundle parametros = new Bundle();
             parametros.putString("tipoAcesso", tipoAcesso);
-            //parametros.putInt("id_jogo", jogo.getId());
+            Sessao sessao = new Sessao(2, jogo, "jogo");
+            Constantes.setSessao(sessao);
             mudarTelaComRetorno(CadastroJogoActivity.class, parametros, 1);
         }
     }

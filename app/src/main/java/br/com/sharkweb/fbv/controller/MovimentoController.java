@@ -93,12 +93,14 @@ public class MovimentoController {
                             if (e == null) {
                                 funcoes.mostrarToast(1);
                             } else {
+                                time.saveEventually();
                                 funcoes.mostrarToast(2);
                             }
                         }
                     });
 
                 } else {
+                    movimento.saveEventually();
                     FuncoesParse.dismissProgressBar(progresso);
                     funcoes.mostrarToast(2);
                 }

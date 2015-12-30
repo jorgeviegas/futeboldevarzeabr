@@ -1,6 +1,7 @@
 package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -13,9 +14,17 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.LocalListAdapter;
 import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.controller.LocalController;
@@ -24,19 +33,16 @@ import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Local;
+import br.com.sharkweb.fbv.model.Sessao;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
 
 public class LocalActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private ListView locais;
-    private ArrayList<Local> listaLocais;
     private LocalListAdapter adapterLocal;
-    private TimeController timesControl = new TimeController(this);
-    private LocalController localControl = new LocalController(this);
     private TipoUsuarioController tipoUserControl = new TipoUsuarioController(this);
-    private TimeUsuarioController timeUsuarioControl = new TimeUsuarioController(this);
-    private Local localSelecionado;
+    private ParseObject localSelecionado;
     final Context context = this;
 
     @Override
@@ -50,29 +56,22 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
         locais = (ListView) findViewById(R.id.locallist_listview);
         locais.setOnItemClickListener(this);
 
-        Bundle params = getIntent().getExtras();
-        if (params != null) {
-
-        } else {
-        }
-
         atualizarLista();
         locais.setCacheColorHint(Color.TRANSPARENT);
     }
 
     @Override
     public void onBackPressed() {
+        Sessao sessao = new Sessao(5, localSelecionado, "local");
+        Constantes.setSessao(sessao);
         Intent it = new Intent();
-        if (localSelecionado != null)
-            it.putExtra("id_local", localSelecionado.getId());
-        else it.putExtra("id_local", 0);
         setResult(1, it);
         super.onBackPressed();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode){
+        switch (requestCode) {
             case 1:
                 atualizarLista();
         }
@@ -84,8 +83,9 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
         MenuItem m1 = menu.findItem(R.id.local_action_cadastrar);
 
         //Somente usuarios administradores podem usar o menu cadastrar
-       if (tipoUserControl.selectTiposUsuariosPorId(Constantes.getUsuarioLogado().
-                getId_tipo()).get(0).getTipo().equals("Administrador"))
+        if (tipoUserControl.
+                selectTiposUsuariosPorId(ParseUser.getCurrentUser().getInt("id_tipo")).
+                get(0).getTipo().equals("Administrador"))
             m1.setVisible(true);
         else
             m1.setVisible(false);
@@ -132,7 +132,7 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
                     dialog.dismiss();
                     Bundle parametros = new Bundle();
                     parametros.putString("tipoAcesso", "write");
-                    mudarTelaComRetorno(CadastroLocalActivity.class,parametros, 1);
+                    mudarTelaComRetorno(CadastroLocalActivity.class, parametros, 1);
                 }
 
             });
@@ -151,16 +151,20 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
     }
 
     public void atualizarLista() {
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando...");
 
-        listaLocais = localControl.selectLocais();
-
-        if (listaLocais.size() == 0) {
-            ArrayList<Local> listaVazia = new ArrayList<Local>();
-            listaVazia.add(new Local(0, "Nenhum local encontrado.", "",0, "",0));
-            adapterLocal = new LocalListAdapter(this, listaVazia);
-        } else
-            adapterLocal = new LocalListAdapter(this, listaLocais);
-           locais.setAdapter(adapterLocal);
+        ParseQuery queryLocal = new ParseQuery("local");
+        //queryLocal.orderByAscending("nome");
+        queryLocal.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    adapterLocal = new LocalListAdapter(context, list);
+                    locais.setAdapter(adapterLocal);
+                }
+            }
+        });
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
@@ -185,10 +189,10 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-       Local local = adapterLocal.getItem(position);
-        if(local.getId() != 0){
-                this.localSelecionado = local;
-                onBackPressed();
+        ParseObject local = adapterLocal.getItem(position);
+        if (!local.getObjectId().isEmpty()) {
+            this.localSelecionado = local;
+            onBackPressed();
         }
     }
 }

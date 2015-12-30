@@ -1,11 +1,11 @@
 <resources>
-    <string name="app_name">FBV</string>
+    <string name="app_name">FBA</string>
 
     <string name="title_section1">Inicial</string>
     <string name="title_section2">Meus times</string>
     <string name="title_section3">Calendario</string>
 
-    <string name="nomeCompleto_app">FBV-Futebol Brasileiro de Várzea</string>
+    <string name="nomeCompleto_app">FBV-Futebol Brasileiro Amador</string>
     <string name="drawer_open">Section 3</string>
     <string name="drawer_close">Section 2</string>
 

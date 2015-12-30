@@ -230,6 +230,21 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         builder.show();
     }
 
+    private void favoritarTime() {
+        ParseUser.getCurrentUser().put("timeFavorito", this.time.getObjectId());
+        ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    funcoes.mostrarToast(1);
+                } else {
+                    funcoes.mostrarToast(2);
+                    ParseUser.getCurrentUser().saveEventually();
+                }
+            }
+        });
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -244,8 +259,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         }
 
         if (id == R.id.timedetalhe_action_favoritar) {
-
-            //item.setTitle("Teste");
+            favoritarTime();
             return true;
         }
 

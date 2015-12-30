@@ -6,12 +6,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.SaveCallback;
+
 import java.util.ArrayList;
+import java.util.List;
 
 import br.com.sharkweb.fbv.DAO.PosJogoDAO;
 import br.com.sharkweb.fbv.DAO.UFDAO;
 import br.com.sharkweb.fbv.PosJogoActivity;
 import br.com.sharkweb.fbv.R;
+import br.com.sharkweb.fbv.Util.Funcoes;
+import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.model.Jogo;
 import br.com.sharkweb.fbv.model.PosJogo;
 import br.com.sharkweb.fbv.model.PosJogoUsuarios;
@@ -21,62 +28,16 @@ import br.com.sharkweb.fbv.model.Usuario;
 
 public class PosJogoController {
 
-    private PosJogoDAO posJogoDAO;
-    private PosJogoUsuariosController posJogoUsers;
-    private TimeController timeControl;
-    private JogoController jogoControl;
-    private UsuarioController userControl;
+    private Funcoes funcoes;
+    private boolean PosJogoNovo = false;
 
     public PosJogoController(Context context) {
-        posJogoDAO = new PosJogoDAO(context);
-        posJogoUsers = new PosJogoUsuariosController(context);
-        timeControl = new TimeController(context);
-        jogoControl = new JogoController(context);
-        userControl = new UsuarioController(context);
+        funcoes = new Funcoes(context);
     }
 
-    public long inserir(PosJogo posJogo) {
-        return posJogoDAO.inserir(posJogo);
-    }
-
-    public long alterar(PosJogo posJogo) {
-        return posJogoDAO.alterar(posJogo);
-    }
-
-    public long excluirPosJogoPorId(int id) {
-        return posJogoDAO.excluirPosJogoPorId(id);
-    }
-
-    public ArrayList<PosJogo> selectPosJogo() {
-        return posJogoDAO.selectPosJogo();
-    }
-
-    public ArrayList<PosJogo> selectPosJogoPorId(int id) {
-        return posJogoDAO.selectPosJogoPorId(id);
-    }
-
-    public ArrayList<PosJogo> selectPosJogoPorIdJogo(int id) {
-        return posJogoDAO.selectPosJogoPorIdJogo(id);
-    }
-
-    public void excluirTodosPosJogo() {
-        posJogoDAO.excluirTodosPosJogo();
-    }
-
-    public void excluirPosJogoPorIdJogo(int id) {
-        Long ret = posJogoDAO.excluirPosJogoPorIdJogo(id);
-        if (ret != null && ret > 0) {
-            posJogoUsers.excluirPosJogoUsuariosPorIdPosJogo(Integer.valueOf(String.valueOf(ret).trim()));
-        }
-    }
-
-    public void exibirPlacarJogo(final PosJogo posJogo, Context context, final TextView tv) {
+    public void exibirPlacarJogo(final ParseObject jogo, Context context, final TextView tv) {
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_pos_jogo_placar);
-        Jogo jogo = jogoControl.selectJogoPorId(posJogo.getId_jogo()).get(0);
-
-        Time time1 = timeControl.selectTimePorId(jogo.getId_time(),"").get(0);
-        Time time2 = timeControl.selectTimePorId(jogo.getId_time2(),"").get(0);
 
         dialog.setTitle("Placar:");
         final TextView tvNomeTime1 = (TextView) dialog.findViewById(R.id.pos_jogo_placar_nometime1);
@@ -86,63 +47,124 @@ public class PosJogoController {
         final Button btnconfirmar = (Button) dialog.findViewById(R.id.pos_jogo_placar_btnconfirmar);
         btnconfirmar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                posJogo.setQtd_gol_time1(Integer.valueOf(tvGolsTime1.getText().toString().trim()));
-                posJogo.setQtd_gol_time2(Integer.valueOf(tvGolsTime2.getText().toString().trim()));
-                String placar = String.valueOf(posJogo.getQtd_gol_time1()).trim() +
-                        " X " + String.valueOf(posJogo.getQtd_gol_time2()).trim();
+                jogo.put("qtdGolsTime1", Integer.valueOf(tvGolsTime1.getText().toString().trim()));
+                jogo.put("qtdGolsTime2", Integer.valueOf(tvGolsTime2.getText().toString().trim()));
+                jogo.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            funcoes.mostrarToast(1);
+                        } else {
+                            funcoes.mostrarToast(2);
+                        }
+                    }
+                });
+
+                String placar = tvGolsTime1.getText().toString().trim() +
+                        " X " + tvGolsTime2.getText().toString().trim();
                 tv.setText(placar);
                 dialog.dismiss();
             }
         });
 
-        tvNomeTime1.setText(time1.getNome().toUpperCase().trim().substring(0, 3));
-        tvNomeTime2.setText(time2.getNome().toUpperCase().trim().substring(0, 3));
-        tvGolsTime1.setText(String.valueOf(posJogo.getQtd_gol_time1()).trim());
-        tvGolsTime2.setText(String.valueOf(posJogo.getQtd_gol_time2()).trim());
+        tvNomeTime1.setText(jogo.getString("nomeTime").toUpperCase().trim().substring(0, 3));
+        tvNomeTime2.setText(jogo.getString("nomeTime2").toUpperCase().trim().substring(0, 3));
+        tvGolsTime1.setText(String.valueOf(jogo.getInt("qtdGolsTime1")).trim());
+        tvGolsTime2.setText(String.valueOf(jogo.getInt("qtdGolsTime2")).trim());
 
         dialog.show();
     }
 
-    public void exibirFeedBackPosJogoJogador(final PosJogoUsuarios posJogoUser, Context context) {
+    public void exibirFeedBackPosJogoJogador(final ParseObject posJogoUser, final ParseObject jogo, final Context context) {
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_pos_jogo_jogador);
-        Usuario user = userControl.selectUsuarioPorId(posJogoUser.getId_usuario(),"").get(0);
 
-        dialog.setTitle(user.getNome().toUpperCase().trim());
         final TextView tvNota = (TextView) dialog.findViewById(R.id.pos_jogo_jogador_nota);
         final TextView tvGols = (TextView) dialog.findViewById(R.id.pos_jogo_jogador_gols);
         final TextView tvCA = (TextView) dialog.findViewById(R.id.pos_jogo_jogador_cartoesamarelo);
         final TextView tvCV = (TextView) dialog.findViewById(R.id.pos_jogo_jogador_cartoesvermelho);
 
-        if (posJogoUser.getNota() > 0) {
-            tvNota.setText(String.valueOf(posJogoUser.getNota()).trim());
-        }
-        if (posJogoUser.getQtd_gol() > 0) {
-            tvGols.setText(String.valueOf(posJogoUser.getQtd_gol()).trim());
-        }
-        if (posJogoUser.getQtd_cartao_amarelo() > 0) {
-            tvCA.setText(String.valueOf(posJogoUser.getQtd_cartao_amarelo()).trim());
-        }
-        if (posJogoUser.getQtd_cartao_vermelho() > 0) {
-            tvCV.setText(String.valueOf(posJogoUser.getQtd_cartao_vermelho()).trim());
+        if (posJogoUser.getClass().getName().equals("com.parse.ParseUser")) {
+            dialog.setTitle(posJogoUser.getString("nome").toUpperCase().trim());
+            PosJogoNovo = true;
+        } else {
+            dialog.setTitle(posJogoUser.getString("nomeUsuario").toUpperCase().trim());
+            if (posJogoUser.getInt("nota") > 0) {
+                tvNota.setText(String.valueOf(posJogoUser.getInt("nota")).trim());
+            } else {
+                tvNota.setText("0");
+            }
+            if (posJogoUser.getInt("qtdGol") > 0) {
+                tvGols.setText(String.valueOf(posJogoUser.getInt("qtdGol")).trim());
+            } else {
+                tvGols.setText("0");
+            }
+            if (posJogoUser.getInt("qtdCartaoAmarelo") > 0) {
+                tvCA.setText(String.valueOf(posJogoUser.getInt("qtdCartaoAmarelo")).trim());
+            } else {
+                tvCA.setText("0");
+            }
+            if (posJogoUser.getInt("qtdCartaoVermelho") > 0) {
+                tvCV.setText(String.valueOf(posJogoUser.getInt("qtdCartaoVermelho")).trim());
+            } else {
+                tvCV.setText("0");
+            }
         }
 
         final Button btnconfirmar = (Button) dialog.findViewById(R.id.pos_jogo_jogador_btnconfirmar);
+
         btnconfirmar.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                ParseObject novoPosJogo = new ParseObject("posJogoUser");
+
+                if (!PosJogoNovo) {
+                    novoPosJogo.setObjectId(posJogoUser.getObjectId());
+                    novoPosJogo.put("nomeUsuario", posJogoUser.getString("nomeUsuario"));
+                    novoPosJogo.put("usuario", posJogoUser.get("usuario"));
+                } else {
+                    novoPosJogo.put("nomeUsuario", posJogoUser.getString("nome"));
+                    novoPosJogo.put("usuario", posJogoUser);
+                }
                 if (!tvNota.getText().toString().trim().isEmpty()) {
-                    posJogoUser.setNota(Integer.valueOf(tvNota.getText().toString().trim()));
+                    novoPosJogo.put("nota", Integer.valueOf(tvNota.getText().toString().trim()));
                 }
                 if (!tvGols.getText().toString().isEmpty()) {
-                    posJogoUser.setQtd_gol(Integer.valueOf(tvGols.getText().toString().trim()));
+                    novoPosJogo.put("qtdGol", Integer.valueOf(tvGols.getText().toString().trim()));
                 }
                 if (!tvCA.getText().toString().isEmpty()) {
-                    posJogoUser.setQtd_cartao_amarelo(Integer.valueOf(tvCA.getText().toString().trim()));
+                    novoPosJogo.put("qtdCartaoAmarelo", Integer.valueOf(tvCA.getText().toString().trim()));
                 }
                 if (!tvCV.getText().toString().isEmpty()) {
-                    posJogoUser.setQtd_cartao_vermelho(Integer.valueOf(tvCV.getText().toString().trim()));
+                    novoPosJogo.put("qtdCartaoVermelho", Integer.valueOf(tvCV.getText().toString().trim()));
                 }
-
+                novoPosJogo.put("jogo", jogo);
+                final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando...");
+                final ParseObject finalNovoPosJogo = novoPosJogo;
+                if (novoPosJogo.getObjectId() == null || novoPosJogo.getObjectId().isEmpty()) {
+                    PosJogoNovo = true;
+                }
+                novoPosJogo.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        FuncoesParse.dismissProgressBar(progresso);
+                        if (e == null) {
+                            funcoes.mostrarToast(1);
+                            if (PosJogoNovo) {
+                                jogo.getRelation("posJogoUser").add(finalNovoPosJogo);
+                                jogo.saveInBackground(new SaveCallback() {
+                                    @Override
+                                    public void done(ParseException e) {
+                                        if (e != null) {
+                                            jogo.saveEventually();
+                                        }
+                                    }
+                                });
+                            }
+                        } else {
+                            funcoes.mostrarToast(2);
+                        }
+                    }
+                });
                 dialog.dismiss();
             }
         });

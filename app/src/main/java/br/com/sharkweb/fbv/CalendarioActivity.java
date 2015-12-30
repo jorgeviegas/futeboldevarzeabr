@@ -52,7 +52,6 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
 
     final Context context = this;
     private Funcoes funcoes = new Funcoes(this);
-    private TimeUsuarioController timeUsuarioControl = new TimeUsuarioController(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +67,6 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         listaDeJogos = (ListView) findViewById(R.id.calendario_listaJogos);
         listaDeJogos.setBackgroundColor(Color.WHITE);
         listaDeJogos.setOnItemClickListener(this);
-
 
         btnHoje = (Button) findViewById(R.id.calendario_botaoHoje);
         btnHoje.setVisibility(View.VISIBLE);
@@ -117,25 +115,30 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         });
 
         initializeCalendar();
-        buscarJogos();
+        buscarJogos(dataSelecionada);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case 1:
-                atualizarLista();
+                buscarJogos(dataSelecionada);
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public void buscarJogos() {
+    public void buscarJogos(Date data) {
         final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando...");
 
         ParseQuery queryJogos = this.time.getRelation("jogos").getQuery();
-        queryJogos.whereGreaterThanOrEqualTo("data", funcoes.getFirstDayOfTheMonth(dataSelecionada));
-        queryJogos.whereLessThanOrEqualTo("data", funcoes.getLastDayOfTheMonth(dataSelecionada));
+        if (data == null) {
+            queryJogos.whereGreaterThanOrEqualTo("data", funcoes.getFirstDayOfTheMonth(dataSelecionada));
+            queryJogos.whereLessThanOrEqualTo("data", funcoes.getLastDayOfTheMonth(dataSelecionada));
+        } else {
+            queryJogos.whereEqualTo("data", data);
+        }
+
         queryJogos.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> listJogos, ParseException e) {
@@ -153,7 +156,7 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
 
     public void atualizarLista() {
         if (listaDeJogosDoTime != null) {
-            adapterJogos = new JogoListAdapter(this, listaDeJogosDoTime, dataSelecionada);
+            adapterJogos = new JogoListAdapter(this, listaDeJogosDoTime);
             listaDeJogos.setAdapter(adapterJogos);
         }
     }
@@ -174,7 +177,7 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
                 String data = day + "/" + month + "/" + year;
                 try {
                     dataSelecionada = funcoes.transformarStringEmData(data);
-                    atualizarLista();
+                    buscarJogos(dataSelecionada);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

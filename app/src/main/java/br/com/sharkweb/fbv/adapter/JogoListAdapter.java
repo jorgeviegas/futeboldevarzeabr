@@ -35,20 +35,14 @@ public class JogoListAdapter extends BaseAdapter {
 
     private LayoutInflater mInflater;
     private List<ParseObject> jogos;
-    private TimeController timeControl;
-    private JogoController jogoControl;
     private Context context;
     private Funcoes funcoes;
-    private Date dataSelecionada;
 
-    public JogoListAdapter(Context context, List<ParseObject> listaJogos, Date data) {
+    public JogoListAdapter(Context context, List<ParseObject> listaJogos) {
         this.jogos = listaJogos;
         this.context = context;
         mInflater = LayoutInflater.from(context);
-        timeControl = new TimeController(context);
-        jogoControl = new JogoController(context);
         funcoes = new Funcoes(context);
-        dataSelecionada = data;
     }
 
     public int getCount() {
@@ -78,7 +72,7 @@ public class JogoListAdapter extends BaseAdapter {
             itemHolder = (ItemSuporte) view.getTag();
         }
 
-        if (jogos != null && jogos.get(position).getDate("data").equals(dataSelecionada)) {
+        if (jogos != null) {
             itemHolder.tvNomeTimes.setText(jogos.get(position).getString("nomeTime").trim().toUpperCase() + " X " +
                     jogos.get(position).getString("nomeTime2").trim().toUpperCase());
             itemHolder.tvDataHora.setText(funcoes.transformarDataEmString(jogos.get(position).getDate("data")).trim() + " - " +
@@ -95,7 +89,6 @@ public class JogoListAdapter extends BaseAdapter {
             itemHolder.tvDataHora.setText("");
             itemHolder.ivJogo.setVisibility(View.GONE);
         }
-
 
         itemHolder.tvSeiLa.setText("");
 

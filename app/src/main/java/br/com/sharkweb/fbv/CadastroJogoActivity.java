@@ -36,6 +36,7 @@ import br.com.sharkweb.fbv.controller.LocalController;
 import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Local;
+import br.com.sharkweb.fbv.model.Sessao;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.Usuario;
 
@@ -304,7 +305,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
             if (jogo.getString("enderecoCompletoLocal") != null) {
                 tvEnderecoLocal.setText(jogo.getString("enderecoCompletoLocal").trim().toUpperCase());
             }
-            if (jogo.getString("nomeLocal") != null){
+            if (jogo.getString("nomeLocal") != null) {
                 tvLocal.setText(jogo.getString("nomeLocal").trim().toUpperCase());
             }
 
@@ -359,6 +360,8 @@ public class CadastroJogoActivity extends ActionBarActivity {
             this.jogo.put("hora", tvHora.getText().toString().trim());
             this.jogo.put("horaFinal", tvHorafinal.getText().toString().trim());
             this.jogo.put("inativo", false);
+            this.jogo.put("qtdGolsTime1", 0);
+            this.jogo.put("qtdGolsTime2", 0);
             this.jogo.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -526,7 +529,9 @@ public class CadastroJogoActivity extends ActionBarActivity {
             //funcoes.mostrarDialogAlert(1, "Está quase pronto! Estamos com essa função no forno!");
             //Bundle parametros = new Bundle();
             //parametros.putInt("id_jogo", jogo.getId());
-            //mudarTela(PosJogoActivity.class, parametros);
+            Sessao sessao = new Sessao(6, this.jogo, "jogo");
+            Constantes.setSessao(sessao);
+            mudarTela(PosJogoActivity.class);
             return true;
         }
 

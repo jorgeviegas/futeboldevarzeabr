@@ -27,6 +27,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
@@ -78,11 +79,29 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
                 opcoes);
 
         spnFiltro.setAdapter(arrayAdapter2);
-        spnFiltro.setVisibility(View.GONE);
+        //spnFiltro.setVisibility(View.GONE);
+        spnFiltro.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
+                Date data = funcoes.getDate();
+                if (position == 0) {
+                    data.setDate(data.getDate() - 15);
+                } else if (position == 1) {
+                    data.setDate(data.getDate() - 30);
+                } else if (position == 2) {
+                    data.setDate(data.getDate() - 45);
+                    //data = funcoes.getFirstDayOfTheMonth(funcoes.getDate());
+                }
+                atualizarLista(data);
+            }
+
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                return;
+            }
+        });
 
         this.time = Constantes.getTimeSelecionado();
 
-        atualizarLista();
+        //atualizarLista(null);
         movimentos.setCacheColorHint(Color.TRANSPARENT);
     }
 
@@ -119,9 +138,11 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
         return super.onOptionsItemSelected(item);
     }
 
-    public void atualizarLista() {
+    public void atualizarLista(Date dataFiltro) {
         final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
-        this.time.getRelation("movimentos").getQuery().findInBackground(new FindCallback<ParseObject>() {
+        ParseQuery query = this.time.getRelation("movimentos").getQuery();
+        query.whereGreaterThanOrEqualTo("createdAt", dataFiltro);
+        query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> movimentoList, ParseException e) {
                 FuncoesParse.dismissProgressBar(progresso);
                 if (e == null) {

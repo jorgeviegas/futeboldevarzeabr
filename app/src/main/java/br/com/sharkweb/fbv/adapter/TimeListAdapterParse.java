@@ -77,12 +77,12 @@ public class TimeListAdapterParse extends BaseAdapter {
             itemHolder.tvLocalTime.setText(times.get(position).getString("cidade").trim().toUpperCase() + " - " +
                     ufControl.selectUFPorId(times.get(position).getInt("id_uf")).get(0).getNome().trim());
 
-            /*if (ParseUser.getCurrentUser().getRelation("timeFavorito"). > 0 &&
-                    (Constantes.getUsuarioLogado().getId_time() == times.get(position).getInt("id_uf"))) {
+            if (ParseUser.getCurrentUser().getString("timeFavorito") != null &&
+                    ParseUser.getCurrentUser().getString("timeFavorito").equals(times.get(position).getObjectId())) {
                 itemHolder.ivFavorito.setImageResource(R.drawable.favorite_star);
             } else {
                 itemHolder.ivFavorito.setImageResource(IGNORE_ITEM_VIEW_TYPE);
-            }*/
+            }
 
         } else {
             itemHolder.ivFavorito.setImageResource(IGNORE_ITEM_VIEW_TYPE);

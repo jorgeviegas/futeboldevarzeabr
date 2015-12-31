@@ -21,4 +21,8 @@
     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
         android:text="android.studio@android.com" android:id="@+id/nav_header_main_email" />
 
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="Endereço de e-mail não confirmado" android:id="@+id/nav_header_main_email_confirmado"
+        android:textSize="10sp"/>
+
 </LinearLayout>

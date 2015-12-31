@@ -3,6 +3,7 @@ package br.com.sharkweb.fbv;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -48,6 +49,7 @@ public class NewMainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private TextView txtEmailUsuario;
+    private TextView txtEmailUsuarioNaoConfirmado;
     private TextView txtNomeUsuario;
     private ImageView imgPerfilUusario;
     private Context context = this;
@@ -89,12 +91,17 @@ public class NewMainActivity extends AppCompatActivity
         ufControl.inicializarUF();
 
         txtEmailUsuario = (TextView) findViewById(R.id.nav_header_main_email);
+        txtEmailUsuarioNaoConfirmado = (TextView) findViewById(R.id.nav_header_main_email_confirmado);
+        txtEmailUsuarioNaoConfirmado.setTextColor(context.getResources().getColor(R.color.vermelhoEscuro));
         txtNomeUsuario = (TextView) findViewById(R.id.nav_header_main_nome);
         imgPerfilUusario = (ImageView) findViewById(R.id.nav_header_main_imgperfil);
 
 
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
+            if (currentUser.getBoolean("emailVerifield")) {
+                txtEmailUsuarioNaoConfirmado.setVisibility(View.GONE);
+            }
             txtNomeUsuario.setText(currentUser.get("nome").toString().trim());
             txtEmailUsuario.setText(currentUser.getEmail().trim());
             imgPerfilUusario.setImageResource(R.drawable.profile4_68);

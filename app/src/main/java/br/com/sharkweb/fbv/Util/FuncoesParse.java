@@ -3,13 +3,16 @@ package br.com.sharkweb.fbv.Util;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.widget.Toast;
 
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.RequestPasswordResetCallback;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,4 +73,5 @@ public class FuncoesParse {
         pQuery.whereEqualTo("username", currentUser.getUsername()); // <-- you'll probably want to target someone that's not the current user, so modify accordingly
         parsePush.sendMessageInBackground("Only for special people", pQuery);*/
     }
+
 }

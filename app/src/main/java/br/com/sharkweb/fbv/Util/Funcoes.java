@@ -10,6 +10,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseUser;
+import com.parse.RequestPasswordResetCallback;
+
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -245,6 +248,29 @@ public class Funcoes {
             conectado = false;
         }
         return conectado;
+    }
+
+    public void requestPasswordReset(String email) {
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Enviando e-mail...");
+        ParseUser.requestPasswordResetInBackground(email.trim(), new RequestPasswordResetCallback() {
+            @Override
+            public void done(com.parse.ParseException e) {
+                FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    mostrarDialogAlert(1, "E-mail enviado com sucesso!");
+                    // An email was successfully sent with reset instructions.
+                } else {
+                    if (e.getCode() == 125) {
+                        mostrarDialogAlert(1, "Endereço de E-mail Inválido.");
+                    } else if (e.getCode() == 205) {
+                        mostrarDialogAlert(1, "Nenhum usuário cadastrado com este endereço de E-mail.");
+                    } else {
+                        mostrarToast(2);
+                    }
+                    // Something went wrong. Look at the ParseException to see what's up.
+                }
+            }
+        });
     }
 
 }

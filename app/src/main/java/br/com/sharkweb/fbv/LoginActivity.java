@@ -1,14 +1,9 @@
 package br.com.sharkweb.fbv;
 
-import android.app.AlertDialog;
-import android.app.Application;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -21,18 +16,10 @@ import android.widget.Toast;
 
 import com.parse.LogInCallback;
 import com.parse.ParseUser;
+import com.parse.RequestPasswordResetCallback;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-
-import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
-import br.com.sharkweb.fbv.controller.LoginController;
-import br.com.sharkweb.fbv.controller.UsuarioController;
-import br.com.sharkweb.fbv.model.Login;
-import br.com.sharkweb.fbv.model.Usuario;
 
 public class LoginActivity extends ActionBarActivity {
 
@@ -71,7 +58,20 @@ public class LoginActivity extends ActionBarActivity {
         txtEsqueceuSenha.setTextColor(Color.WHITE);
         txtEsqueceuSenha.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                final Dialog dialog = new Dialog(context);
+                dialog.setContentView(R.layout.dialog_pediremail);
+                dialog.setTitle("Informe o E-mail:");
+                final EditText txtEmail = (EditText) dialog.findViewById(R.id.dialog_pediremail_email);
+                final Button btnconfirmar = (Button) dialog.findViewById(R.id.dialog_pediremail_btnconfirmar);
+                btnconfirmar.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(final View v) {
+                        if (!txtEmail.getText().toString().isEmpty()) {
+                            funcoes.requestPasswordReset(txtEmail.getText().toString().trim());
+                        }
+                        dialog.dismiss();
+                    }
+                });
+                dialog.show();
             }
         });
 
@@ -108,7 +108,8 @@ public class LoginActivity extends ActionBarActivity {
         Bundle parametros = new Bundle();
         parametros.putBoolean("login", true);
         mudarTela(NewMainActivity.class, parametros);
-        Toast toast = Toast.makeText(getApplicationContext(), "Login feito com sucesso!", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getApplicationContext(), "Login feito com sucesso! \n " +
+                "Por favor, confirme seu endereço de e-mail.", Toast.LENGTH_LONG);
         toast.show();
     }
 
@@ -154,6 +155,7 @@ public class LoginActivity extends ActionBarActivity {
         }
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

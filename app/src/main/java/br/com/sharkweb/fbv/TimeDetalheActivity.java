@@ -119,7 +119,11 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
     private void buscarUsuarios() {
         final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
-        this.time.getRelation("usuarios").getQuery().findInBackground(new FindCallback<ParseObject>() {
+        ParseQuery query = this.time.getRelation("usuarios").getQuery();
+        if (chkInativo.isChecked()) {
+           // query.whereEqualTo("");
+        }
+        query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
                 FuncoesParse.dismissProgressBar(progresso);
@@ -136,7 +140,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     public void atualizarLista() {
         adapterUsuarios = new UsuarioListAdapterParse(this.context, this.listaUsuarios, 2);
         listaJogadores.setAdapter(adapterUsuarios);
-
     }
 
     public void inserirJogador(String username) {

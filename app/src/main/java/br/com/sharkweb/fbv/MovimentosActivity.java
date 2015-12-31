@@ -73,7 +73,7 @@ public class MovimentosActivity extends ActionBarActivity implements AdapterView
         opcoes.add("Últimos 15 dias");
         opcoes.add("Últimos 30 dias");
         opcoes.add("Últimos 45 dias");
-        opcoes.add("Mes anterior");
+       //opcoes.add("Mes anterior");
         ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_activated_1,
                 opcoes);

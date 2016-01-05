@@ -17,6 +17,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.parse.DeleteCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -147,7 +148,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
         });
 
         tvJuiz = (EditText) findViewById(R.id.cadastro_jogo_juiz);
-        tvJuiz.setVisibility(EditText.VISIBLE);
+        tvJuiz.setVisibility(EditText.GONE);
         tvJuiz.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -189,6 +190,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
                 EscolheUsuario(3);
             }
         });
+        btnSearchJuiz.setVisibility(View.GONE);
 
         btnExcluirJuiz = (Button) findViewById(R.id.cadastro_jogo_btnexcluirjuiz);
         btnExcluirJuiz.setVisibility(View.GONE);
@@ -521,8 +523,16 @@ public class CadastroJogoActivity extends ActionBarActivity {
         }
 
         if (id == R.id.cadastro_jogo_action_excluir) {
-            // jogoControl.excluirJogoPorId(this.jogo.getId());
-            onBackPressed();
+            this.jogo.deleteInBackground(new DeleteCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        onBackPressed();
+                    } else {
+                        funcoes.mostrarToast(5);
+                    }
+                }
+            });
             return true;
         }
 

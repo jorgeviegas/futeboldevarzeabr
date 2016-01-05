@@ -84,6 +84,9 @@ public class Funcoes {
             case 4:
                 toast.setText("Falha ao carregar. Por favor, tente novamente.");
                 break;
+            case 5:
+                toast.setText("Falha ao excluir. Por favor, tente novamente.");
+                break;
         }
         toast.show();
     }
@@ -194,7 +197,11 @@ public class Funcoes {
         final TextView tvNumeroTelefone = (TextView) dialog.findViewById(R.id.usuario_detalhe_numerotelefone);
         final TextView tvEmail = (TextView) dialog.findViewById(R.id.usuario_detalhe_infoemail);
         //celularMask = Mask.insert("(##)####-####", tvNumeroTelefone);
-        tvNumeroTelefone.setText(user.getString("celular").trim());
+        if (user.getString("celular") != null && !user.getString("celular").isEmpty()) {
+            tvNumeroTelefone.setText(user.getString("celular").trim());
+        } else {
+            tvNumeroTelefone.setText("");
+        }
         tvEmail.setText(user.getString("email").trim());
         //exibe na tela o dialog
         dialog.show();

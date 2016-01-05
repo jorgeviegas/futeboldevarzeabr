@@ -170,7 +170,11 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                     });
                 } else {
                     FuncoesParse.dismissProgressBar(progresso);
-                    funcoes.mostrarToast(2);
+                    if (e.getCode() == 101) {
+                        funcoes.mostrarDialogAlert(1, "Nenhum usuário encontrado com esse nome.");
+                    } else {
+                        funcoes.mostrarToast(2);
+                    }
                 }
             }
         });
@@ -318,7 +322,9 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             arrayOpcoes[0] = "Informações de contato";
 
             TextView tvTipoUsuario = ((TextView) view.findViewById(R.id.usuariolist_tipoUsuario));
-            if (tvTipoUsuario.getText().toString().trim().equals("Pendente")) {
+
+            if (tvTipoUsuario.getText().toString().trim().equals("Pendente")
+                    || FuncoesParse.isAdmin()) {
                 arrayOpcoes = new String[2];
                 arrayOpcoes[0] = "Informações de contato";
                 arrayOpcoes[1] = "Enviar convite novamente";

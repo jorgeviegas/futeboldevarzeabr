@@ -157,7 +157,12 @@ public class NewMainActivity extends AppCompatActivity
         builder.setIcon(R.drawable.questionmark_64);
         builder.setTitle(list.get(count).getString("tipo").trim());
         builder.setMessage(list.get(count).getString("mensagem").trim());
-        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+        builder.setCancelable(false);
+        String opcao = "Ok";
+        if (list.get(count).getString("tipo").equals("Pergunta")) {
+            opcao = "Sim";
+        }
+        builder.setPositiveButton(opcao, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
                 atualizarTime(list.get(count).getString("objectIdParam").trim());

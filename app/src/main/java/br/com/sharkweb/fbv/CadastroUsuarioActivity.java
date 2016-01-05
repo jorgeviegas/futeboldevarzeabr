@@ -229,10 +229,12 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
 
     private void cadastroEfetuado() {
         funcoes.mostrarToast(1);
-        if (ParseUser.getCurrentUser() == null)
+        if (ParseUser.getCurrentUser() == null) {
+            funcoes.mostrarDialogAlert(1, "Por favor, confirme seu endereço de e-mail.");
             mudarTela(LoginActivity.class);
-        else
+        } else {
             mudarTela(NewMainActivity.class);
+        }
     }
 
     private void falhaNoCadastro(com.parse.ParseException e) {

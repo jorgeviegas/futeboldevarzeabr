@@ -21,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -33,6 +34,7 @@ import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.w3c.dom.Text;
 import org.xml.sax.helpers.ParserAdapter;
 
 import java.util.ArrayList;
@@ -50,6 +52,7 @@ import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.controllerParse.TimeControllerParse;
 import br.com.sharkweb.fbv.model.ParseProxyObject;
+import br.com.sharkweb.fbv.model.Sessao;
 import br.com.sharkweb.fbv.model.Time;
 import br.com.sharkweb.fbv.model.TimeUsuario;
 import br.com.sharkweb.fbv.model.Usuario;
@@ -84,7 +87,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         chkInativo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //atualizarLista();
+                buscarUsuarios();
             }
         });
 
@@ -120,9 +123,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     private void buscarUsuarios() {
         final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
         ParseQuery query = this.time.getRelation("usuarios").getQuery();
-        if (chkInativo.isChecked()) {
-           // query.whereEqualTo("");
-        }
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
@@ -138,7 +138,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     }
 
     public void atualizarLista() {
-        adapterUsuarios = new UsuarioListAdapterParse(this.context, this.listaUsuarios, 2);
+        adapterUsuarios = new UsuarioListAdapterParse(this.context, this.listaUsuarios, 2, chkInativo.isChecked());
         listaJogadores.setAdapter(adapterUsuarios);
     }
 
@@ -159,6 +159,9 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                                 FuncoesParse.dismissProgressBar(progresso);
                                 listaUsuarios.add(parseUser);
                                 atualizarLista();
+                                FuncoesParse.enviarNotificacao(context, parseUser, "O time " + time.getString("nome").trim() +
+                                                " convidou você para fazer parte do time. Deseja aceitar?",
+                                        time.getObjectId().trim(), "Pergunta");
                             } else {
                                 FuncoesParse.dismissProgressBar(progresso);
                                 funcoes.mostrarToast(2);
@@ -269,7 +272,8 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         if (id == R.id.timedetalhe_action_editar) {
             Bundle parametros = new Bundle();
             parametros.putString("tipoAcesso", "edit");
-            //parametros.putInt("id_time", time.getId());
+            Sessao sessao = new Sessao(1, this.time, "time");
+            Constantes.setSessao(sessao);
             mudarTela(CadastroTimeActivity.class, parametros);
             return true;
         }
@@ -307,24 +311,29 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-       /* final Usuario user = adapterUsuarios.getItem(position);
-        if (user.getId() > 0) {
-            //  final TimeUsuario tipoUser = timeusuarioControl.selectTimeUsuarioPorIdTimeeIdUsuario(time.getId(), user.getId()).get(0);
+        final ParseObject user = adapterUsuarios.getItem(position);
+        if (!user.getObjectId().isEmpty()) {
             //Menu de opções que o usuário pode fazer com os usuarios.
             String[] arrayOpcoes = new String[1];
             arrayOpcoes[0] = "Informações de contato";
 
+            TextView tvTipoUsuario = ((TextView) view.findViewById(R.id.usuariolist_tipoUsuario));
+            if (tvTipoUsuario.getText().toString().trim().equals("Pendente")) {
+                arrayOpcoes = new String[2];
+                arrayOpcoes[0] = "Informações de contato";
+                arrayOpcoes[1] = "Enviar convite novamente";
+            }
             //Diponível somente para usuarios administradores do time.
-           *//* if (timeusuarioControl.isAdmin(Constantes.getUsuarioLogado().getId(), time.getId())) {
+           /* if (FuncoesParse.isAdmin()) {
                 arrayOpcoes = new String[3];
                 arrayOpcoes[0] = "Informações de contato";
-                arrayOpcoes[1] = "Tornar Admin do time";
-                if (tipoUser.getInativo() > 0) {
-                    arrayOpcoes[2] = "Ativar usuario";
+                //arrayOpcoes[1] = "Tornar Admin do time";
+                if (FuncoesParse.isInativo(user)) {
+                    //arrayOpcoes[2] = "Ativar usuario";
                 } else {
-                    arrayOpcoes[2] = "Inativar usuario";
+                    //arrayOpcoes[2] = "Inativar usuario";
                 }
-            }*//*
+            }*/
 
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setIcon(R.drawable.questionmark_64);
@@ -338,15 +347,18 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                             funcoes.exibirDetalheUsuario(user, context);
                             break;
                         case 1:
+                            FuncoesParse.enviarNotificacao(context, user, "O time " + time.getString("nome").trim() +
+                                            " convidou você para fazer parte do time. Deseja aceitar?",
+                                    time.getObjectId().trim(), "Pergunta");
                             // timeusuarioControl.tornarAdmin(time.getId(), user.getId());
                             //atualizarLista();
                             break;
                         case 2:
-                           *//* if (tipoUser.getInativo() > 0) {
+                            if (FuncoesParse.isInativo(user)) {
                                 //timeusuarioControl.ativarUsuario(time.getId(), user.getId());
                             } else {
-                               // timeusuarioControl.inativarUsuario(time.getId(), user.getId());
-                            }*//*
+                                // timeusuarioControl.inativarUsuario(time.getId(), user.getId());
+                            }
                             // atualizarLista();
                             break;
                     }
@@ -363,7 +375,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             AlertDialog dialogExportar = builder.create();
             dialogExportar.show();
 
-        }*/
+        }
         return true;
     }
 

@@ -11,6 +11,7 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
+import com.parse.SaveCallback;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -63,15 +64,46 @@ public class FuncoesParse {
         return retorno;
     }
 
-    public static void enviarConviteTime(String username) {
-       /* ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-        installation.put("username", username);
-        installation.saveInBackground();
+    public static boolean isInativo(ParseObject user) {
+        boolean retorno = false;
+        ArrayList<String> configsTimes = (ArrayList<String>) user.get("configTimes");
+        if (configsTimes != null && configsTimes.size() > 0) {
+            for (int i = 0; i < configsTimes.size(); i++) {
+                Object object = (Object) configsTimes.get(i);
+                String inativo = ((ArrayList<String>) object).get(1);
+                if (Integer.valueOf(inativo) == 1) {
+                    retorno = true;
+                }
+            }
+        } else {
+            return false;
+        }
+        return retorno;
+    }
 
-        ParsePush parsePush = new ParsePush();
-        ParseQuery pQuery = ParseIntallation.query(); // <-- Installation query
-        pQuery.whereEqualTo("username", currentUser.getUsername()); // <-- you'll probably want to target someone that's not the current user, so modify accordingly
-        parsePush.sendMessageInBackground("Only for special people", pQuery);*/
+    public static void enviarNotificacao(final Context context, ParseObject usuario, String mensagem, String objectId, String tipo) {
+        // final Dialog progresso = FuncoesParse.showProgressBar(context, "Enviando notificação...");
+        final ParseObject notific = new ParseObject("notificacao");
+        notific.put("mensagem", mensagem);
+        notific.put("objectIdParam", objectId.trim());
+        notific.put("usuario", usuario);
+        notific.put("tipo", tipo.trim());
+        notific.put("lida", false);
+        notific.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(com.parse.ParseException e) {
+                // FuncoesParse.dismissProgressBar(progresso);
+                if (e == null) {
+                    Toast toast = Toast.makeText(context, "Notificação enviada ao usuário.", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    notific.saveEventually();
+                    Toast toast = Toast.makeText(context, "Falha ao enviar a notificação ao usuário.", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        });
+
     }
 
 }

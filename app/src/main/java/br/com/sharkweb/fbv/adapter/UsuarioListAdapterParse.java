@@ -44,14 +44,16 @@ public class UsuarioListAdapterParse extends BaseAdapter {
     private TipoUsuarioController tipousuarioControl;
     private int modelo;
     private Context context;
+    private boolean filtrarInativos;
 
-    public UsuarioListAdapterParse(Context context, List<ParseObject> listaUsuarios, int modelo) {
+    public UsuarioListAdapterParse(Context context, List<ParseObject> listaUsuarios, int modelo, boolean filtrarInativos) {
 
         this.usuarios = listaUsuarios;
         this.context = context;
         mInflater = LayoutInflater.from(context);
         posicaoControl = new PosicaoController(context);
         tipousuarioControl = new TipoUsuarioController(context);
+        this.filtrarInativos = filtrarInativos;
 
         //MODELOS DE ADAPTER:
         //1 - Exibe informarções como jogador;
@@ -110,6 +112,10 @@ public class UsuarioListAdapterParse extends BaseAdapter {
                         if (tipousuarioControl.selectTiposUsuariosPorId(Integer.valueOf(tipoUsuario))
                                 .get(0).getTipo().equals("Administrador"))
                             itemHolder.tvTipoUsuario.setTextColor(context.getResources().getColor(R.color.greengreen));
+
+                        if (Integer.valueOf(inativo) == 1 && !filtrarInativos) {
+                            usuarios.remove(position);
+                        }
                     }
                 }
             } else {
@@ -132,7 +138,7 @@ public class UsuarioListAdapterParse extends BaseAdapter {
         return view;
     }
 
-    private class ItemSuporte {
+    public class ItemSuporte {
         public TextView tvUsuarioNome;
         public TextView tvUsuarioPosicao;
         public TextView tvTipoUsuario;

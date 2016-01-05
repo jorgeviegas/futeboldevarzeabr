@@ -362,6 +362,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
             this.jogo.put("inativo", false);
             this.jogo.put("qtdGolsTime1", 0);
             this.jogo.put("qtdGolsTime2", 0);
+            this.jogo.put("situacao", "Aguardando");
             this.jogo.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -373,6 +374,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
                                 FuncoesParse.dismissProgressBar(progresso);
                                 if (e == null) {
                                     funcoes.mostrarToast(1);
+                                    //FAZER TRATAMENTO PARA ENVIAR NOTIFICAÇÃO AO TIME ADVERSÁRIO ACEITAR O JOGO.
                                     onBackPressed();
                                 } else {
                                     funcoes.mostrarToast(2);

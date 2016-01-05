@@ -60,7 +60,6 @@ public class CadastroTimeActivity extends ActionBarActivity {
     private UFController ufControl = new UFController(this);
     private Funcoes funcoes = new Funcoes(this);
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -108,12 +107,13 @@ public class CadastroTimeActivity extends ActionBarActivity {
         if (params != null) {
             tipoAcesso = params.getString("tipoAcesso");
             if (!tipoAcesso.equals("write")) {
-                this.time.setObjectId(params.getString("ObjectId").trim());
+                this.time = Constantes.getSessao().getObjeto();
+                Constantes.setSessao(null);
                 carregarRegistro();
             }
         } else {
+            time = new ParseObject("time");
             tipoAcesso = "write";
-            this.time = null;
             spnUF.setSelection(22);
         }
     }
@@ -141,42 +141,55 @@ public class CadastroTimeActivity extends ActionBarActivity {
     private void salvar() {
         String validacao = validarCampos().trim();
         if (validacao.isEmpty()) {
-
-            final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando cadastro...");
-
+            final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando time...");
             final int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
-
-            final ParseObject time = new ParseObject("time");
             time.put("nome", txtNome.getText().toString().trim());
             time.put("cidade", txtCidade.getText().toString().trim());
-            time.put("id_uf", spnUF.getSelectedItemId());
-            time.getRelation("usuarios").add(ParseUser.getCurrentUser());
-            time.saveInBackground(new SaveCallback() {
-                public void done(com.parse.ParseException e) {
-                    if (e == null) {
-                        ParseUser.getCurrentUser().getRelation("times").add(time);
-                        ArrayList<String> configs = new ArrayList<String>();
-                        configs.add(time.getObjectId());
-                        configs.add("0");
-                        configs.add(String.valueOf(tipo_usuario));
-                        ParseUser.getCurrentUser().add("configTimes", configs);
-                        ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
-                            public void done(com.parse.ParseException e) {
-                                FuncoesParse.dismissProgressBar(progresso);
-                                Constantes.setTimeSelecionado(time);
-                                if (e == null) {
-                                    cadastroEfetuado();
-                                } else {
-                                    falhaNoCadastro(e);
+            int id_uf = (int) spnUF.getSelectedItemId();
+            id_uf = id_uf - 1;
+            time.put("id_uf", id_uf);
+            if (time.getObjectId() == null || time.getObjectId().isEmpty()) {
+                time.getRelation("usuarios").add(ParseUser.getCurrentUser());
+                time.saveInBackground(new SaveCallback() {
+                    public void done(com.parse.ParseException e) {
+                        if (e == null) {
+                            ParseUser.getCurrentUser().getRelation("times").add(time);
+                            ArrayList<String> configs = new ArrayList<String>();
+                            configs.add(time.getObjectId());
+                            configs.add("0");
+                            configs.add(String.valueOf(tipo_usuario));
+                            ParseUser.getCurrentUser().add("configTimes", configs);
+                            ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
+                                public void done(com.parse.ParseException e) {
+                                    FuncoesParse.dismissProgressBar(progresso);
+                                    Constantes.setTimeSelecionado(time);
+                                    if (e == null) {
+                                        cadastroEfetuado();
+                                    } else {
+                                        falhaNoCadastro(e);
+                                    }
                                 }
-                            }
-                        });
-                    } else {
-                        FuncoesParse.dismissProgressBar(progresso);
-                        falhaNoCadastro(e);
+                            });
+                        } else {
+                            FuncoesParse.dismissProgressBar(progresso);
+                            falhaNoCadastro(e);
+                        }
                     }
-                }
-            });
+                });
+            } else {
+                time.saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        FuncoesParse.dismissProgressBar(progresso);
+                        Constantes.setTimeSelecionado(time);
+                        if (e == null) {
+                            cadastroEfetuado();
+                        } else {
+                            falhaNoCadastro(e);
+                        }
+                    }
+                });
+            }
         } else {
             funcoes.mostrarDialogAlert(1, validacao);
         }
@@ -193,29 +206,17 @@ public class CadastroTimeActivity extends ActionBarActivity {
     }
 
     private void carregarRegistro() {
+        txtNome.setText(time.getString("nome").trim());
+        txtCidade.setText(time.getString("cidade").trim());
+        int if_uf = time.getInt("id_uf");
+        if_uf = if_uf + 1;
+        spnUF.setSelection(if_uf);
 
-        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("time");
-        query.getInBackground(this.time.getObjectId().trim(), new GetCallback<ParseObject>() {
-            public void done(ParseObject object, ParseException e) {
-                FuncoesParse.dismissProgressBar(progresso);
-                if (e == null) {
-                    txtNome.setText(object.getString("nome").trim());
-                    txtCidade.setText(object.getString("cidade").trim());
-                    int if_uf = object.getInt("id_uf");
-                    if_uf = if_uf + 1;
-                    spnUF.setSelection(if_uf);
-
-                    if (tipoAcesso.equals("read")) {
-                        txtNome.setEnabled(false);
-                        txtCidade.setEnabled(false);
-                        spnUF.setEnabled(false);
-                    }
-                } else {
-                    funcoes.mostrarDialogAlert(1, "");
-                }
-            }
-        });
+        if (tipoAcesso.equals("read")) {
+            txtNome.setEnabled(false);
+            txtCidade.setEnabled(false);
+            spnUF.setEnabled(false);
+        }
     }
 
     private void cadastroEfetuado() {

@@ -149,7 +149,6 @@ public class CadastroLocalActivity extends ActionBarActivity {
             if (!tvNumero.getText().toString().isEmpty()) {
                 numero = Integer.valueOf(tvNumero.getText().toString().trim());
             }
-
             final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando local...");
             local.put("nome", tvtNome.getText().toString().trim());
             local.put("endereco", tvEndereco.getText().toString().trim());

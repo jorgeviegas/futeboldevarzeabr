@@ -1,7 +1,9 @@
 package br.com.sharkweb.fbv;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,19 +18,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.LogOutCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.parse.RequestPasswordResetCallback;
 import com.parse.SaveCallback;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import br.com.sharkweb.fbv.Util.Constantes;
@@ -92,22 +101,148 @@ public class NewMainActivity extends AppCompatActivity
 
         txtEmailUsuario = (TextView) findViewById(R.id.nav_header_main_email);
         txtEmailUsuarioNaoConfirmado = (TextView) findViewById(R.id.nav_header_main_email_confirmado);
+        txtEmailUsuarioNaoConfirmado.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                funcoes.reEnviarEmailConfirmacao();
+            }
+        });
+
         txtEmailUsuarioNaoConfirmado.setTextColor(context.getResources().getColor(R.color.vermelhoEscuro));
         txtNomeUsuario = (TextView) findViewById(R.id.nav_header_main_nome);
         imgPerfilUusario = (ImageView) findViewById(R.id.nav_header_main_imgperfil);
 
+        verificarUsuario();
+    }
 
+
+    private void verificarUsuario() {
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-            if (currentUser.getBoolean("emailVerifield")) {
-                txtEmailUsuarioNaoConfirmado.setVisibility(View.GONE);
+            try {
+                ParseUser.getCurrentUser().fetch();
+            } catch (com.parse.ParseException e1) {
+                e1.printStackTrace();
             }
+
+            if (currentUser.getBoolean("emailVerified")) {
+                txtEmailUsuarioNaoConfirmado.setVisibility(View.GONE);
+            } else {
+                Toast toast = Toast.makeText(getApplicationContext(), "Por favor, confirme seu endereço de e-mail.", Toast.LENGTH_LONG);
+                toast.show();
+            }
+
             txtNomeUsuario.setText(currentUser.get("nome").toString().trim());
             txtEmailUsuario.setText(currentUser.getEmail().trim());
             imgPerfilUusario.setImageResource(R.drawable.profile4_68);
+
+            //Verifica a existência de notificações ao usuário.
+            ParseQuery queryNotific = new ParseQuery("notificacao");
+            queryNotific.whereEqualTo("usuario", currentUser);
+            queryNotific.whereEqualTo("lida", false);
+            queryNotific.findInBackground(new FindCallback<ParseObject>() {
+                @Override
+                public void done(List<ParseObject> list, ParseException e) {
+                    if (e == null && list.size() > 0) {
+                        exibirNotificacoes(list, 0);
+                    }
+                }
+            });
         } else {
             mudarTela(LoginActivity.class);
         }
+    }
+
+    private void exibirNotificacoes(final List<ParseObject> list, final int count) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setIcon(R.drawable.questionmark_64);
+        builder.setTitle(list.get(count).getString("tipo").trim());
+        builder.setMessage(list.get(count).getString("mensagem").trim());
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                atualizarTime(list.get(count).getString("objectIdParam").trim());
+                if ((count + 1) <= (list.size() - 1)) {
+                    exibirNotificacoes(list, (count + 1));
+                }
+            }
+        });
+        if (list.get(count).getString("tipo").equals("Pergunta")) {
+            builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    if ((count + 1) <= (list.size() - 1)) {
+                        exibirNotificacoes(list, (count + 1));
+                    }
+                }
+            });
+        }
+        builder.create().show();
+        list.get(count).put("lida", true);
+        list.get(count).saveInBackground();
+    }
+
+    private void atualizarTime(String objectId) {
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando...");
+        ParseQuery queryTime = new ParseQuery("time");
+        queryTime.getInBackground(objectId.trim(), new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject parseObject, ParseException e) {
+                if (e == null) {
+                    ParseUser.getCurrentUser().getRelation("times").add(parseObject);
+                    ArrayList<String> configs = new ArrayList<String>();
+                    configs.add(parseObject.getObjectId().trim());
+                    configs.add("0");
+                    configs.add("2");
+                    ParseUser.getCurrentUser().add("configTimes", configs);
+                    ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            FuncoesParse.dismissProgressBar(progresso);
+                            if (e == null) {
+                                funcoes.mostrarToast(1);
+                            } else {
+                                funcoes.mostrarToast(2);
+                            }
+                        }
+                    });
+                } else {
+                    FuncoesParse.dismissProgressBar(progresso);
+                    funcoes.mostrarToast(2);
+                }
+            }
+        });
+    }
+
+    private void confirmarTrocaDeSenha() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setIcon(R.drawable.questionmark_64);
+        builder.setTitle("Pergunta");
+        builder.setMessage("Tem certeza que deseja trocar sua senha?");
+        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+                final Dialog progresso = FuncoesParse.showProgressBar(context, "Enviando E-mail...");
+                ParseUser.getCurrentUser().requestPasswordResetInBackground(ParseUser.getCurrentUser().getEmail().trim(),
+                        new RequestPasswordResetCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                FuncoesParse.dismissProgressBar(progresso);
+                                if (e == null) {
+                                    funcoes.mostrarDialogAlert(1, "Um e-mail com as instruções para a troca da senha foi enviado.");
+                                } else {
+                                    funcoes.mostrarToast(2);
+                                }
+                            }
+                        });
+            }
+        });
+        builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
     }
 
     @Override
@@ -203,6 +338,8 @@ public class NewMainActivity extends AppCompatActivity
                 mudarTela(CadastroUsuarioActivity.class, parametros);
             } else if (id == R.id.main_config) {
                 funcoes.mostrarDialogAlert(1, "Função ainda não implementada! Estará disponível nas próximas versões.");
+            } else if (id == R.id.main_alterarsenha) {
+                confirmarTrocaDeSenha();
             } else if (id == R.id.main_meustimes) {
                 // funcoes.mostrarDialogAlert(1, "Função desabilitada temporariamente!");
                 parametros.putBoolean("cadastrar", true);

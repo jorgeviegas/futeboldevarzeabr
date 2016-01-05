@@ -6,12 +6,16 @@ import android.content.DialogInterface;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.text.InputType;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
+import com.parse.SaveCallback;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -183,17 +187,15 @@ public class Funcoes {
         }
     }
 
-    public void exibirDetalheUsuario(Usuario user, Context context) {
+    public void exibirDetalheUsuario(ParseObject user, Context context) {
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_usuario_detalhe);
-        dialog.setTitle(user.getNome().trim().toUpperCase());
+        dialog.setTitle(user.getString("nome").trim().toUpperCase());
         final TextView tvNumeroTelefone = (TextView) dialog.findViewById(R.id.usuario_detalhe_numerotelefone);
         final TextView tvEmail = (TextView) dialog.findViewById(R.id.usuario_detalhe_infoemail);
-
         //celularMask = Mask.insert("(##)####-####", tvNumeroTelefone);
-
-        tvNumeroTelefone.setText(user.getCelular().trim());
-        tvEmail.setText(user.getEmail().trim());
+        tvNumeroTelefone.setText(user.getString("celular").trim());
+        tvEmail.setText(user.getString("email").trim());
         //exibe na tela o dialog
         dialog.show();
     }
@@ -257,7 +259,7 @@ public class Funcoes {
             public void done(com.parse.ParseException e) {
                 FuncoesParse.dismissProgressBar(progresso);
                 if (e == null) {
-                    mostrarDialogAlert(1, "E-mail enviado com sucesso!");
+                    mostrarDialogAlert(1, "Um e-mail com as instruções para a troca da senha foi enviado.");
                     // An email was successfully sent with reset instructions.
                 } else {
                     if (e.getCode() == 125) {
@@ -273,4 +275,69 @@ public class Funcoes {
         });
     }
 
+    public String validarSenha(String senha, String confirmarSenha) {
+        if (senha.equals("") || confirmarSenha.equals("")) {
+            return "Senha inválida";
+        }
+        if (!senha.equals(confirmarSenha)) {
+            return "Senha e Confirmar senha devem ser iguais.";
+        }
+        return "";
+    }
+
+    public void reEnviarEmailConfirmacao() {
+        if (ParseUser.getCurrentUser().getEmail() == null ||
+                ParseUser.getCurrentUser().getEmail().isEmpty()) {
+            final Dialog dialog = new Dialog(context);
+            dialog.setContentView(R.layout.dialog_pediremail);
+            dialog.setTitle("Informe o E-mail:");
+            final EditText txtEmail = (EditText) dialog.findViewById(R.id.dialog_pediremail_email);
+            final Button btnconfirmar = (Button) dialog.findViewById(R.id.dialog_pediremail_btnconfirmar);
+            btnconfirmar.setOnClickListener(new View.OnClickListener() {
+                public void onClick(final View v) {
+                    if (!txtEmail.getText().toString().isEmpty()) {
+                        enviarEmailConfirmacao(txtEmail.getText().toString().trim());
+                    }
+                    dialog.dismiss();
+                }
+            });
+            dialog.show();
+        } else {
+            enviarEmailConfirmacao(ParseUser.getCurrentUser().getEmail().trim());
+        }
+    }
+
+    public void enviarEmailConfirmacao(final String email) {
+        //É necessário forçar uma mudança no email do usuário para re-enviar o email de confirmação.
+        final Dialog progresso = FuncoesParse.showProgressBar(context, "Enviando E-mail...");
+        ParseUser.getCurrentUser().setEmail("");
+        ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
+            @Override
+            public void done(com.parse.ParseException e) {
+                if (e == null) {
+                    ParseUser.getCurrentUser().setEmail(email.trim());
+                    ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(com.parse.ParseException e) {
+                            FuncoesParse.dismissProgressBar(progresso);
+                            if (e == null) {
+                                mostrarDialogAlert(1, "Um e-mail foi enviado para que você possa confirmar o mesmo.");
+                            } else {
+                                if (e.getCode() == 125) {
+                                    mostrarDialogAlert(1, "Endereço de E-mail Inválido.");
+                                } else if (e.getCode() == 205) {
+                                    mostrarDialogAlert(1, "Nenhum usuário cadastrado com este endereço de E-mail.");
+                                } else {
+                                    mostrarToast(2);
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    FuncoesParse.dismissProgressBar(progresso);
+                    mostrarToast(2);
+                }
+            }
+        });
+    }
 }

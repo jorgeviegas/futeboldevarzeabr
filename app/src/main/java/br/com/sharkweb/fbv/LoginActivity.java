@@ -108,8 +108,7 @@ public class LoginActivity extends ActionBarActivity {
         Bundle parametros = new Bundle();
         parametros.putBoolean("login", true);
         mudarTela(NewMainActivity.class, parametros);
-        Toast toast = Toast.makeText(getApplicationContext(), "Login feito com sucesso! \n " +
-                "Por favor, confirme seu endereço de e-mail.", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getApplicationContext(), "Login feito com sucesso!", Toast.LENGTH_LONG);
         toast.show();
     }
 

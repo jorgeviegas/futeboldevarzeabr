@@ -113,7 +113,7 @@ public class UsuariosTimeActivity extends ActionBarActivity implements AdapterVi
             public void done(List<ParseObject> list, ParseException e) {
                 FuncoesParse.dismissProgressBar(progresso);
                 if (e == null) {
-                    adapterUsuarios = new UsuarioListAdapterParse(context, list, 2);
+                    adapterUsuarios = new UsuarioListAdapterParse(context, list, 2,false);
                     usuarios.setAdapter(adapterUsuarios);
                 } else {
                     funcoes.mostrarToast(3);

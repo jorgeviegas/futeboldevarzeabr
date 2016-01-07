@@ -101,9 +101,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         listaJogadores.setOnItemClickListener(this);
         listaJogadores.setOnItemLongClickListener(this);
         //listaJogadores.setCacheColorHint(Color.TRANSPARENT);
-
         buscarUsuarios();
-
     }
 
     @Override
@@ -309,7 +307,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             builder.create().show();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -320,15 +317,16 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             //Menu de opções que o usuário pode fazer com os usuarios.
             String[] arrayOpcoes = new String[1];
             arrayOpcoes[0] = "Informações de contato";
+            final TextView tvTipoUsuario = ((TextView) view.findViewById(R.id.usuariolist_tipoUsuario));
 
-            TextView tvTipoUsuario = ((TextView) view.findViewById(R.id.usuariolist_tipoUsuario));
-
-            if (tvTipoUsuario.getText().toString().trim().equals("Pendente")
-                    || FuncoesParse.isAdmin()) {
-                arrayOpcoes = new String[2];
+            if (FuncoesParse.isAdmin()
+                    && tvTipoUsuario.getText().toString().trim().equals("Pendente")) {
+                arrayOpcoes = new String[3];
                 arrayOpcoes[0] = "Informações de contato";
-                arrayOpcoes[1] = "Enviar convite novamente";
+                arrayOpcoes[1] = "Excluir convite";
+                arrayOpcoes[2] = "Enviar convite novamente";
             }
+
             //Diponível somente para usuarios administradores do time.
            /* if (FuncoesParse.isAdmin()) {
                 arrayOpcoes = new String[3];
@@ -353,18 +351,33 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                             funcoes.exibirDetalheUsuario(user, context);
                             break;
                         case 1:
-                            FuncoesParse.enviarNotificacao(context, user, "O time " + time.getString("nome").trim() +
-                                            " convidou você para fazer parte do time. Deseja aceitar?",
-                                    time.getObjectId().trim(), "Pergunta");
+                            time.getRelation("usuarios").remove(user);
+                            time.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if (e == null) {
+                                        FuncoesParse.excluirNotificacao(context, user, time.getObjectId().trim(), "Pergunta");
+                                        funcoes.mostrarToast(1);
+                                        buscarUsuarios();
+                                    } else {
+                                        funcoes.mostrarToast(2);
+                                    }
+                                }
+                            });
                             // timeusuarioControl.tornarAdmin(time.getId(), user.getId());
                             //atualizarLista();
                             break;
                         case 2:
-                            if (FuncoesParse.isInativo(user)) {
-                                //timeusuarioControl.ativarUsuario(time.getId(), user.getId());
-                            } else {
-                                // timeusuarioControl.inativarUsuario(time.getId(), user.getId());
-                            }
+                            FuncoesParse.enviarNotificacao(context, user, "O time " + time.getString("nome").trim() +
+                                            " convidou você para fazer parte do time. Deseja aceitar?",
+                                    time.getObjectId().trim(), "Pergunta");
+                            break;
+                        case 3:
+                            // if (FuncoesParse.isInativo(user)) {
+                            //timeusuarioControl.ativarUsuario(time.getId(), user.getId());
+                            // } else {
+                            // timeusuarioControl.inativarUsuario(time.getId(), user.getId());
+                            //  }
                             // atualizarLista();
                             break;
                     }

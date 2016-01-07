@@ -5,6 +5,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.widget.Toast;
 
+import com.parse.DeleteCallback;
+import com.parse.GetCallback;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
@@ -106,4 +108,32 @@ public class FuncoesParse {
 
     }
 
+    public static void excluirNotificacao(final Context context, ParseObject usuario, String objectId, String tipo) {
+        // final Dialog progresso = FuncoesParse.showProgressBar(context, "Enviando notificação...");
+        ParseQuery query = new ParseQuery("notificacao");
+        query.whereEqualTo("usuario", usuario);
+        query.whereEqualTo("tipo", tipo);
+        query.whereEqualTo("objectIdParam", objectId);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(final ParseObject parseObject, com.parse.ParseException e) {
+                if (e==null){
+                    parseObject.deleteInBackground(new DeleteCallback() {
+                        @Override
+                        public void done(com.parse.ParseException e) {
+                            if (e == null) {
+                                Toast toast = Toast.makeText(context, "Notificação excluída com sucesso.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            } else {
+                                parseObject.saveEventually();
+                            }
+                        }
+                    });
+                }else {
+
+                }
+
+            }
+        });
+    }
 }

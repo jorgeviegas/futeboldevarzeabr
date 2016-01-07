@@ -116,20 +116,20 @@ public class NewMainActivity extends AppCompatActivity
 
 
     private void verificarUsuario() {
-        ParseUser currentUser = ParseUser.getCurrentUser();
+        final ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-            try {
-                ParseUser.getCurrentUser().fetch();
-            } catch (com.parse.ParseException e1) {
-                e1.printStackTrace();
-            }
 
-            if (currentUser.getBoolean("emailVerified")) {
-                txtEmailUsuarioNaoConfirmado.setVisibility(View.GONE);
-            } else {
-                Toast toast = Toast.makeText(getApplicationContext(), "Por favor, confirme seu endereço de e-mail.", Toast.LENGTH_LONG);
-                toast.show();
-            }
+            ParseUser.getCurrentUser().fetchInBackground(new GetCallback<ParseObject>() {
+                @Override
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (currentUser.getBoolean("emailVerified")) {
+                        txtEmailUsuarioNaoConfirmado.setVisibility(View.GONE);
+                    } else {
+                        Toast toast = Toast.makeText(getApplicationContext(), "Por favor, confirme seu endereço de e-mail.", Toast.LENGTH_LONG);
+                        toast.show();
+                    }
+                }
+            });
 
             txtNomeUsuario.setText(currentUser.get("nome").toString().trim());
             txtEmailUsuario.setText(currentUser.getEmail().trim());

@@ -25,6 +25,14 @@
         android:hint="Valor:"
         android:id="@+id/dialog_mensalidade_valor" />
 
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:ems="10"
+        android:hint="Valor Pago:"
+        android:id="@+id/dialog_mensalidade_valor_pago" />
+
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

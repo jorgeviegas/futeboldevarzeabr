@@ -87,6 +87,9 @@ public class Funcoes {
             case 5:
                 toast.setText("Falha ao excluir. Por favor, tente novamente.");
                 break;
+            case 6:
+                toast.setText("Cadastro excluído com sucesso!");
+                break;
         }
         toast.show();
     }
@@ -209,6 +212,10 @@ public class Funcoes {
 
     public String formatarNumeroComVirgula(double valor) {
         return String.valueOf(valor).format("%.2f", valor);
+    }
+
+    public String formatarNumeroComPonto(double valor) {
+        return String.valueOf(valor).format("%.2f", valor).replace(",", ".");
     }
 
     public Date dataPorPeriodo(Date dat, int diaVencimento, int frequencia) {

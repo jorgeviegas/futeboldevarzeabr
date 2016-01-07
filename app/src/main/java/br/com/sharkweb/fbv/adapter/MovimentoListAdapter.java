@@ -88,6 +88,14 @@ public class MovimentoListAdapter extends BaseAdapter {
             } else if (movimentos.get(position).getString("tipo").equals("R")) {
                 itemHolder.ivTipoMov.setImageResource(R.drawable.minus_red_32);
                 itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.vermelhoEscuro));
+            } else if (movimentos.get(position).getString("tipo").equals("A")) {
+                if (movimentos.get(position).getDouble("valor") < 0) {
+                    itemHolder.ivTipoMov.setImageResource(R.drawable.minus_red_32);
+                    itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.vermelhoEscuro));
+                } else {
+                    itemHolder.ivTipoMov.setImageResource(R.drawable.plus_blue32);
+                    itemHolder.tvValor.setTextColor(context.getResources().getColor(R.color.AzulPrincipal));
+                }
             }
         } else {
             itemHolder.tvData.setText("");

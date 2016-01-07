@@ -71,6 +71,9 @@ public class MovimentoController {
             if (!nomeUsuario.isEmpty()) {
                 historico = historico + ": \n" + nomeUsuario.trim();
             }
+        } else if (tipo.equals("A")) {
+            historico = "Ajuste de Caixa";
+            time.put("valorEmCaixa", time.getDouble("valorEmCaixa") + valor);
         }
         if (!obs.isEmpty()) {
             historico = obs.trim();

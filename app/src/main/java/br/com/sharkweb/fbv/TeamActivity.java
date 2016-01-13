@@ -2,50 +2,32 @@ package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.ProgressBar;
 
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
-import java.util.IllegalFormatCodePointException;
 import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
-import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.adapter.TimeListAdapterParse;
-import br.com.sharkweb.fbv.controller.TimeController;
-import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
-import br.com.sharkweb.fbv.controller.UsuarioController;
-import br.com.sharkweb.fbv.controllerParse.TimeControllerParse;
-import br.com.sharkweb.fbv.controllerParse.TimeUsuarioControllerParse;
-import br.com.sharkweb.fbv.model.ParseProxyObject;
 import br.com.sharkweb.fbv.model.Sessao;
-import br.com.sharkweb.fbv.model.Time;
-import br.com.sharkweb.fbv.model.TimeUsuario;
-import br.com.sharkweb.fbv.model.Usuario;
 
 public class TeamActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
@@ -57,6 +39,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     private boolean podeCadastrar = true;
     private boolean buscarTodosTimes = false;
     final Context context = this;
+    private static ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +51,9 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
 
         times = (ListView) findViewById(R.id.timelist_listviewTimes);
         times.setOnItemClickListener(this);
+
+        progressBar = (ProgressBar) findViewById(R.id.timelist_progressBar);
+        progressBar.setVisibility(View.GONE);
 
         Bundle params = getIntent().getExtras();
         if (params != null) {
@@ -95,8 +81,8 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
     }
 
     private void buscarTimes() {
-        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
-
+        // final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
+        progressBar.setVisibility(View.VISIBLE);
         //Pega a relação "times" que está dentro da tabela user e então traz os times que estão nessa relação.
         // O comando getQuery retorna um objeto Query que é usado para fazer consultas. Como eu não quero adicionar
         //nenuhum outro filtro adicional, chamei o findInBackgroud direto.
@@ -105,8 +91,9 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
             queryTimes.findInBackground(new FindCallback<ParseObject>() {
                 @Override
                 public void done(List<ParseObject> list, ParseException e) {
+                    progressBar.setVisibility(View.GONE);
                     if (e == null) {
-                        FuncoesParse.dismissProgressBar(progresso);
+                        //FuncoesParse.dismissProgressBar(progresso);
                         adapterTimes = new TimeListAdapterParse(context, list);
                         times.setAdapter(adapterTimes);
                     }
@@ -115,16 +102,17 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
         } else {
             ParseUser.getCurrentUser().getRelation("times").getQuery()
                     .findInBackground(new FindCallback<ParseObject>() {
-                public void done(List<ParseObject> timeList, ParseException e) {
-                    FuncoesParse.dismissProgressBar(progresso);
-                    if (e == null) {
-                        adapterTimes = new TimeListAdapterParse(context, timeList);
-                        times.setAdapter(adapterTimes);
-                    } else {
+                        public void done(List<ParseObject> timeList, ParseException e) {
+                            //FuncoesParse.dismissProgressBar(progresso);
+                            progressBar.setVisibility(View.GONE);
+                            if (e == null) {
+                                adapterTimes = new TimeListAdapterParse(context, timeList);
+                                times.setAdapter(adapterTimes);
+                            } else {
 
-                    }
-                }
-            });
+                            }
+                        }
+                    });
         }
     }
 

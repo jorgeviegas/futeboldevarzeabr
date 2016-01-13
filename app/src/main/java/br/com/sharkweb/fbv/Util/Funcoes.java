@@ -4,8 +4,13 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,6 +30,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import br.com.sharkweb.fbv.R;
+import br.com.sharkweb.fbv.controller.PosicaoController;
 import br.com.sharkweb.fbv.model.PosJogoUsuarios;
 import br.com.sharkweb.fbv.model.Usuario;
 
@@ -34,9 +40,11 @@ import br.com.sharkweb.fbv.model.Usuario;
 public class Funcoes {
 
     private Context context = null;
+    private PosicaoController posicaoControl;
 
     public Funcoes(Context contex) {
         context = contex;
+        posicaoControl = new PosicaoController(contex);
     }
 
     public Funcoes() {
@@ -83,6 +91,12 @@ public class Funcoes {
                 break;
             case 4:
                 toast.setText("Falha ao carregar. Por favor, tente novamente.");
+                break;
+            case 5:
+                toast.setText("Falha ao excluir. Por favor, tente novamente.");
+                break;
+            case 6:
+                toast.setText("Cadastro excluído com sucesso!");
                 break;
         }
         toast.show();
@@ -191,17 +205,37 @@ public class Funcoes {
         final Dialog dialog = new Dialog(context);
         dialog.setContentView(R.layout.dialog_usuario_detalhe);
         dialog.setTitle(user.getString("nome").trim().toUpperCase());
-        final TextView tvNumeroTelefone = (TextView) dialog.findViewById(R.id.usuario_detalhe_numerotelefone);
-        final TextView tvEmail = (TextView) dialog.findViewById(R.id.usuario_detalhe_infoemail);
-        //celularMask = Mask.insert("(##)####-####", tvNumeroTelefone);
-        tvNumeroTelefone.setText(user.getString("celular").trim());
+        final EditText tvNumeroTelefone = (EditText) dialog.findViewById(R.id.usuario_detalhe_numerotelefone);
+        final EditText tvEmail = (EditText) dialog.findViewById(R.id.usuario_detalhe_email);
+        final EditText tvPosicao = (EditText) dialog.findViewById(R.id.usuario_detalhe_posicao);
+        final EditText tvUsername = (EditText) dialog.findViewById(R.id.usuario_detalhe_username);
+        //tvNumeroTelefone.setEnabled(false);
+        //tvEmail.setEnabled(false);
+        //tvPosicao.setEnabled(false);
+        if (user.getString("celular") != null && !user.getString("celular").isEmpty()) {
+            TextWatcher celularMask;
+            celularMask = Mask.insert("(##)####-####", tvNumeroTelefone);
+            tvNumeroTelefone.addTextChangedListener(celularMask);
+            tvNumeroTelefone.setText(user.getString("celular").trim());
+        } else {
+            tvNumeroTelefone.setText("");
+        }
+        if (user.getString("posicao") != null && !user.getString("posicao").isEmpty()) {
+            tvPosicao.setText(posicaoControl.selectPosicaoPorCodigo(user.getString("posicao").trim()).get(0).getNome());
+        } else {
+            tvPosicao.setText("");
+        }
         tvEmail.setText(user.getString("email").trim());
-        //exibe na tela o dialog
+        tvUsername.setText(user.getString("username").trim());
         dialog.show();
     }
 
     public String formatarNumeroComVirgula(double valor) {
         return String.valueOf(valor).format("%.2f", valor);
+    }
+
+    public String formatarNumeroComPonto(double valor) {
+        return String.valueOf(valor).format("%.2f", valor).replace(",", ".");
     }
 
     public Date dataPorPeriodo(Date dat, int diaVencimento, int frequencia) {

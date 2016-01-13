@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +55,7 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
     private UsuarioPosJogoListAdapter adapterUsuarios;
     private Button btnCancelar;
     private Button btnSalvar;
+    private LinearLayout linearBotoes;
     private TextView tvNomeTime1;
     private TextView tvNomeTime2;
     private TextView tvVersus;
@@ -74,6 +76,8 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
         usuarios = (ListView) findViewById(R.id.pos_jogo_usuarioslist);
         usuarios.setOnItemClickListener(this);
 
+        linearBotoes = (LinearLayout) findViewById(R.id.activity_pos_jogo_linear);
+        linearBotoes.setVisibility(View.GONE);
 
         if (Constantes.getSessao() != null) {
             this.jogo = Constantes.getSessao().getObjeto();

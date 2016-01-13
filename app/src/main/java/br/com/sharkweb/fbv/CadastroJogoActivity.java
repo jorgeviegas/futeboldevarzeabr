@@ -15,12 +15,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
-import com.parse.GetCallback;
+import com.parse.DeleteCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import java.text.SimpleDateFormat;
@@ -30,15 +28,8 @@ import java.util.Locale;
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
-import br.com.sharkweb.fbv.adapter.TimeListAdapter;
-import br.com.sharkweb.fbv.controller.JogoController;
 import br.com.sharkweb.fbv.controller.LocalController;
-import br.com.sharkweb.fbv.controller.TimeController;
-import br.com.sharkweb.fbv.controller.UsuarioController;
-import br.com.sharkweb.fbv.model.Local;
 import br.com.sharkweb.fbv.model.Sessao;
-import br.com.sharkweb.fbv.model.Time;
-import br.com.sharkweb.fbv.model.Usuario;
 
 import static android.app.TimePickerDialog.*;
 
@@ -147,7 +138,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
         });
 
         tvJuiz = (EditText) findViewById(R.id.cadastro_jogo_juiz);
-        tvJuiz.setVisibility(EditText.VISIBLE);
+        tvJuiz.setVisibility(EditText.GONE);
         tvJuiz.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -189,6 +180,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
                 EscolheUsuario(3);
             }
         });
+        btnSearchJuiz.setVisibility(View.GONE);
 
         btnExcluirJuiz = (Button) findViewById(R.id.cadastro_jogo_btnexcluirjuiz);
         btnExcluirJuiz.setVisibility(View.GONE);
@@ -521,8 +513,16 @@ public class CadastroJogoActivity extends ActionBarActivity {
         }
 
         if (id == R.id.cadastro_jogo_action_excluir) {
-            // jogoControl.excluirJogoPorId(this.jogo.getId());
-            onBackPressed();
+            this.jogo.deleteInBackground(new DeleteCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        onBackPressed();
+                    } else {
+                        funcoes.mostrarToast(5);
+                    }
+                }
+            });
             return true;
         }
 

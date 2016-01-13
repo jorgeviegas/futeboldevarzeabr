@@ -20,22 +20,13 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.LocalListAdapter;
-import br.com.sharkweb.fbv.adapter.TimeListAdapter;
-import br.com.sharkweb.fbv.controller.LocalController;
-import br.com.sharkweb.fbv.controller.TimeController;
-import br.com.sharkweb.fbv.controller.TimeUsuarioController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
-import br.com.sharkweb.fbv.controller.UsuarioController;
-import br.com.sharkweb.fbv.model.Local;
 import br.com.sharkweb.fbv.model.Sessao;
-import br.com.sharkweb.fbv.model.Time;
-import br.com.sharkweb.fbv.model.Usuario;
 
 public class LocalActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 

@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.GetCallback;
 import com.parse.ParseObject;
@@ -60,10 +61,14 @@ public class FinanceiroActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         txtSaldo = (TextView) findViewById(R.id.txtSaldo);
-
         this.time = Constantes.getTimeSelecionado();
-
-        atualizarSaldo();
+        if (FuncoesParse.isAdmin()) {
+            atualizarSaldo();
+        } else {
+            Toast toast = Toast.makeText(context, "Somente usuários com permissão de Administrador podem visualizar.", Toast.LENGTH_LONG);
+            toast.show();
+            onBackPressed();
+        }
     }
 
     @Override

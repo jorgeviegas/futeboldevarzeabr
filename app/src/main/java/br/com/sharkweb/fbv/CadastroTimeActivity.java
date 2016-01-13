@@ -110,6 +110,8 @@ public class CadastroTimeActivity extends ActionBarActivity {
                 this.time = Constantes.getSessao().getObjeto();
                 Constantes.setSessao(null);
                 carregarRegistro();
+            } else {
+                time = new ParseObject("time");
             }
         } else {
             time = new ParseObject("time");

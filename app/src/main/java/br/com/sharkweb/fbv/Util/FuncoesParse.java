@@ -3,8 +3,13 @@ package br.com.sharkweb.fbv.Util;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.widget.Toast;
 
+import com.parse.DeleteCallback;
+import com.parse.GetCallback;
+import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParsePush;
@@ -13,9 +18,12 @@ import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 import com.parse.SaveCallback;
 
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import br.com.sharkweb.fbv.R;
 
 /**
  * Created by Tiago on 28/10/2015.
@@ -101,6 +109,67 @@ public class FuncoesParse {
                     Toast toast = Toast.makeText(context, "Falha ao enviar a notificação ao usuário.", Toast.LENGTH_SHORT);
                     toast.show();
                 }
+            }
+        });
+
+    }
+
+    public static void excluirNotificacao(final Context context, ParseObject usuario, String objectId, String tipo) {
+        // final Dialog progresso = FuncoesParse.showProgressBar(context, "Enviando notificação...");
+        ParseQuery query = new ParseQuery("notificacao");
+        query.whereEqualTo("usuario", usuario);
+        query.whereEqualTo("tipo", tipo);
+        query.whereEqualTo("objectIdParam", objectId);
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(final ParseObject parseObject, com.parse.ParseException e) {
+                if (e == null) {
+                    parseObject.deleteInBackground(new DeleteCallback() {
+                        @Override
+                        public void done(com.parse.ParseException e) {
+                            if (e == null) {
+                                Toast toast = Toast.makeText(context, "Notificação excluída com sucesso.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            } else {
+                                parseObject.saveEventually();
+                            }
+                        }
+                    });
+                } else {
+
+                }
+
+            }
+        });
+    }
+
+    public static void inserirImagemPerfil(final Context context, final ParseObject objeto, Bitmap bitmap) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] image = stream.toByteArray();
+        final ParseFile file = new ParseFile("imgP" + objeto.getObjectId().trim(), image);
+        file.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(com.parse.ParseException e) {
+                if (e == null) {
+                    objeto.put("ImageFile", file);
+                    objeto.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(com.parse.ParseException e) {
+                            if (e == null) {
+                                Toast toast = Toast.makeText(context, "Cadastro salvo com sucesso.", Toast.LENGTH_SHORT);
+                                toast.show();
+                            } else {
+                                Toast toast = Toast.makeText(context, "Falha ao salvar cadastro. Por favor, tente novamente", Toast.LENGTH_SHORT);
+                                toast.show();
+                            }
+                        }
+                    });
+                } else {
+                    Toast toast = Toast.makeText(context, "Falha ao carregar Imagem. Por favor, tente novamente", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
             }
         });
 

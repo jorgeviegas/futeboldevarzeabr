@@ -5,71 +5,60 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.support.v4.app.NavUtils;
-import android.support.v4.widget.DrawerLayout;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.text.InputType;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseRelation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.w3c.dom.Text;
-import org.xml.sax.helpers.ParserAdapter;
-
-import java.util.ArrayList;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
-import br.com.sharkweb.fbv.adapter.TimeListAdapter;
+import br.com.sharkweb.fbv.Util.RoundedImageView;
 import br.com.sharkweb.fbv.adapter.UsuarioListAdapter;
-import br.com.sharkweb.fbv.adapter.UsuarioListAdapterParse;
-import br.com.sharkweb.fbv.controller.TimeController;
-import br.com.sharkweb.fbv.controller.TimeUsuarioController;
-import br.com.sharkweb.fbv.controller.TipoUsuarioController;
-import br.com.sharkweb.fbv.controller.UsuarioController;
-import br.com.sharkweb.fbv.controllerParse.TimeControllerParse;
-import br.com.sharkweb.fbv.model.ParseProxyObject;
+import br.com.sharkweb.fbv.controller.UFController;
 import br.com.sharkweb.fbv.model.Sessao;
-import br.com.sharkweb.fbv.model.Time;
-import br.com.sharkweb.fbv.model.TimeUsuario;
-import br.com.sharkweb.fbv.model.Usuario;
 
 
 public class TimeDetalheActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     private TextView tvNomeTime;
     private CheckBox chkInativo;
+    private ImageView imgPerfilTime;
     private Funcoes funcoes = new Funcoes(this);
     private List<ParseObject> listaUsuarios;
 
     private ParseObject time;
     private ListView listaJogadores;
-    private UsuarioListAdapterParse adapterUsuarios;
+    private UsuarioListAdapter adapterUsuarios;
+    private UFController ufControl = new UFController(this);
     final Context context = this;
     private String m_Text = "";
+    static final int IMAGE_VIEW_ACTIVITY_REQUEST_CODE = 101;
+    static final int USUARIO_ACTIVITY_REQUEST_CODE = 102;
+    private static ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +71,9 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         tvNomeTime = (TextView) findViewById(R.id.timeDetalhe_tvNomeTime);
         tvNomeTime.setVisibility(TextView.VISIBLE);
 
+        progressBar = (ProgressBar) findViewById(R.id.time_detalhe_progressBar);
+        progressBar.setVisibility(View.GONE);
+
         chkInativo = (CheckBox) findViewById(R.id.time_detalhe_chkInativo);
         chkInativo.setVisibility(View.VISIBLE);
         chkInativo.setOnClickListener(new View.OnClickListener() {
@@ -91,29 +83,85 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             }
         });
 
+        imgPerfilTime = (ImageView) findViewById(R.id.time_detalhe_imgPerfil);
+        imgPerfilTime.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (FuncoesParse.isAdmin()) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setIcon(R.drawable.questionmark_64);
+                    builder.setCancelable(true);
+                    String[] arrayOpcoes = new String[1];
+                    arrayOpcoes[0] = "Alterar Imagem";
+                    builder.setItems(arrayOpcoes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int arg1) {
+                            escolherImagemPerfil();
+                        }
+                    });
+                    AlertDialog dialogExportar = builder.create();
+                    dialogExportar.show();
+                }
+            }
+        });
+
         //Setando o objeto ParseObject do time.
         this.time = Constantes.getTimeSelecionado();
 
-        tvNomeTime.setText(" " + funcoes.PrimeiraLetraMaiuscula(this.time.getString("nome").trim()));
+        ParseFile imagemPerfil = time.getParseFile("ImageFile");
+        if (imagemPerfil != null) {
+            try {
+                byte[] bitmapdata = imagemPerfil.getData();
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+                imgPerfilTime.setImageBitmap(bitmap);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                imgPerfilTime.setImageResource(R.drawable.estadio);
+            }
+        } else {
+            imgPerfilTime.setImageResource(R.drawable.estadio);
+            imgPerfilTime.setMaxHeight(80);
+        }
+
+        tvNomeTime.setText(funcoes.PrimeiraLetraMaiuscula(this.time.getString("nome").trim()) + "\n" +
+                time.getString("cidade") + " - " +
+                ufControl.selectUFPorId(time.getInt("id_uf")).get(0).getNome().trim());
         listaJogadores = (ListView) findViewById(R.id.timeDetalhe_listJogadores);
         //listaJogadores.setOnItemClickListener((AdapterView.OnItemClickListener) this);
         listaJogadores.setBackgroundColor(Color.WHITE);
         listaJogadores.setOnItemClickListener(this);
         listaJogadores.setOnItemLongClickListener(this);
-        //listaJogadores.setCacheColorHint(Color.TRANSPARENT);
-
         buscarUsuarios();
-
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         switch (requestCode) {
-            case 1:
-                String objectIdUsuario = data.getExtras().getString("usuario");
-                if (!objectIdUsuario.isEmpty()) {
-                    inserirJogador(objectIdUsuario);
+            case IMAGE_VIEW_ACTIVITY_REQUEST_CODE:
+                if (data == null) {
+                    return;
+                }
+                try {
+                    Bitmap bitmap;
+                    if (data.getData() == null) {
+                        bitmap = (Bitmap) data.getExtras().get("data");
+                    } else {
+                        InputStream inputStream = getContentResolver().openInputStream(data.getData());
+                        bitmap = BitmapFactory.decodeStream(inputStream);
+                    }
+                    RoundedImageView arredondarImagem = new RoundedImageView(context);
+                    Bitmap bitArredondado = arredondarImagem.getCroppedBitmap(bitmap, 300);
+                    imgPerfilTime.setImageBitmap(bitArredondado);
+                    FuncoesParse.inserirImagemPerfil(context, time, bitArredondado);
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case USUARIO_ACTIVITY_REQUEST_CODE:
+                if (Constantes.getSessao() != null) {
+                    inserirJogador(Constantes.getSessao().getObjeto());
+                    Constantes.setSessao(null);
                 }
                 break;
         }
@@ -121,12 +169,14 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     }
 
     private void buscarUsuarios() {
-        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
+        //final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando....");
+        progressBar.setVisibility(View.VISIBLE);
         ParseQuery query = this.time.getRelation("usuarios").getQuery();
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-                FuncoesParse.dismissProgressBar(progresso);
+                progressBar.setVisibility(View.GONE);
+                //FuncoesParse.dismissProgressBar(progresso);
                 if (e == null) {
                     listaUsuarios = list;
                     atualizarLista();
@@ -138,48 +188,53 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     }
 
     public void atualizarLista() {
-        adapterUsuarios = new UsuarioListAdapterParse(this.context, this.listaUsuarios, 2, chkInativo.isChecked());
+        adapterUsuarios = new UsuarioListAdapter(this.context, this.listaUsuarios, 1, chkInativo.isChecked(), true);
         listaJogadores.setAdapter(adapterUsuarios);
     }
 
-    public void inserirJogador(String username) {
+    public void inserirJogador(final ParseObject usuario) {
         final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando...");
 
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereEqualTo("username", username);
-        query.getFirstInBackground(new GetCallback<ParseUser>() {
-            @Override
-            public void done(final ParseUser parseUser, ParseException e) {
-                if (e == null) {
-                    time.getRelation("usuarios").add(parseUser);
-                    time.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                FuncoesParse.dismissProgressBar(progresso);
-                                listaUsuarios.add(parseUser);
-                                atualizarLista();
-                                FuncoesParse.enviarNotificacao(context, parseUser, "O time " + time.getString("nome").trim() +
-                                                " convidou você para fazer parte do time. Deseja aceitar?",
-                                        time.getObjectId().trim(), "Pergunta");
-                            } else {
-                                FuncoesParse.dismissProgressBar(progresso);
-                                funcoes.mostrarToast(2);
-                            }
-                        }
-                    });
-                } else {
-                    FuncoesParse.dismissProgressBar(progresso);
-                    funcoes.mostrarToast(2);
-                }
+        boolean usuarioJaExistente = false;
+        for (int i = 0; i < listaUsuarios.size(); i++) {
+            if (listaUsuarios.get(i).getObjectId().trim().equals(usuario.getObjectId().trim())) {
+                usuarioJaExistente = true;
             }
-        });
+        }
+        if (!usuarioJaExistente) {
+            time.getRelation("usuarios").add(usuario);
+            time.saveInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        FuncoesParse.dismissProgressBar(progresso);
+                        listaUsuarios.add(usuario);
+                        atualizarLista();
+                        FuncoesParse.enviarNotificacao(context, usuario, "O time " + time.getString("nome").trim() +
+                                        " convidou você para fazer parte do time. Deseja aceitar?",
+                                time.getObjectId().trim(), "Pergunta");
+                    } else {
+                        FuncoesParse.dismissProgressBar(progresso);
+                        funcoes.mostrarToast(2);
+                    }
+                }
+            });
+        } else {
+            FuncoesParse.dismissProgressBar(progresso);
+            funcoes.mostrarDialogAlert(1, "Este usuário já faz parte do time.");
+        }
     }
 
     @SuppressWarnings({"rawtypes", "unused"})
     private void mudarTela(Class cls, Bundle parametros) {
         Intent intent = new Intent(this, cls);
         intent.putExtras(parametros);
+        startActivity(intent);
+    }
+
+    @SuppressWarnings({"rawtypes", "unused"})
+    private void mudarTela(Class cls) {
+        Intent intent = new Intent(this, cls);
         startActivity(intent);
     }
 
@@ -207,33 +262,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         getMenuInflater().inflate(R.menu.menu_time_detalhe, menu);
 
         return true;
-    }
-
-    public void pedirEmailApelido() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Informe o Nome de usuario FBV do jogador");
-
-// Set up the input
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-
-// Set up the buttons
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                m_Text = input.getText().toString();
-                inserirJogador(m_Text);
-            }
-        });
-        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
     }
 
     private void favoritarTime() {
@@ -289,7 +317,8 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    pedirEmailApelido();
+                    mudarTelaComRetorno(BuscaUsuarioActivity.class, USUARIO_ACTIVITY_REQUEST_CODE);
+                    // pedirEmailApelido();
                     //mudarTelaComRetorno(UsuariosActivity.class, 1);
 
                 }
@@ -305,7 +334,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             builder.create().show();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -316,13 +344,16 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             //Menu de opções que o usuário pode fazer com os usuarios.
             String[] arrayOpcoes = new String[1];
             arrayOpcoes[0] = "Informações de contato";
+            final TextView tvTipoUsuario = ((TextView) view.findViewById(R.id.usuariolist_tipoUsuario));
 
-            TextView tvTipoUsuario = ((TextView) view.findViewById(R.id.usuariolist_tipoUsuario));
-            if (tvTipoUsuario.getText().toString().trim().equals("Pendente")) {
-                arrayOpcoes = new String[2];
+            if (FuncoesParse.isAdmin()
+                    && tvTipoUsuario.getText().toString().trim().equals("Pendente")) {
+                arrayOpcoes = new String[3];
                 arrayOpcoes[0] = "Informações de contato";
-                arrayOpcoes[1] = "Enviar convite novamente";
+                arrayOpcoes[1] = "Excluir convite";
+                arrayOpcoes[2] = "Enviar convite novamente";
             }
+
             //Diponível somente para usuarios administradores do time.
            /* if (FuncoesParse.isAdmin()) {
                 arrayOpcoes = new String[3];
@@ -347,18 +378,33 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                             funcoes.exibirDetalheUsuario(user, context);
                             break;
                         case 1:
-                            FuncoesParse.enviarNotificacao(context, user, "O time " + time.getString("nome").trim() +
-                                            " convidou você para fazer parte do time. Deseja aceitar?",
-                                    time.getObjectId().trim(), "Pergunta");
-                            // timeusuarioControl.tornarAdmin(time.getId(), user.getId());
+                            time.getRelation("usuarios").remove(user);
+                            time.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    if (e == null) {
+                                        FuncoesParse.excluirNotificacao(context, user, time.getObjectId().trim(), "Pergunta");
+                                        funcoes.mostrarToast(1);
+                                        buscarUsuarios();
+                                    } else {
+                                        funcoes.mostrarToast(2);
+                                    }
+                                }
+                            });
+                            //timeusuarioControl.tornarAdmin(time.getId(), user.getId());
                             //atualizarLista();
                             break;
                         case 2:
-                            if (FuncoesParse.isInativo(user)) {
-                                //timeusuarioControl.ativarUsuario(time.getId(), user.getId());
-                            } else {
-                                // timeusuarioControl.inativarUsuario(time.getId(), user.getId());
-                            }
+                            FuncoesParse.enviarNotificacao(context, user, "O time " + time.getString("nome").trim() +
+                                            " convidou você para fazer parte do time. Deseja aceitar?",
+                                    time.getObjectId().trim(), "Pergunta");
+                            break;
+                        case 3:
+                            // if (FuncoesParse.isInativo(user)) {
+                            //timeusuarioControl.ativarUsuario(time.getId(), user.getId());
+                            // } else {
+                            // timeusuarioControl.inativarUsuario(time.getId(), user.getId());
+                            //  }
                             // atualizarLista();
                             break;
                     }
@@ -377,6 +423,17 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
         }
         return true;
+    }
+
+    private void escolherImagemPerfil() {
+        Intent pickIntent = new Intent();
+        pickIntent.setType("image/*");
+        pickIntent.setAction(Intent.ACTION_GET_CONTENT);
+        Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        String pickTitle = "Tire agora ou selecione uma imagem";
+        Intent chooserIntent = Intent.createChooser(pickIntent, pickTitle);
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{takePhotoIntent});
+        startActivityForResult(chooserIntent, IMAGE_VIEW_ACTIVITY_REQUEST_CODE);
     }
 
     @Override

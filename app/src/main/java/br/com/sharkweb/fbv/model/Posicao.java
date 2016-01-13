@@ -7,10 +7,12 @@ public class Posicao {
 
     public int id;
     public String nome;
+    public String abreviatura;
 
-    public Posicao(int i, String n) {
+    public Posicao(int i, String n, String abreviatura) {
         this.id = i;
         this.nome = n;
+        this.abreviatura = abreviatura;
     }
 
     public int getId() {
@@ -27,5 +29,18 @@ public class Posicao {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getAbreviatura() {
+        return abreviatura;
+    }
+
+    public void setAbreviatura(String abreviatura) {
+        this.abreviatura = abreviatura;
+    }
+
+    @Override
+    public String toString() {
+        return this.nome;
     }
 }

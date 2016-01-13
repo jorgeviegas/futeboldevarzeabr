@@ -25,10 +25,11 @@
         android:textSize="20sp"
         android:textColor="#333333"
         android:paddingLeft="5dp"
-        />
+        android:layout_toStartOf="@+id/usuariolist_posicao"
+        android:layout_toLeftOf="@+id/usuariolist_posicao" />
 
     <TextView
-        android:id="@+id/usuariolist_posicao"
+        android:id="@+id/usuariolist_nomeUsuario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/usuariolist_nomeTime"
@@ -47,4 +48,16 @@
         android:text="TipoUsuario"
         android:textColor="#333333"
         />
+
+    <TextView
+        android:layout_width="20sp"
+        android:layout_height="wrap_content"
+        android:text="ST"
+        android:textSize="13sp"
+        android:gravity="right"
+        android:id="@+id/usuariolist_posicao"
+        android:layout_above="@+id/usuariolist_tipoUsuario"
+        android:layout_alignRight="@+id/usuariolist_tipoUsuario"
+        android:layout_alignEnd="@+id/usuariolist_tipoUsuario"
+        android:layout_alignParentTop="true" />
 </RelativeLayout>

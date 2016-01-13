@@ -15,13 +15,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.parse.DeleteCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import java.text.SimpleDateFormat;
@@ -31,15 +28,8 @@ import java.util.Locale;
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
-import br.com.sharkweb.fbv.adapter.TimeListAdapter;
-import br.com.sharkweb.fbv.controller.JogoController;
 import br.com.sharkweb.fbv.controller.LocalController;
-import br.com.sharkweb.fbv.controller.TimeController;
-import br.com.sharkweb.fbv.controller.UsuarioController;
-import br.com.sharkweb.fbv.model.Local;
 import br.com.sharkweb.fbv.model.Sessao;
-import br.com.sharkweb.fbv.model.Time;
-import br.com.sharkweb.fbv.model.Usuario;
 
 import static android.app.TimePickerDialog.*;
 

@@ -1,43 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:paddingTop="5sp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="5sp"
     android:paddingLeft="5sp"
     android:paddingRight="5sp"
-    android:layout_height="match_parent">
+    android:paddingTop="5sp">
 
     <Spinner
+        android:id="@+id/dialog_mensalidade_frequencia"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="right|center"
-        android:id="@+id/dialog_mensalidade_frequencia" />
+        android:gravity="right|center" />
+
+    <TextView
+        android:id="@+id/dialog_mensalidade_labelVencimento"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vencimento" />
 
     <EditText
+        android:id="@+id/dialog_mensalidade_data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Dia do vencimento:"
-        android:id="@+id/dialog_mensalidade_data" />
+        android:hint="Dia do vencimento:" />
+
+    <TextView
+        android:id="@+id/dialog_mensalidade_labelValor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Valor" />
 
     <EditText
+        android:id="@+id/dialog_mensalidade_valor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Valor:"
-        android:id="@+id/dialog_mensalidade_valor" />
+        android:hint="Valor:" />
+
+    <TextView
+        android:id="@+id/dialog_mensalidade_labelValorPago"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Valor Pago" />
 
     <EditText
+        android:id="@+id/dialog_mensalidade_valor_pago"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="number"
         android:ems="10"
         android:hint="Valor Pago:"
-        android:id="@+id/dialog_mensalidade_valor_pago" />
+        android:inputType="number" />
 
     <Button
+        android:id="@+id/dialog_mensalidade_btnConfirmar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Confirmar"
         android:background="@drawable/botaoazul"
-        android:textColor="#fff"
-        android:id="@+id/dialog_mensalidade_btnConfirmar" />
+        android:text="Confirmar"
+        android:textColor="#fff" />
 </LinearLayout>

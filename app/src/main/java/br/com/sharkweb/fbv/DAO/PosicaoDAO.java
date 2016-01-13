@@ -14,6 +14,7 @@ public class PosicaoDAO {
     private static final String NOME_TABELA = "posicao";
     private static final String ID = "_id";
     private static final String NOME = "nome";
+    private static final String ABREVIATURA = "abreviatura";
     private FBVDAO fbvdao;
 
 
@@ -21,9 +22,10 @@ public class PosicaoDAO {
         fbvdao = FBVDAO.getInstance(context);
     }
 
-    public long inserir(String nome) {
+    public long inserir(String nome, String abreviatura) {
         ContentValues valores = new ContentValues();
         valores.put(NOME, nome);
+        valores.put(ABREVIATURA, abreviatura);
 
         long retorno = fbvdao.getWritableDatabase().insert(NOME_TABELA, null, valores);
         fbvdao.close();
@@ -51,13 +53,19 @@ public class PosicaoDAO {
     }
 
     public ArrayList<Posicao> selectPosicoes() {
-        ArrayList<Posicao> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " ORDER BY " + NOME, null));
+        ArrayList<Posicao> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " ORDER BY " + ID, null));
         fbvdao.close();
         return c;
     }
 
     public ArrayList<Posicao> selectPosicaoPorId(int id_posicao) {
-        ArrayList<Posicao> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID + " = " + id_posicao + " ORDER BY " + NOME, null));
+        ArrayList<Posicao> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID + " = " + id_posicao + " ORDER BY " + ID, null));
+        fbvdao.close();
+        return c;
+    }
+
+    public ArrayList<Posicao> selectPosicaoPorCodigo(String abreviatura) {
+        ArrayList<Posicao> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ABREVIATURA + " = '" + abreviatura + "' ORDER BY " + ID, null));
         fbvdao.close();
         return c;
     }
@@ -69,7 +77,7 @@ public class PosicaoDAO {
     private ArrayList<Posicao> cursorToArray(Cursor c) {
         ArrayList<Posicao> posicao = new ArrayList<Posicao>();
         while (c.moveToNext()) {
-            posicao.add(new Posicao(c.getInt(0), c.getString(1)));
+            posicao.add(new Posicao(c.getInt(0), c.getString(1), c.getString(2)));
         }
         return posicao;
     }

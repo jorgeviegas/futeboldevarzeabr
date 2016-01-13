@@ -2,9 +2,5 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="br.com.sharkweb.fbv.CadastroUsuarioActivity">
-    <item
-        android:id="@+id/cadastro_usuario_action_cancelar"
-        android:orderInCategory="100"
-        android:title="Cancelar"
-        app:showAsAction="never" />
+
 </menu>

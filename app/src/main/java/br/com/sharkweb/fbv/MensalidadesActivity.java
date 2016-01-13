@@ -24,6 +24,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,6 +72,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
     private Funcoes funcoes = new Funcoes(this);
     private MovimentoController movimentoControl = new MovimentoController(this);
     final Context context = this;
+    private static ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,7 +87,11 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
             @Override
             public void onClick(View view) {
                 //pedirEmailApelido();
-                mudarTelaComRetorno(UsuariosTimeActivity.class, 1);
+                if (funcoes.verificaConexao(context)) {
+                    mudarTelaComRetorno(UsuariosTimeActivity.class, 1);
+                } else {
+                    funcoes.mostrarDialogAlert(1, "Sem conexão com internet!");
+                }
             }
         });
 
@@ -109,6 +115,9 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
                 mudarTelaComRetorno(UsuariosTimeActivity.class, 2);
             }
         });
+
+        progressBar = (ProgressBar) findViewById(R.id.mensalidades_progressBar);
+        progressBar.setVisibility(View.GONE);
 
         //Setando o objeto ParseObject do time.
         this.time = Constantes.getTimeSelecionado();
@@ -181,7 +190,8 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
     }
 
     public void atualizarLista(ParseObject usuarioFiltrado) {
-        final Dialog progresso = FuncoesParse.showProgressBar(context, "Atualizando lista de mensalidades....");
+        //final Dialog progresso = FuncoesParse.showProgressBar(context, "Atualizando lista de mensalidades....");
+        progressBar.setVisibility(View.VISIBLE);
         ParseQuery query = this.time.getRelation("mensalidades").getQuery();
         if (chkSomenteEmAberto.isChecked()) {
             query.whereEqualTo("pago", false);
@@ -191,7 +201,8 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
         }
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> mensalidadeList, ParseException e) {
-                FuncoesParse.dismissProgressBar(progresso);
+                progressBar.setVisibility(View.GONE);
+                //FuncoesParse.dismissProgressBar(progresso);
                 if (e == null) {
                     adapterMensalidade = new MensalidadeListAdapter(context, mensalidadeList);
                     mensalidades.setAdapter(adapterMensalidade);
@@ -553,30 +564,34 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
         builder.setItems(arrayOpcoes, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int arg1) {
-                switch (arg1) {
-                    case 0:
-                        informacoesMensalidade(null, mensalidade);
-                        break;
-                    case 1:
-                        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                        builder.setIcon(R.drawable.questionmark_64);
-                        builder.setTitle("Atenção!");
-                        builder.setCancelable(false);
-                        builder.setMessage("Tem certeza que deseja excluir?");
-                        builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                verificarAntesDeDeletar(mensalidade);
-                                dialog.dismiss();
-                            }
-                        });
-                        builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
+                if (funcoes.verificaConexao(context)) {
+                    switch (arg1) {
+                        case 0:
+                            informacoesMensalidade(null, mensalidade);
+                            break;
+                        case 1:
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setIcon(R.drawable.questionmark_64);
+                            builder.setTitle("Atenção!");
+                            builder.setCancelable(false);
+                            builder.setMessage("Tem certeza que deseja excluir?");
+                            builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    verificarAntesDeDeletar(mensalidade);
+                                    dialog.dismiss();
+                                }
+                            });
+                            builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
 
-                        builder.create().show();
-                        break;
+                            builder.create().show();
+                            break;
+                    }
+                } else {
+                    funcoes.mostrarDialogAlert(1, "Sem conexão com internet!");
                 }
             }
         });
@@ -594,36 +609,41 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-        final ParseObject mensalidade = adapterMensalidade.getItem(position);
 
-        if (!mensalidade.getObjectId().isEmpty() && mensalidade.getDouble("valor") != mensalidade.getDouble("valorPago")) {
-            double valorFaltante = mensalidade.getDouble("valor") - mensalidade.getDouble("valorPago");
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Informe o Valor pago:");
+        if (funcoes.verificaConexao(context)) {
+            final ParseObject mensalidade = adapterMensalidade.getItem(position);
 
-            final EditText input = new EditText(context);
-            input.setInputType(InputType.TYPE_CLASS_NUMBER |
-                    InputType.TYPE_NUMBER_FLAG_DECIMAL |
-                    InputType.TYPE_NUMBER_FLAG_SIGNED);
+            if (!mensalidade.getObjectId().isEmpty() && mensalidade.getDouble("valor") != mensalidade.getDouble("valorPago")) {
+                double valorFaltante = mensalidade.getDouble("valor") - mensalidade.getDouble("valorPago");
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setTitle("Informe o Valor pago:");
 
-            input.setText(String.valueOf(funcoes.formatarNumeroComVirgula(valorFaltante)).replace(",", "."));
-            builder.setView(input);
-            input.setHint("Valor:");
+                final EditText input = new EditText(context);
+                input.setInputType(InputType.TYPE_CLASS_NUMBER |
+                        InputType.TYPE_NUMBER_FLAG_DECIMAL |
+                        InputType.TYPE_NUMBER_FLAG_SIGNED);
 
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    atualizarMensalidade(mensalidade, Double.valueOf(input.getText().toString()));
-                }
-            });
-            builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.cancel();
-                }
-            });
+                input.setText(String.valueOf(funcoes.formatarNumeroComVirgula(valorFaltante)).replace(",", "."));
+                builder.setView(input);
+                input.setHint("Valor:");
 
-            builder.show();
+                builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        atualizarMensalidade(mensalidade, Double.valueOf(input.getText().toString()));
+                    }
+                });
+                builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+            }
+        } else {
+            funcoes.mostrarDialogAlert(1, "Sem conexão com internet!");
         }
     }
 

@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.parse.DeleteCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -78,11 +79,9 @@ public class CadastroTimeActivity extends ActionBarActivity {
         spnUF.setVisibility(EditText.VISIBLE);
         ArrayList<UF> est = ufControl.selectUF();
         ArrayList<String> estados = new ArrayList<>();
-
         for (int i = 0; i < est.size(); i++) {
             estados.add(est.get(i).getNome().trim());
         }
-
         ArrayAdapter<String> arrayAdapter2 = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_activated_1,
                 estados);
 
@@ -147,8 +146,12 @@ public class CadastroTimeActivity extends ActionBarActivity {
             final int tipo_usuario = tipoUsuarioControl.selectTiposUsuariosPorTipo("Administrador").get(0).getId();
             time.put("nome", txtNome.getText().toString().trim());
             time.put("cidade", txtCidade.getText().toString().trim());
+            time.put("valorEmCaixa", 0);
             int id_uf = (int) spnUF.getSelectedItemId();
             id_uf = id_uf - 1;
+            if (id_uf <= 0) {
+                id_uf = 1;
+            }
             time.put("id_uf", id_uf);
             if (time.getObjectId() == null || time.getObjectId().isEmpty()) {
                 time.getRelation("usuarios").add(ParseUser.getCurrentUser());
@@ -231,6 +234,18 @@ public class CadastroTimeActivity extends ActionBarActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem m1 = menu.findItem(R.id.cadastro_time_excluir);
+        //Somente usuarios administradores do time podem usar o menu inserir jogador
+        if (FuncoesParse.isAdmin()) {
+            m1.setVisible(true);
+        } else {
+            m1.setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -244,19 +259,27 @@ public class CadastroTimeActivity extends ActionBarActivity {
         }
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.cadastro_time_settings) {
+        if (id == R.id.cadastro_time_excluir) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
             builder.setTitle("Pergunta");
-            builder.setMessage("Tem certeza que deseja cancelar?");
-
+            builder.setMessage("Tem certeza que deseja Excluir?");
             builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
-
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    onBackPressed();
+                    final Dialog progresso = FuncoesParse.showProgressBar(context, "Excluindo Time...");
+                    time.deleteInBackground(new DeleteCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            FuncoesParse.dismissProgressBar(progresso);
+                            if (e == null) {
+                                funcoes.mostrarToast(6);
+                                mudarTela(NewMainActivity.class);
+                            } else {
+                                funcoes.mostrarToast(5);
+                            }
+                        }
+                    });
                 }
-
             });
             builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
 

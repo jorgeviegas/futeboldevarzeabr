@@ -2,6 +2,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="br.com.sharkweb.fbv.CadastroJogoActivity">
-    <item android:id="@+id/cadastro_time_settings" android:title="Cancelar"
+    <item android:id="@+id/cadastro_time_excluir" android:title="Excluir Time"
         android:orderInCategory="100" app:showAsAction="never" />
 </menu>

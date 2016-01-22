@@ -2,5 +2,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="br.com.sharkweb.fbv.CalendarioActivity">
+    <item
+        android:id="@+id/calendario_action_visualizarjogos"
+        android:orderInCategory="100"
+        android:title="Ver todos os Jogos"
+        app:showAsAction="never" />
 
 </menu>

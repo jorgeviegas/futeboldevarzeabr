@@ -50,10 +50,10 @@
         />
 
     <TextView
-        android:layout_width="20sp"
+        android:layout_width="30sp"
         android:layout_height="wrap_content"
-        android:text="ST"
-        android:textSize="13sp"
+        android:text="LMW"
+        android:textSize="12sp"
         android:gravity="right"
         android:id="@+id/usuariolist_posicao"
         android:layout_above="@+id/usuariolist_tipoUsuario"

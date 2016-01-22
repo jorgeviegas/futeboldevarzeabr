@@ -138,7 +138,6 @@ public class CadastroJogoActivity extends ActionBarActivity {
         });
 
         tvJuiz = (EditText) findViewById(R.id.cadastro_jogo_juiz);
-        tvJuiz.setVisibility(EditText.GONE);
         tvJuiz.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
@@ -180,7 +179,6 @@ public class CadastroJogoActivity extends ActionBarActivity {
                 EscolheUsuario(3);
             }
         });
-        btnSearchJuiz.setVisibility(View.GONE);
 
         btnExcluirJuiz = (Button) findViewById(R.id.cadastro_jogo_btnexcluirjuiz);
         btnExcluirJuiz.setVisibility(View.GONE);
@@ -231,6 +229,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
                     Constantes.setSessao(null);
                     tvTime1.setEnabled(false);
                 } else {
+                    time = null;
                     tvTime1.setEnabled(true);
                     tvTime1.setText("");
                 }
@@ -242,13 +241,20 @@ public class CadastroJogoActivity extends ActionBarActivity {
                     Constantes.setSessao(null);
                     tvTime2.setEnabled(false);
                 } else {
+                    time2 = null;
                     tvTime2.setEnabled(true);
                     tvTime2.setText("");
                 }
                 break;
             case 3:
-                //Usuario user = userControl.selectUsuarioPorId(id_usuario, "").get(0);
-                //this.juiz = user;
+                if (Constantes.getSessao() != null) {
+                    this.juiz = Constantes.getSessao().getObjeto();
+                    tvJuiz.setText(this.juiz.getString("nome").trim().toUpperCase());
+                    Constantes.setSessao(null);
+                } else {
+                    this.juiz = null;
+                    tvJuiz.setText("");
+                }
                 break;
             case 4:
                 if (Constantes.getSessao() != null) {
@@ -273,9 +279,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
     }
 
     public void EscolheUsuario(int key) {
-        Bundle parametros = new Bundle();
-        parametros.putBoolean("esperaRetorno", true);
-        mudarTelaComRetorno(UsuariosTimeActivity.class, parametros, key);
+        mudarTelaComRetorno(BuscaUsuarioActivity.class, key);
     }
 
     public void EscolheLocal(int key) {
@@ -359,8 +363,8 @@ public class CadastroJogoActivity extends ActionBarActivity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Constantes.getTimeSelecionado().getRelation("jogos").add(jogo);
-                        Constantes.getTimeSelecionado().saveInBackground(new SaveCallback() {
+                        time.getRelation("jogos").add(jogo);
+                        time.saveInBackground(new SaveCallback() {
                             @Override
                             public void done(ParseException e) {
                                 FuncoesParse.dismissProgressBar(progresso);
@@ -551,6 +555,12 @@ public class CadastroJogoActivity extends ActionBarActivity {
     private void mudarTelaComRetorno(Class cls, Bundle parametros, int key) {
         Intent intent = new Intent(this, cls);
         intent.putExtras(parametros);
+        startActivityForResult(intent, key);
+    }
+
+    @SuppressWarnings({"rawtypes", "unused"})
+    private void mudarTelaComRetorno(Class cls, int key) {
+        Intent intent = new Intent(this, cls);
         startActivityForResult(intent, key);
     }
 

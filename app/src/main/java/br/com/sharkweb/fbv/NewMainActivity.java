@@ -57,6 +57,7 @@ public class NewMainActivity extends AppCompatActivity
     private TextView txtEmailUsuarioNaoConfirmado;
     private TextView txtNomeUsuario;
     private ImageView imgPerfilUusario;
+    private ImageView imgFundo;
     private Context context = this;
 
     private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
@@ -364,9 +365,8 @@ public class NewMainActivity extends AppCompatActivity
             return true;
         }
 
-        if (id == R.id.action_sair)
-
-        {
+        if (id == R.id.action_sair) {
+            this.finish();
             finish();
             return true;
         }

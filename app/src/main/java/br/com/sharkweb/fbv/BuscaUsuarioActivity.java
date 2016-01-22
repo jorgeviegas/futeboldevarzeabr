@@ -1,5 +1,6 @@
 package br.com.sharkweb.fbv;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -10,8 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
@@ -39,7 +42,7 @@ public class BuscaUsuarioActivity extends ActionBarActivity implements AdapterVi
     final private Funcoes funcoes = new Funcoes(this);
     final Context context = this;
     private static ProgressBar progressBar;
-    ;
+    private String campoFiltrado = "username";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,14 +77,20 @@ public class BuscaUsuarioActivity extends ActionBarActivity implements AdapterVi
         txtEditarPesquisa = (TextView) findViewById(R.id.busca_usuarios_editarPesquisa);
         txtEditarPesquisa.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
+                escolherFiltroDePesquisa();
             }
         });
     }
 
     private void buscarUsuarios() {
         progressBar.setVisibility(View.VISIBLE);
-        queryUsuario.whereContains("username", txtPesquisaUsuario.getText().toString().trim());
+        if (campoFiltrado.equals("email")) {
+            queryUsuario.whereEqualTo(campoFiltrado, txtPesquisaUsuario.getText().toString().trim());
+        } else if (campoFiltrado.equals("username")) {
+            queryUsuario.whereContains(campoFiltrado, txtPesquisaUsuario.getText().toString().trim().toLowerCase());
+        } else {
+            queryUsuario.whereContains(campoFiltrado, txtPesquisaUsuario.getText().toString().trim());
+        }
         queryUsuario.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
@@ -94,6 +103,42 @@ public class BuscaUsuarioActivity extends ActionBarActivity implements AdapterVi
                 }
             }
         });
+    }
+
+    private void escolherFiltroDePesquisa() {
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.dialog_opcoespesquisa);
+        dialog.setTitle("Pesquisar por:");
+        final RadioButton rdUsername = (RadioButton) dialog.findViewById(R.id.opcoes_pesquisa_username);
+        final RadioButton rdNome = (RadioButton) dialog.findViewById(R.id.opcoes_pesquisa_nome);
+        final RadioButton rdEmail = (RadioButton) dialog.findViewById(R.id.opcoes_pesquisa_email);
+
+        if (campoFiltrado.equals("username")) {
+            rdUsername.setChecked(true);
+        } else if (campoFiltrado.equals("nome")) {
+            rdNome.setChecked(true);
+        } else if (campoFiltrado.equals("email")) {
+            rdEmail.setChecked(true);
+        }
+        rdUsername.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                campoFiltrado = "username";
+                dialog.dismiss();
+            }
+        });
+        rdNome.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                campoFiltrado = "nome";
+                dialog.dismiss();
+            }
+        });
+        rdEmail.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                campoFiltrado = "email";
+                dialog.dismiss();
+            }
+        });
+        dialog.show();
     }
 
     @Override

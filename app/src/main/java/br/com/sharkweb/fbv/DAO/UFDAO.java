@@ -43,19 +43,19 @@ public class UFDAO {
     }
 
     public ArrayList<UF> selectUF() {
-        ArrayList<UF> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " ORDER BY " + UF, null));
+        ArrayList<UF> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " ORDER BY " + ID, null));
         fbvdao.close();
         return c;
     }
 
     public ArrayList<UF> selectUFPorId(int id) {
-        ArrayList<UF> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID + " = " + id + " ORDER BY " + UF, null));
+        ArrayList<UF> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + ID + " = " + id + " ORDER BY " + ID, null));
         fbvdao.close();
         return c;
     }
 
     public ArrayList<UF> selectUFPorDescricao(String uf) {
-        ArrayList<UF> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + UF + " = '" + uf + "' ORDER BY " + UF, null));
+        ArrayList<UF> c = cursorToArray(fbvdao.getReadableDatabase().rawQuery("SELECT * FROM " + NOME_TABELA + " WHERE " + UF + " = '" + uf + "' ORDER BY " + ID, null));
         fbvdao.close();
         return c;
     }

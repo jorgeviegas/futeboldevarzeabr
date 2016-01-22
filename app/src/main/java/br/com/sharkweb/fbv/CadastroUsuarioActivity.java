@@ -176,9 +176,13 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
         spnTipoUsuario.setSelection(Integer.valueOf(ParseUser.getCurrentUser().get("id_tipo").toString()) - 1);
         txtApelido.setText(ParseUser.getCurrentUser().getUsername().trim());
         txtCelular.setText(ParseUser.getCurrentUser().get("celular").toString().trim());
-        txtPosicao.setText(
-                posicaoControl.selectPosicaoPorCodigo(
-                        ParseUser.getCurrentUser().getString("posicao").trim()).get(0).getNome());
+        if (ParseUser.getCurrentUser().getString("posicao") != null
+                && !ParseUser.getCurrentUser().getString("posicao").isEmpty()) {
+            txtPosicao.setText(
+                    posicaoControl.selectPosicaoPorCodigo(
+                            ParseUser.getCurrentUser().getString("posicao").trim()).get(0).getNome());
+        }
+
         txtSenha.setEnabled(false);
         txtConfirmarSenha.setEnabled(false);
 
@@ -217,7 +221,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando cadastro...");
             ParseUser user = new ParseUser();
             if (ParseUser.getCurrentUser() != null) {
-                ParseUser.getCurrentUser().setUsername(txtApelido.getText().toString());
+                ParseUser.getCurrentUser().setUsername(txtApelido.getText().toString().toLowerCase());
                 ParseUser.getCurrentUser().setEmail(txtEmail.getText().toString());
                 ParseUser.getCurrentUser().put("celular", Mask.unmask(txtCelular.getText().toString()));
                 ParseUser.getCurrentUser().put("id_tipo", (spnTipoUsuario.getSelectedItemPosition() + 1));

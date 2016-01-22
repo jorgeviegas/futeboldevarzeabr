@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingLeft="5sp"
+    android:paddingTop="5sp"
     android:minWidth="300dp"
     android:weightSum="1">
 

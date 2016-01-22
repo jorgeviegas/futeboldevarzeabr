@@ -1,7 +1,6 @@
 package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,15 +23,14 @@ import com.parse.ParseUser;
 import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
-import br.com.sharkweb.fbv.Util.FuncoesParse;
-import br.com.sharkweb.fbv.adapter.TimeListAdapterParse;
+import br.com.sharkweb.fbv.adapter.TimeListAdapter;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.model.Sessao;
 
 public class TeamActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
     private ListView times;
-    private TimeListAdapterParse adapterTimes;
+    private TimeListAdapter adapterTimes;
     private TipoUsuarioController tipouserControl = new TipoUsuarioController(this);
     private boolean esperaRetorno;
     private ParseObject timeSelecionado;
@@ -94,7 +92,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
                     progressBar.setVisibility(View.GONE);
                     if (e == null) {
                         //FuncoesParse.dismissProgressBar(progresso);
-                        adapterTimes = new TimeListAdapterParse(context, list);
+                        adapterTimes = new TimeListAdapter(context, list);
                         times.setAdapter(adapterTimes);
                     }
                 }
@@ -106,7 +104,7 @@ public class TeamActivity extends ActionBarActivity implements AdapterView.OnIte
                             //FuncoesParse.dismissProgressBar(progresso);
                             progressBar.setVisibility(View.GONE);
                             if (e == null) {
-                                adapterTimes = new TimeListAdapterParse(context, timeList);
+                                adapterTimes = new TimeListAdapter(context, timeList);
                                 times.setAdapter(adapterTimes);
                             } else {
 

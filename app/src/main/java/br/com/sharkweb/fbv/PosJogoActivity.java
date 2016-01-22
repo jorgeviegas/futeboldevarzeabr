@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -15,13 +17,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.FindCallback;
+import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseRelation;
@@ -59,6 +64,8 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
     private TextView tvNomeTime1;
     private TextView tvNomeTime2;
     private TextView tvVersus;
+    private ImageView imgTime1;
+    private ImageView imgTime2;
     private List<ParseObject> listaDePosJogo;
     final Context context = this;
 
@@ -79,12 +86,19 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
         linearBotoes = (LinearLayout) findViewById(R.id.activity_pos_jogo_linear);
         linearBotoes.setVisibility(View.GONE);
 
+        imgTime1 = (ImageView) findViewById(R.id.pos_jogo_imagemtime1);
+        imgTime1.setVisibility(View.GONE);
+
+        imgTime2 = (ImageView) findViewById(R.id.pos_jogo_imagemtime2);
+        imgTime2.setVisibility(View.GONE);
+
         if (Constantes.getSessao() != null) {
             this.jogo = Constantes.getSessao().getObjeto();
             Constantes.setSessao(null);
         } else {
             this.jogo = null;
         }
+
         tvNomeTime1 = (TextView) findViewById(R.id.pos_jogo_nometime1);
         tvNomeTime1.setVisibility(View.VISIBLE);
         tvNomeTime1.setText("TM1");
@@ -147,6 +161,28 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
             String placar = String.valueOf(this.jogo.getInt("qtdGolsTime1")).trim() +
                     " X " + String.valueOf(this.jogo.getInt("qtdGolsTime2")).trim();
             tvVersus.setText(placar);
+
+            //buscarImagemTimes();
+        }
+    }
+
+    private void buscarImagemTimes() {
+        ParseObject timeTeste = this.jogo.getParseObject("time");
+        if (timeTeste != null) {
+            ParseFile imagemPerfil = timeTeste.getParseFile("ImageFile");
+            if (imagemPerfil != null) {
+                try {
+                    byte[] bitmapdata = imagemPerfil.getData();
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(bitmapdata, 0, bitmapdata.length);
+                    imgTime1.setImageBitmap(bitmap);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    imgTime1.setImageResource(R.drawable.estadio);
+                }
+            } else {
+                imgTime1.setImageResource(R.drawable.estadio);
+                imgTime1.setMaxHeight(80);
+            }
         }
     }
 

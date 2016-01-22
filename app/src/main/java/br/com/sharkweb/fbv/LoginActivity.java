@@ -82,7 +82,7 @@ public class LoginActivity extends ActionBarActivity {
                 if (retV) {
                     if (funcoes.verificaConexao(context)) {
                         final Dialog progresso = FuncoesParse.showProgressBar(context, "Fazendo login...");
-                        ParseUser.logInInBackground(txtemail.getText().toString().trim(),
+                        ParseUser.logInInBackground(txtemail.getText().toString().trim().toLowerCase(),
                                 txtSenha.getText().toString().trim(), new LogInCallback() {
                                     @Override
                                     public void done(ParseUser parseUser, com.parse.ParseException e) {
@@ -113,7 +113,7 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     public void usernameOrPasswordIsInvalid() {
-        Toast toast2 = Toast.makeText(getApplicationContext(), "E-mail ou Senha incorreto(a).", Toast.LENGTH_SHORT);
+        Toast toast2 = Toast.makeText(getApplicationContext(), "Nome de usuário ou Senha incorreto(a).", Toast.LENGTH_SHORT);
         toast2.show();
     }
 

@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="br.com.sharkweb.fbv.TimeDetalheActivity">
 
@@ -8,82 +9,97 @@
         style="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/AzulPrincipal"
-        android:textColor="#fff"
         android:layout_alignParentTop="true"
-        android:text="BARCELONA \n POA - RS"
-        android:paddingBottom="25sp"
-        android:paddingTop="10sp"
-        android:paddingLeft="10sp"
         android:layout_toLeftOf="@+id/time_detalhe_chkInativo"
-        android:layout_toStartOf="@+id/time_detalhe_chkInativo" />
+        android:layout_toStartOf="@+id/time_detalhe_chkInativo"
+        android:background="@color/AzulPrincipal"
+        android:paddingBottom="25sp"
+        android:paddingLeft="10sp"
+        android:paddingTop="10sp"
+        android:text="BARCELONA \n"
+        android:textColor="#fff" />
 
     <ListView
         android:id="@+id/timeDetalhe_listJogadores"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#cccc"
-        android:choiceMode="singleChoice"
-        android:paddingLeft="10sp"
-        android:paddingRight="10sp"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:divider="#dcdcdc"
-        android:dividerHeight="1dp"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/timeDetalhe_labelJogadores" />
+        android:layout_below="@+id/timeDetalhe_labelJogadores"
+        android:background="#cccc"
+        android:choiceMode="singleChoice"
+        android:divider="#dcdcdc"
+        android:dividerHeight="1dp"
+        android:paddingLeft="10sp"
+        android:paddingRight="10sp"
+        android:paddingTop="@dimen/activity_vertical_margin" />
 
     <TextView
+        android:id="@+id/timeDetalhe_labelJogadores"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Integrantes:"
-        android:padding="15dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:background="@android:color/white"
-        android:textColor="@android:color/black"
-        android:id="@+id/timeDetalhe_labelJogadores"
         android:layout_alignLeft="@+id/timeDetalhe_tvNomeTime"
         android:layout_alignStart="@+id/timeDetalhe_tvNomeTime"
         android:layout_below="@+id/timeDetalhe_tvNomeTime"
-        android:layout_toStartOf="@+id/time_detalhe_chkInativo" />
+        android:layout_toStartOf="@+id/time_detalhe_chkInativo"
+        android:background="@android:color/white"
+        android:padding="15dp"
+        android:text="Integrantes:"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="20sp" />
 
     <CheckBox
+        android:id="@+id/time_detalhe_chkInativo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mostrar inativos"
-        android:id="@+id/time_detalhe_chkInativo"
         android:layout_above="@+id/timeDetalhe_listJogadores"
-        android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/timeDetalhe_labelJogadores"
+        android:background="@android:color/white"
         android:checked="true"
         android:paddingRight="20sp"
-        android:background="@android:color/white"
+        android:text="Mostrar inativos"
         android:textColor="@android:color/black" />
 
     <ImageView
+        android:id="@+id/time_detalhe_imgPerfil"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/time_detalhe_imgPerfil"
+        android:layout_alignBottom="@+id/timeDetalhe_tvNomeTime"
+        android:layout_alignEnd="@+id/time_detalhe_chkInativo"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/time_detalhe_chkInativo"
+        android:layout_toEndOf="@+id/timeDetalhe_labelJogadores"
+        android:layout_toRightOf="@+id/timeDetalhe_labelJogadores"
         android:background="@color/AzulPrincipal"
         android:paddingBottom="10sp"
-        android:paddingTop="5sp"
-        android:layout_alignParentTop="true"
-        android:layout_alignBottom="@+id/timeDetalhe_tvNomeTime"
-        android:layout_alignRight="@+id/time_detalhe_chkInativo"
-        android:layout_alignEnd="@+id/time_detalhe_chkInativo"
-        android:layout_toRightOf="@+id/timeDetalhe_labelJogadores"
-        android:layout_toEndOf="@+id/timeDetalhe_labelJogadores" />
+        android:paddingTop="5sp" />
 
     <ProgressBar
+        android:id="@+id/time_detalhe_progressBar"
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/time_detalhe_progressBar"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
+
+    <TextView
+        android:id="@+id/time_detalhe_endereco"
+        android:layout_width="wrap_content"
+        android:layout_height="50sp"
+        android:layout_above="@+id/timeDetalhe_labelJogadores"
+        android:layout_alignEnd="@+id/time_detalhe_progressBar"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/time_detalhe_progressBar"
+        android:gravity="top|left"
+        android:paddingLeft="10sp"
+        android:text="POA - RS"
+        android:textColor="#fff"
+        android:textSize="12sp" />
 
 </RelativeLayout>

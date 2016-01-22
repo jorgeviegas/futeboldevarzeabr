@@ -221,6 +221,11 @@ public class CalendarioActivity extends ActionBarActivity implements AdapterView
         if (id == R.id.action_settings) {
             return true;
         }
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.calendario_action_visualizarjogos) {
+            mudarTela(JogosActivity.class);
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

@@ -16,7 +16,7 @@
         android:ems="10"
         android:focusable="true"
         android:paddingTop="30sp"
-        android:hint="Nome de usuario ou E-mail:"
+        android:hint="Nome de usuario"
         android:textColorHint="#d3d3d3"
         android:textColor="#fff"
         android:inputType="textEmailAddress"

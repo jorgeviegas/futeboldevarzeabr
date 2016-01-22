@@ -45,6 +45,7 @@ import br.com.sharkweb.fbv.model.Sessao;
 public class TimeDetalheActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     private TextView tvNomeTime;
+    private TextView tvEndereco;
     private CheckBox chkInativo;
     private ImageView imgPerfilTime;
     private Funcoes funcoes = new Funcoes(this);
@@ -70,6 +71,9 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
         tvNomeTime = (TextView) findViewById(R.id.timeDetalhe_tvNomeTime);
         tvNomeTime.setVisibility(TextView.VISIBLE);
+
+        tvEndereco = (TextView) findViewById(R.id.time_detalhe_endereco);
+        tvEndereco.setVisibility(TextView.VISIBLE);
 
         progressBar = (ProgressBar) findViewById(R.id.time_detalhe_progressBar);
         progressBar.setVisibility(View.GONE);
@@ -122,8 +126,8 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             imgPerfilTime.setMaxHeight(80);
         }
 
-        tvNomeTime.setText(funcoes.PrimeiraLetraMaiuscula(this.time.getString("nome").trim()) + "\n" +
-                time.getString("cidade") + " - " +
+        tvNomeTime.setText(funcoes.PrimeiraLetraMaiuscula(this.time.getString("nome").trim()+"\n"));
+        tvEndereco.setText(time.getString("cidade").trim() + " - " +
                 ufControl.selectUFPorId(time.getInt("id_uf")).get(0).getNome().trim());
         listaJogadores = (ListView) findViewById(R.id.timeDetalhe_listJogadores);
         //listaJogadores.setOnItemClickListener((AdapterView.OnItemClickListener) this);
@@ -149,11 +153,11 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                         InputStream inputStream = getContentResolver().openInputStream(data.getData());
                         bitmap = BitmapFactory.decodeStream(inputStream);
                     }
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
                     RoundedImageView arredondarImagem = new RoundedImageView(context);
                     Bitmap bitArredondado = arredondarImagem.getCroppedBitmap(bitmap, 300);
                     imgPerfilTime.setImageBitmap(bitArredondado);
                     FuncoesParse.inserirImagemPerfil(context, time, bitArredondado);
-
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }

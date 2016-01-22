@@ -1,21 +1,19 @@
 package br.com.sharkweb.fbv;
 
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -31,36 +29,21 @@ import android.widget.Toast;
 
 import com.parse.DeleteCallback;
 import com.parse.FindCallback;
-import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.adapter.MensalidadeListAdapter;
-import br.com.sharkweb.fbv.adapter.MovimentoListAdapter;
-import br.com.sharkweb.fbv.controller.CaixaController;
-import br.com.sharkweb.fbv.controller.MensalidadeController;
 import br.com.sharkweb.fbv.controller.MovimentoController;
-import br.com.sharkweb.fbv.controller.TimeController;
-import br.com.sharkweb.fbv.model.Caixa;
-import br.com.sharkweb.fbv.model.Jogo;
-import br.com.sharkweb.fbv.model.Mensalidade;
-import br.com.sharkweb.fbv.model.Movimento;
-import br.com.sharkweb.fbv.model.ParseProxyObject;
-import br.com.sharkweb.fbv.model.Time;
-import br.com.sharkweb.fbv.model.Usuario;
 
 public class MensalidadesActivity extends ActionBarActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
@@ -73,6 +56,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
     private MovimentoController movimentoControl = new MovimentoController(this);
     final Context context = this;
     private static ProgressBar progressBar;
+    private FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +65,7 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
 
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.mensalidade_botaoflutuante);
+        fab = (FloatingActionButton) findViewById(R.id.mensalidade_botaoflutuante);
         fab.setColorFilter(Color.WHITE);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +82,18 @@ public class MensalidadesActivity extends ActionBarActivity implements AdapterVi
         mensalidades = (ListView) findViewById(R.id.mensalidadeslist_listviewmensalidades);
         mensalidades.setOnItemClickListener(this);
         mensalidades.setOnItemLongClickListener(this);
+        mensalidades.setOnItemLongClickListener(this);
+        mensalidades.setOnScrollListener(new AbsListView.OnScrollListener() {
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            }
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    fab.setVisibility(View.VISIBLE);
+                }else{
+                    fab.setVisibility(View.GONE);
+                }
+            }
+        });
 
         chkSomenteEmAberto = (CheckBox) findViewById(R.id.mensalidadeslist_somenteAbertos);
         chkSomenteEmAberto.setChecked(true);

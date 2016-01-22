@@ -18,6 +18,7 @@
     <permission
         android:name="br.com.sharkweb.fbv.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
+
     <uses-permission android:name="br.com.sharkweb.fbv.permission.C2D_MESSAGE" />
 
     <!--
@@ -130,7 +131,10 @@
         </activity>
         <activity
             android:name=".BuscaUsuarioActivity"
-            android:label="Busca de Usuários"></activity>
+            android:label="Busca de Usuários" />
+        <activity
+            android:name=".JogosActivity"
+            android:label="Jogos do Time" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -145,7 +149,7 @@
 
         <activity
             android:name=".BuscaTimesActivity"
-            android:label="@string/title_activity_busca_times"></activity>
+            android:label="@string/title_activity_busca_times" />
 
         <service android:name="com.parse.PushService" />
 
@@ -165,12 +169,12 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <!--
-                  IMPORTANT: Change "com.parse.starter" to match your app's package name.
-                -->
+                <!-- IMPORTANT: Change "com.parse.starter" to match your app's package name. -->
                 <category android:name="br.com.sharkweb.fbv" />
             </intent-filter>
         </receiver>
+
+        <activity android:name=".estatisticasUsuario"></activity>
     </application>
 
 </manifest>

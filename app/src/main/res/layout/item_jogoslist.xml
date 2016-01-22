@@ -3,7 +3,9 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:padding="5dp"
+    android:paddingTop="2sp"
+    android:paddingLeft="5sp"
+    android:paddingBottom="10sp"
     android:background="#ffffffff"
     >
 
@@ -23,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/jogoslist_imagemtime"
         android:layout_alignTop="@+id/jogoslist_imagemtime"
-        android:text="Nome usuario"
+        android:text="Nome dos times"
         android:textSize="15sp"
         android:textColor="#333333"
         android:paddingLeft="5dp"
@@ -35,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/jogoslist_nometimes"
         android:layout_toRightOf="@+id/jogoslist_imagemtime"
-        android:text="Posicao"
+        android:text="Data e horario"
         android:textColor="#333333"
         android:paddingLeft="5dp"
         />
@@ -49,4 +51,18 @@
         android:text="tipousuario"
         android:textColor="#333333"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RUA DO TAL MUITO LOCO TENDEL"
+        android:paddingLeft="5dp"
+        android:textSize="10sp"
+        android:id="@+id/jogoslist_endereco"
+        android:layout_alignBottom="@+id/jogoslist_imagemtime"
+        android:layout_alignRight="@+id/jogoslist_seila"
+        android:layout_alignEnd="@+id/jogoslist_seila"
+        android:layout_below="@+id/jogoslist_horario"
+        android:layout_toRightOf="@+id/jogoslist_imagemtime"
+        android:layout_toEndOf="@+id/jogoslist_imagemtime" />
 </RelativeLayout>

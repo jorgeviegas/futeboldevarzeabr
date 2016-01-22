@@ -67,6 +67,7 @@ public class JogoListAdapter extends BaseAdapter {
             itemHolder.tvDataHora = ((TextView) view.findViewById(R.id.jogoslist_horario));
             itemHolder.ivJogo = (ImageView) view.findViewById(R.id.jogoslist_imagemtime);
             itemHolder.tvSeiLa = ((TextView) view.findViewById(R.id.jogoslist_seila));
+            itemHolder.tvEndereco = ((TextView) view.findViewById(R.id.jogoslist_endereco));
             view.setTag(itemHolder);
         } else {
             itemHolder = (ItemSuporte) view.getTag();
@@ -78,10 +79,17 @@ public class JogoListAdapter extends BaseAdapter {
             itemHolder.tvDataHora.setText(funcoes.transformarDataEmString(jogos.get(position).getDate("data")).trim() + " - " +
                     jogos.get(position).getString("hora").trim()
                     + " até " + jogos.get(position).getString("horaFinal").trim());
-            itemHolder.ivJogo.setBackgroundColor(context.getResources().getColor(R.color.AzulPrincipal));
 
+            if (jogos.get(position).getString("enderecoCompletoLocal") != null ||
+                    !jogos.get(position).getString("enderecoCompletoLocal").isEmpty()) {
+                itemHolder.tvEndereco.setText(jogos.get(position).getString("enderecoCompletoLocal").trim());
+            } else {
+                itemHolder.tvEndereco.setText("");
+            }
+
+            itemHolder.ivJogo.setBackgroundColor(context.getResources().getColor(R.color.AzulPrincipal));
             //Se o jogo já venceu, coloca uma tarja vermelha.
-            if (jogos.get(position).getDate("data").after(funcoes.getDate()))
+            if (jogos.get(position).getDate("data").before(funcoes.getDate()))
                 itemHolder.ivJogo.setBackgroundColor(context.getResources().getColor(R.color.vermelhoEscuro));
 
         } else {
@@ -99,6 +107,7 @@ public class JogoListAdapter extends BaseAdapter {
         public TextView tvNomeTimes;
         public TextView tvSeiLa;
         public TextView tvDataHora;
+        public TextView tvEndereco;
         public ImageView ivJogo;
 
     }

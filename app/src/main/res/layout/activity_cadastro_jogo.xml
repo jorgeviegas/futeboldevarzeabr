@@ -150,7 +150,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/cadastro_jogo_local"
         android:hint="Local do jogo:"
-        android:editable="false"
         android:paddingTop="5sp"
         android:layout_alignBottom="@+id/cadastro_jogo_btnlocal"
         android:layout_alignParentLeft="true"
@@ -174,6 +173,7 @@
         android:layout_height="wrap_content"
         android:text="Endereco local"
         android:id="@+id/cadastro_jogo_enderecolocal"
+        android:paddingBottom="10sp"
         android:layout_alignParentLeft="true"
         android:textSize="15sp"
         android:paddingLeft="5sp"
@@ -193,5 +193,15 @@
         android:layout_alignTop="@+id/cadastro_jogo_btnjuiz"
         android:layout_toLeftOf="@+id/cadastrojogo_horafinal"
         android:layout_toStartOf="@+id/cadastrojogo_horafinal" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enviar notificação aos usuarios"
+        android:paddingRight="5sp"
+        android:id="@+id/cadastro_jogo_chkenviarnotificaco"
+        android:layout_below="@+id/cadastro_jogo_enderecolocal"
+        android:layout_alignRight="@+id/cadastro_jogo_btnlocal"
+        android:layout_alignEnd="@+id/cadastro_jogo_btnlocal" />
 
 </RelativeLayout>

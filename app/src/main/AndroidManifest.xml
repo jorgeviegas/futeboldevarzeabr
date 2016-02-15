@@ -125,7 +125,6 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -146,6 +145,13 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <meta-data
+            android:name="com.parse.push.gcm_sender_id"
+            android:value="id:YOUR_SENDER_ID" />;
+        <meta-data
+            android:name="com.parse.push.notification_icon"
+            android:resource="@drawable/soccer_ball_64" />
 
         <activity
             android:name=".BuscaTimesActivity"

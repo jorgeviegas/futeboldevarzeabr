@@ -11,10 +11,8 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBarActivity;
-import android.view.View;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -22,6 +20,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,22 +30,23 @@ import com.parse.GetCallback;
 import com.parse.LogOutCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
-import com.parse.SaveCallback;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.Util.RoundedImageView;
+import br.com.sharkweb.fbv.controller.NotificacaoController;
 import br.com.sharkweb.fbv.controller.PosicaoController;
+import br.com.sharkweb.fbv.controller.TimeController;
 import br.com.sharkweb.fbv.controller.TipoUsuarioController;
 import br.com.sharkweb.fbv.controller.UFController;
 import br.com.sharkweb.fbv.model.ParseProxyObject;
@@ -58,11 +58,12 @@ public class NewMainActivity extends AppCompatActivity
     private TextView txtEmailUsuarioNaoConfirmado;
     private TextView txtNomeUsuario;
     private ImageView imgPerfilUusario;
-    private ImageView imgFundo;
     private Context context = this;
 
     private TipoUsuarioController tipoUsuarioControl = new TipoUsuarioController(this);
     private PosicaoController posicaoControl = new PosicaoController(this);
+    private NotificacaoController notificacaoControl = new NotificacaoController(this);
+    private TimeController timeControl = new TimeController(this);
     private Funcoes funcoes = new Funcoes(this);
     private UFController ufControl = new UFController(this);
     static final int IMAGE_VIEW_ACTIVITY_REQUEST_CODE = 101;
@@ -92,6 +93,11 @@ public class NewMainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        Bundle mBundle = getIntent().getExtras();
+        if (mBundle != null) {
+            notificacaoControl.receberNotificacaoConvite(mBundle);
+        }
 
         //INICIANDO DADOS FIXOS DO APLICATIVO E DADOS DE TESTE
         tipoUsuarioControl.IniciarTiposUsuarios();
@@ -130,11 +136,13 @@ public class NewMainActivity extends AppCompatActivity
         verificarUsuario();
     }
 
-
     private void verificarUsuario() {
         final ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-
+            if (ParseInstallation.getCurrentInstallation().get("User") == null) {
+                ParseInstallation.getCurrentInstallation().put("User", currentUser);
+                ParseInstallation.getCurrentInstallation().saveEventually();
+            }
             ParseUser.getCurrentUser().fetchInBackground(new GetCallback<ParseObject>() {
                 @Override
                 public void done(ParseObject parseObject, ParseException e) {
@@ -163,7 +171,6 @@ public class NewMainActivity extends AppCompatActivity
             } else {
                 imgPerfilUusario.setImageResource(R.drawable.profile4_68);
             }
-
             //Verifica a existência de notificações ao usuário.
             ParseQuery queryNotific = new ParseQuery("notificacao");
             queryNotific.whereEqualTo("usuario", currentUser);
@@ -194,7 +201,7 @@ public class NewMainActivity extends AppCompatActivity
         builder.setPositiveButton(opcao, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                atualizarTime(list.get(count).getString("objectIdParam").trim());
+                timeControl.atualizarTime(list.get(count).getString("objectIdParam").trim());
                 if ((count + 1) <= (list.size() - 1)) {
                     exibirNotificacoes(list, (count + 1));
                 }
@@ -213,38 +220,6 @@ public class NewMainActivity extends AppCompatActivity
         builder.create().show();
         list.get(count).put("lida", true);
         list.get(count).saveInBackground();
-    }
-
-    private void atualizarTime(String objectId) {
-        final Dialog progresso = FuncoesParse.showProgressBar(context, "Salvando...");
-        ParseQuery queryTime = new ParseQuery("time");
-        queryTime.getInBackground(objectId.trim(), new GetCallback<ParseObject>() {
-            @Override
-            public void done(ParseObject parseObject, ParseException e) {
-                if (e == null) {
-                    ParseUser.getCurrentUser().getRelation("times").add(parseObject);
-                    ArrayList<String> configs = new ArrayList<String>();
-                    configs.add(parseObject.getObjectId().trim());
-                    configs.add("0");
-                    configs.add("2");
-                    ParseUser.getCurrentUser().add("configTimes", configs);
-                    ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            FuncoesParse.dismissProgressBar(progresso);
-                            if (e == null) {
-                                funcoes.mostrarToast(1);
-                            } else {
-                                funcoes.mostrarToast(2);
-                            }
-                        }
-                    });
-                } else {
-                    FuncoesParse.dismissProgressBar(progresso);
-                    funcoes.mostrarToast(2);
-                }
-            }
-        });
     }
 
     private void confirmarTrocaDeSenha() {
@@ -350,6 +325,10 @@ public class NewMainActivity extends AppCompatActivity
 
         if (id == R.id.action_logoff) {
             final Dialog progresso = FuncoesParse.showProgressBar(this, "Fazendo logoff...");
+
+            ParseInstallation.getCurrentInstallation().remove("User");
+            ParseInstallation.getCurrentInstallation().saveEventually();
+
             ParseUser.getCurrentUser().logOutInBackground(new LogOutCallback() {
                 @Override
                 public void done(ParseException e) {

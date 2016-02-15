@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import br.com.sharkweb.fbv.Util.Constantes;
 import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.controller.LocalController;
+import br.com.sharkweb.fbv.controller.NotificacaoController;
 import br.com.sharkweb.fbv.model.Sessao;
 
 import static android.app.TimePickerDialog.*;
@@ -46,6 +48,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
     private ParseObject jogo;
     final Context context = this;
     private LocalController localControl = new LocalController(this);
+    private NotificacaoController notificacaoControl = new NotificacaoController(this);
 
     private EditText tvTime1;
     private EditText tvTime2;
@@ -55,6 +58,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
     private EditText tvJuiz;
     private EditText tvLocal;
     private TextView tvEnderecoLocal;
+    private CheckBox enviarNotificacao;
 
     private Button btnSearchTime1;
     private Button btnSearchTime2;
@@ -103,6 +107,10 @@ public class CadastroJogoActivity extends ActionBarActivity {
 
         tvTime2 = (EditText) findViewById(R.id.cadastrojogo__time2);
         tvTime2.setVisibility(EditText.VISIBLE);
+
+        enviarNotificacao = (CheckBox) findViewById(R.id.cadastro_jogo_chkenviarnotificaco);
+        //enviarNotificacao.setChecked(false);
+        //enviarNotificacao.setVisibility(EditText.GONE);
 
         tvEnderecoLocal = (TextView) findViewById(R.id.cadastro_jogo_enderecolocal);
         tvEnderecoLocal.setVisibility(EditText.VISIBLE);
@@ -261,9 +269,12 @@ public class CadastroJogoActivity extends ActionBarActivity {
                     this.local = Constantes.getSessao().getObjeto();
                     Constantes.setSessao(null);
                     tvLocal.setText(this.local.getString("nome"));
+                    tvLocal.setEnabled(false);
                     tvEnderecoLocal.setText(localControl.getEnderecoCompleto(this.local));
                 } else {
-
+                    local = null;
+                    tvLocal.setEnabled(true);
+                    tvLocal.setText("");
                 }
                 break;
         }
@@ -356,27 +367,45 @@ public class CadastroJogoActivity extends ActionBarActivity {
             this.jogo.put("hora", tvHora.getText().toString().trim());
             this.jogo.put("horaFinal", tvHorafinal.getText().toString().trim());
             this.jogo.put("inativo", false);
-            this.jogo.put("qtdGolsTime1", 0);
-            this.jogo.put("qtdGolsTime2", 0);
-            this.jogo.put("situacao", "Aguardando");
+
+            if (tipoAcesso.equals("write")) {
+                this.jogo.put("qtdGolsTime1", 0);
+                this.jogo.put("qtdGolsTime2", 0);
+                this.jogo.put("situacao", "Aguardando");
+            }
             this.jogo.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        time.getRelation("jogos").add(jogo);
-                        time.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                FuncoesParse.dismissProgressBar(progresso);
-                                if (e == null) {
-                                    funcoes.mostrarToast(1);
-                                    //FAZER TRATAMENTO PARA ENVIAR NOTIFICAÇÃO AO TIME ADVERSÁRIO ACEITAR O JOGO.
-                                    onBackPressed();
-                                } else {
-                                    funcoes.mostrarToast(2);
+                        if (tipoAcesso.equals("write")) {
+                            time.getRelation("jogos").add(jogo);
+                            time.saveInBackground(new SaveCallback() {
+                                @Override
+                                public void done(ParseException e) {
+                                    FuncoesParse.dismissProgressBar(progresso);
+                                    if (e == null) {
+                                        funcoes.mostrarToast(1);
+                                        if (enviarNotificacao.isChecked()) {
+                                            notificacaoControl.enviarNotificacaoDeJogoParaUsuariosDoTime(
+                                                    time.getRelation("usuarios").getQuery(), jogo);
+                                        }
+                                        //FAZER TRATAMENTO PARA ENVIAR NOTIFICAÇÃO AO TIME ADVERSÁRIO ACEITAR O JOGO.
+                                        // onBackPressed();
+                                    } else {
+                                        funcoes.mostrarToast(2);
+                                    }
                                 }
+                            });
+                        } else {
+                            if (enviarNotificacao.isChecked()) {
+                                notificacaoControl.enviarNotificacaoDeJogoParaUsuariosDoTime(
+                                        time.getRelation("usuarios").getQuery(), jogo);
                             }
-                        });
+                            funcoes.mostrarToast(1);
+                            //FAZER TRATAMENTO PARA ENVIAR NOTIFICAÇÃO AO TIME ADVERSÁRIO ACEITAR O JOGO.
+                            // onBackPressed();
+                        }
+
                     } else {
                         FuncoesParse.dismissProgressBar(progresso);
                         funcoes.mostrarToast(2);
@@ -467,7 +496,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
                 tvHorafinal.getText().toString().trim().equals("")) {
             return "Hummmm... Faltou informar o horario do nosso jogo!";
         }
-        if (local == null) {
+        if (local == null && tvLocal.getText().toString().trim().equals("")) {
             return "Ops... Faltou informar o local do nosso jogo!";
         }
         /*if (Double.valueOf(String.valueOf(tvHorafinal.getText()).replace(":","")) >
@@ -481,7 +510,7 @@ public class CadastroJogoActivity extends ActionBarActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem m1 = menu.findItem(R.id.cadastro_jogo_action_excluir);
         MenuItem m2 = menu.findItem(R.id.cadastro_jogo_action_abrirposjogo);
-        if (this.jogo != null) {
+        if (this.jogo != null && jogo.getObjectId() != null) {
             m1.setVisible(true);
             m2.setVisible(true);
         } else {

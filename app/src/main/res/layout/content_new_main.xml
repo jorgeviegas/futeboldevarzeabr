@@ -9,9 +9,9 @@
     tools:context="br.com.sharkweb.fbv.NewMainActivity"
     tools:showIn="@layout/app_bar_new_main">
 
-    <include
+   <!-- <include
         layout="@layout/activity_estatisticas_usuario"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent" />-->
 
 </RelativeLayout>

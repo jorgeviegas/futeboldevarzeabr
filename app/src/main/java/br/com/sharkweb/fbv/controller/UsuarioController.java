@@ -2,111 +2,35 @@ package br.com.sharkweb.fbv.controller;
 
 import android.content.Context;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
 import com.parse.ParseObject;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import br.com.sharkweb.fbv.DAO.UsuarioDAO;
 import br.com.sharkweb.fbv.DAOParse.UsuarioDAOParse;
 import br.com.sharkweb.fbv.Util.Constantes;
+import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.model.Usuario;
 
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 /**
  * @author Tiago Klein
  */
 public class UsuarioController {
 
-    private UsuarioDAO usuarioDAO;
-    private UsuarioDAOParse usuarioDAOParse;
+    private Funcoes funcoes;
 
     public UsuarioController(Context context) {
-        usuarioDAO = new UsuarioDAO(context);
-        usuarioDAOParse = new UsuarioDAOParse(context);
-    }
-
-
-    public long inserir(Usuario usuario, boolean parse) {
-        if (parse) {
-            return usuarioDAOParse.salvar(usuario);
-        } else {
-            return usuarioDAO.inserir(usuario);
-        }
-    }
-
-    public long alterar(Usuario usuario, boolean parse) {
-        if (parse) {
-            return usuarioDAOParse.salvar(usuario);
-        } else {
-            return usuarioDAO.alterar(usuario);
-        }
-    }
-
-    public long favoritarTime(int id, int id_time) {
-        return usuarioDAO.favoritarTime(id, id_time);
-    }
-
-    public ArrayList<Usuario> selectUsuarios(boolean parse) {
-        if (parse) {
-            return usuarioDAOParse.buscarUsuarios("", "", 0);
-        } else {
-            return usuarioDAO.selectUsuarios();
-        }
-    }
-
-    public ArrayList<Usuario> selectUsuarioPorEmail(String email, boolean parse) {
-        if (parse) {
-            return usuarioDAOParse.buscarUsuarios("email", email, 1);
-        } else {
-            return usuarioDAO.selectUsuarioPorEmail(email);
-        }
-    }
-
-    public ArrayList<Usuario> selectUsuarioPorEmailouApelido(String email, boolean parse) {
-        if (validarEmail(email)) {
-            if (parse) {
-                return usuarioDAOParse.buscarUsuarios("email", email, 1);
-            } else {
-                return usuarioDAO.selectUsuarioPorEmail(email);
-            }
-        } else {
-            if (parse) {
-                return usuarioDAOParse.buscarUsuarios("apelido", email, 1);
-            } else {
-                return usuarioDAO.selectUsuarioPorApelido(email);
-            }
-        }
-    }
-
-    public ArrayList<Usuario> selectUsuarioPorApelido(String apelido, boolean parse) {
-        if (parse) {
-            return usuarioDAOParse.buscarUsuarios("apelido", apelido, 1);
-        } else {
-            return usuarioDAO.selectUsuarioPorApelido(apelido);
-        }
-    }
-
-    public ArrayList<Usuario> selectUsuarioPorId(int id_usuario, String id_parse) {
-        if (!id_parse.isEmpty()) {
-            return usuarioDAOParse.selectUsuarioPorId(id_parse);
-        } else {
-            return usuarioDAO.selectUsuarioPorId(id_usuario);
-        }
-    }
-
-    public ArrayList<Usuario> selectUsuarioPorIdParse(String id_parse, boolean parse) {
-        if (parse) {
-            return usuarioDAOParse.selectUsuarioPorId(id_parse);
-        } else {
-            return usuarioDAO.selectUsuarioPorIdParse(id_parse);
-        }
-    }
-
-    public void excluirTodosJogadores() {
-        usuarioDAO.excluirTodosUsuarios();
+        funcoes = new Funcoes(context);
     }
 
     public boolean validarLogin(Usuario usuario, String senha) {
@@ -133,6 +57,88 @@ public class UsuarioController {
 
         return matcher.matches();
     }
+
+    public void desvincularUsuarioDoTime(ParseObject objectTime) {
+        ParseUser.getCurrentUser().getRelation("times").remove(objectTime);
+        ArrayList<String> configsTimes = (ArrayList<String>) ParseUser.getCurrentUser().get("configTimes");
+        if (configsTimes != null && configsTimes.size() > 0) {
+            for (int i = 0; i < configsTimes.size(); i++) {
+                Object object = (Object) configsTimes.get(i);
+                String time = ((ArrayList<String>) object).get(0);
+                if (objectTime.getObjectId().trim().equals(time)) {
+                    configsTimes.remove(i);
+                    ParseUser.getCurrentUser().add("configTimes", configsTimes);
+                    ParseUser.getCurrentUser().saveEventually(new SaveCallback() {
+                        @Override
+                        public void done(com.parse.ParseException e) {
+                            if (e == null) {
+                                //funcoes.mostrarToast(1);
+                            } else {
+                                //funcoes.mostrarToast(2);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    public void alterarConfigTime(String objectIdTime, String itemAlterarao, String valor) {
+        ArrayList<String> configsTimes = (ArrayList<String>) ParseUser.getCurrentUser().get("configTimes");
+        if (configsTimes != null && configsTimes.size() > 0) {
+            for (int i = 0; i < configsTimes.size(); i++) {
+                Object object = (Object) configsTimes.get(i);
+                String time = ((ArrayList<String>) object).get(0);
+                if (objectIdTime.trim().equals(time)) {
+                    try {
+                        configsTimes.remove(i);
+                        String inativo = ((ArrayList<String>) object).get(1);
+                        String tipo_user = ((ArrayList<String>) object).get(1);
+                        if (itemAlterarao.equals("inativo")) {
+                            ((ArrayList<String>) object).set(0, time);
+                            ((ArrayList<String>) object).set(1, valor);
+                            ((ArrayList<String>) object).set(2, tipo_user);
+                            configsTimes.add(i, object.toString());
+                        } else if (itemAlterarao.equals("tipoUsuario")) {
+                            ((ArrayList<String>) object).set(0, time);
+                            ((ArrayList<String>) object).set(1, inativo);
+                            ((ArrayList<String>) object).set(2, valor);
+                            configsTimes.add(i, object.toString());
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    ParseUser.getCurrentUser().add("configTimes", configsTimes);
+                    ParseUser.getCurrentUser().saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(com.parse.ParseException e) {
+                            if (e == null) {
+                                funcoes.mostrarToast(1);
+                            } else {
+                                funcoes.mostrarToast(2);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    public void atualizarEstatisticas() {
+        ParseQuery query = new ParseQuery("posJogoUser");
+        query.whereEqualTo("usuario", ParseUser.getCurrentUser());
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> list, ParseException e) {
+                if (e == null) {
+
+                } else {
+
+                }
+            }
+        });
+    }
+
     /*public String validarEAlterarNovaSenha(Login loginAtual, String senhaAntiga, String novaSenha, String repetirNovaSenha){
 
         if(!novaSenha.equals(repetirNovaSenha))

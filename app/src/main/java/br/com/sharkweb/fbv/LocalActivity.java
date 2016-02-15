@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -35,6 +36,8 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
     private TipoUsuarioController tipoUserControl = new TipoUsuarioController(this);
     private ParseObject localSelecionado;
     final Context context = this;
+    private static ProgressBar progressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,14 +50,15 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
         locais = (ListView) findViewById(R.id.locallist_listview);
         locais.setOnItemClickListener(this);
 
+        progressBar = (ProgressBar) findViewById(R.id.locallist_progressBar);
+        progressBar.setVisibility(View.GONE);
+
         atualizarLista();
         locais.setCacheColorHint(Color.TRANSPARENT);
     }
 
     @Override
     public void onBackPressed() {
-        Sessao sessao = new Sessao(5, localSelecionado, "local");
-        Constantes.setSessao(sessao);
         Intent it = new Intent();
         setResult(1, it);
         super.onBackPressed();
@@ -142,14 +146,16 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
     }
 
     public void atualizarLista() {
-        final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando...");
+        //final Dialog progresso = FuncoesParse.showProgressBar(context, "Carregando...");
+        progressBar.setVisibility(View.VISIBLE);
 
         ParseQuery queryLocal = new ParseQuery("local");
         //queryLocal.orderByAscending("nome");
         queryLocal.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-                FuncoesParse.dismissProgressBar(progresso);
+                // FuncoesParse.dismissProgressBar(progresso);
+                progressBar.setVisibility(View.GONE);
                 if (e == null) {
                     adapterLocal = new LocalListAdapter(context, list);
                     locais.setAdapter(adapterLocal);
@@ -183,6 +189,8 @@ public class LocalActivity extends ActionBarActivity implements AdapterView.OnIt
         ParseObject local = adapterLocal.getItem(position);
         if (!local.getObjectId().isEmpty()) {
             this.localSelecionado = local;
+            Sessao sessao = new Sessao(5, localSelecionado, "local");
+            Constantes.setSessao(sessao);
             onBackPressed();
         }
     }

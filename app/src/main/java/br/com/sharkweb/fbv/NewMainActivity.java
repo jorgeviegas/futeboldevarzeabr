@@ -101,7 +101,6 @@ public class NewMainActivity extends AppCompatActivity
 
         //INICIANDO DADOS FIXOS DO APLICATIVO E DADOS DE TESTE
         tipoUsuarioControl.IniciarTiposUsuarios();
-        //posicaoControl.excluirTodasPosicoes();
         posicaoControl.IniciarPosicoes();
         ufControl.inicializarUF();
 
@@ -139,25 +138,9 @@ public class NewMainActivity extends AppCompatActivity
     private void verificarUsuario() {
         final ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
-            if (ParseInstallation.getCurrentInstallation().get("User") == null) {
-                ParseInstallation.getCurrentInstallation().put("User", currentUser);
-                ParseInstallation.getCurrentInstallation().saveEventually();
-            }
-            ParseUser.getCurrentUser().fetchInBackground(new GetCallback<ParseObject>() {
-                @Override
-                public void done(ParseObject parseObject, ParseException e) {
-                    if (currentUser.getBoolean("emailVerified")) {
-                        txtEmailUsuarioNaoConfirmado.setVisibility(View.GONE);
-                    } else {
-                        Toast toast = Toast.makeText(getApplicationContext(), "Por favor, confirme seu endereço de e-mail.", Toast.LENGTH_LONG);
-                        toast.show();
-                    }
-                }
-            });
 
             txtNomeUsuario.setText(currentUser.get("nome").toString().trim());
             txtEmailUsuario.setText(currentUser.getEmail().trim());
-
             ParseFile imagemPerfil = ParseUser.getCurrentUser().getParseFile("ImageFile");
             if (imagemPerfil != null) {
                 try {
@@ -171,55 +154,27 @@ public class NewMainActivity extends AppCompatActivity
             } else {
                 imgPerfilUusario.setImageResource(R.drawable.profile4_68);
             }
-            //Verifica a existência de notificações ao usuário.
-            ParseQuery queryNotific = new ParseQuery("notificacao");
-            queryNotific.whereEqualTo("usuario", currentUser);
-            queryNotific.whereEqualTo("lida", false);
-            queryNotific.findInBackground(new FindCallback<ParseObject>() {
+
+            if (ParseInstallation.getCurrentInstallation().get("User") == null) {
+                ParseInstallation.getCurrentInstallation().put("User", currentUser);
+                ParseInstallation.getCurrentInstallation().saveEventually();
+            }
+            ParseUser.getCurrentUser().fetchInBackground(new GetCallback<ParseObject>() {
                 @Override
-                public void done(List<ParseObject> list, ParseException e) {
-                    if (e == null && list.size() > 0) {
-                        exibirNotificacoes(list, 0);
+                public void done(ParseObject parseObject, ParseException e) {
+                    if (e == null) {
+                        if (currentUser.getBoolean("emailVerified")) {
+                            txtEmailUsuarioNaoConfirmado.setVisibility(View.GONE);
+                        } else {
+                            Toast toast = Toast.makeText(getApplicationContext(), "Por favor, confirme seu endereço de e-mail.", Toast.LENGTH_LONG);
+                            toast.show();
+                        }
                     }
                 }
             });
         } else {
             mudarTela(LoginActivity.class);
         }
-    }
-
-    private void exibirNotificacoes(final List<ParseObject> list, final int count) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setIcon(R.drawable.questionmark_64);
-        builder.setTitle(list.get(count).getString("tipo").trim());
-        builder.setMessage(list.get(count).getString("mensagem").trim());
-        builder.setCancelable(false);
-        String opcao = "Ok";
-        if (list.get(count).getString("tipo").equals("Pergunta")) {
-            opcao = "Sim";
-        }
-        builder.setPositiveButton(opcao, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                timeControl.atualizarTime(list.get(count).getString("objectIdParam").trim());
-                if ((count + 1) <= (list.size() - 1)) {
-                    exibirNotificacoes(list, (count + 1));
-                }
-            }
-        });
-        if (list.get(count).getString("tipo").equals("Pergunta")) {
-            builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    if ((count + 1) <= (list.size() - 1)) {
-                        exibirNotificacoes(list, (count + 1));
-                    }
-                }
-            });
-        }
-        builder.create().show();
-        list.get(count).put("lida", true);
-        list.get(count).saveInBackground();
     }
 
     private void confirmarTrocaDeSenha() {

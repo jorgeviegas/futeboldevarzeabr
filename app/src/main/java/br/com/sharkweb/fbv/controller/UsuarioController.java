@@ -66,7 +66,8 @@ public class UsuarioController {
                 Object object = (Object) configsTimes.get(i);
                 String time = ((ArrayList<String>) object).get(0);
                 if (objectTime.getObjectId().trim().equals(time)) {
-                    configsTimes.remove(i);
+                    //configsTimes.remove(i);
+                    configsTimes.remove(object);
                     ParseUser.getCurrentUser().add("configTimes", configsTimes);
                     ParseUser.getCurrentUser().saveEventually(new SaveCallback() {
                         @Override

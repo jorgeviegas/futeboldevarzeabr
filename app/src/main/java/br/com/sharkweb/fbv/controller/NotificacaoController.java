@@ -40,19 +40,18 @@ public class NotificacaoController {
     public void enviarConvite(final ParseObject usuario, final ParseObject time, String tipo) {
         if (tipo.equals("conviteTime")) {
             enviarConvite(usuario, time, "Olá! O " + time.getString("nome").trim().toUpperCase()
-                    + " quer você no time! Clique aqui para responder." +
-                    " Clique para visualizar", tipo, "FBA - " + time.getString("nome").toUpperCase());
+                    + " quer você no time! Clique aqui para responder.", tipo, "FBA - " + time.getString("nome").toUpperCase());
         } else if (tipo.equals("conviteAdmin")) {
             enviarConvite(usuario, time, "Olá! O " + time.getString("nome").trim().toUpperCase()
-                    + " quer você como administrador do time! Clique aqui para responder." +
-                    " Clique para visualizar", tipo, "FBA - " + time.getString("nome").toUpperCase());
+                    + " quer você como administrador do time! Clique aqui para responder.", tipo, "FBA - " + time.getString("nome").toUpperCase());
         }
     }
 
     public void receberNotificacaoConvite(Bundle mBundle) {
-        String mData = mBundle.getString("com.parse.Data");
-        JSONObject jsonObject;
         try {
+            String mData = mBundle.getString("com.parse.Data");
+            JSONObject jsonObject;
+
             jsonObject = new JSONObject(mData);
             String tipo = jsonObject.getString("tipo");
             if (tipo != null && tipo.contains("convite")) {
@@ -90,6 +89,8 @@ public class NotificacaoController {
             }
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -115,9 +116,9 @@ public class NotificacaoController {
             public void done(com.parse.ParseException e) {
                 FuncoesParse.dismissProgressBar(progresso);
                 if (e == null) {
-                    funcoes.mostrarToast(8);
-                } else {
                     funcoes.mostrarToast(9);
+                } else {
+                    funcoes.mostrarToast(8);
                 }
             }
         });

@@ -37,8 +37,7 @@ public class StarterApplication extends Application {
       //  ParseObject.registerSubclass(TimeUsuarioP.class);
        // ParseObject.registerSubclass(TimeP.class);
         Parse.initialize(this, Constantes.getParseApplicationId(), Constantes.getParseClientKey());
-        ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-        ParseInstallation.getCurrentInstallation().saveInBackground();
+        ParseInstallation.getCurrentInstallation().saveEventually();
         // ParseUser.enableAutomaticUser();
         //ParseACL defaultACL = new ParseACL();
         // Optionally enable public read access.

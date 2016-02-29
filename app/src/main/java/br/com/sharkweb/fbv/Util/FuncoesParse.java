@@ -17,6 +17,10 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 import com.parse.SaveCallback;
+import com.parse.SendCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
@@ -169,10 +173,7 @@ public class FuncoesParse {
                     Toast toast = Toast.makeText(context, "Falha ao carregar Imagem. Por favor, tente novamente", Toast.LENGTH_SHORT);
                     toast.show();
                 }
-
             }
         });
-
     }
-
 }

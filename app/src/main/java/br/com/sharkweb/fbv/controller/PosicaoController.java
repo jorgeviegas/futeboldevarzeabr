@@ -55,6 +55,7 @@ public class PosicaoController {
             this.excluirTodasPosicoes();
         }
         if (posicao.isEmpty()) {
+            this.inserir("Técnico", "Coach");
             this.inserir("Goleiro", "GK");
             this.inserir("Zagueiro Direito", "RB");
             this.inserir("Zagueiro Central", "CB");

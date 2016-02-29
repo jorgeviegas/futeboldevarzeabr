@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
@@ -38,7 +39,9 @@ import br.com.sharkweb.fbv.Util.Funcoes;
 import br.com.sharkweb.fbv.Util.FuncoesParse;
 import br.com.sharkweb.fbv.Util.RoundedImageView;
 import br.com.sharkweb.fbv.adapter.UsuarioListAdapter;
+import br.com.sharkweb.fbv.controller.NotificacaoController;
 import br.com.sharkweb.fbv.controller.UFController;
+import br.com.sharkweb.fbv.controller.UsuarioController;
 import br.com.sharkweb.fbv.model.Sessao;
 
 
@@ -55,6 +58,8 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
     private ListView listaJogadores;
     private UsuarioListAdapter adapterUsuarios;
     private UFController ufControl = new UFController(this);
+    private NotificacaoController notificacaoControl = new NotificacaoController(this);
+    private UsuarioController userControl = new UsuarioController(this);
     final Context context = this;
     private String m_Text = "";
     static final int IMAGE_VIEW_ACTIVITY_REQUEST_CODE = 101;
@@ -110,7 +115,6 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
 
         //Setando o objeto ParseObject do time.
         this.time = Constantes.getTimeSelecionado();
-
         ParseFile imagemPerfil = time.getParseFile("ImageFile");
         if (imagemPerfil != null) {
             try {
@@ -126,7 +130,7 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             imgPerfilTime.setMaxHeight(80);
         }
 
-        tvNomeTime.setText(funcoes.PrimeiraLetraMaiuscula(this.time.getString("nome").trim()+"\n"));
+        tvNomeTime.setText(funcoes.PrimeiraLetraMaiuscula(this.time.getString("nome").trim() + "\n"));
         tvEndereco.setText(time.getString("cidade").trim() + " - " +
                 ufControl.selectUFPorId(time.getInt("id_uf")).get(0).getNome().trim());
         listaJogadores = (ListView) findViewById(R.id.timeDetalhe_listJogadores);
@@ -179,14 +183,27 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-                progressBar.setVisibility(View.GONE);
                 //FuncoesParse.dismissProgressBar(progresso);
                 if (e == null) {
                     listaUsuarios = list;
-                    atualizarLista();
+                    boolean estouNoTime = false;
+                    for (int i = 0; i < list.size(); i++) {
+                        if (ParseUser.getCurrentUser().getObjectId().equals(list.get(i).getObjectId())) {
+                            estouNoTime = true;
+                        }
+                    }
+                    if (estouNoTime) {
+                        atualizarLista();
+                    } else {
+                        userControl.desvincularUsuarioDoTime(time);
+                        Toast toast = Toast.makeText(context, "Você foi removido deste time.", Toast.LENGTH_LONG);
+                        toast.show();
+                        mudarTela(NewMainActivity.class);
+                    }
                 } else {
                     funcoes.mostrarToast(3);
                 }
+                progressBar.setVisibility(View.GONE);
             }
         });
     }
@@ -214,9 +231,10 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                         FuncoesParse.dismissProgressBar(progresso);
                         listaUsuarios.add(usuario);
                         atualizarLista();
-                        FuncoesParse.enviarNotificacao(context, usuario, "O time " + time.getString("nome").trim() +
-                                        " convidou você para fazer parte do time. Deseja aceitar?",
-                                time.getObjectId().trim(), "Pergunta");
+                        notificacaoControl.enviarConvite(usuario, time, "conviteTime");
+                        //FuncoesParse.enviarNotificacao(context, usuario, "O time " + time.getString("nome").trim() +
+                        //               " convidou você para fazer parte do time. Deseja aceitar?",
+                        //     time.getObjectId().trim(), "Pergunta");
                     } else {
                         FuncoesParse.dismissProgressBar(progresso);
                         funcoes.mostrarToast(2);
@@ -348,27 +366,27 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
             //Menu de opções que o usuário pode fazer com os usuarios.
             String[] arrayOpcoes = new String[1];
             arrayOpcoes[0] = "Informações de contato";
-            final TextView tvTipoUsuario = ((TextView) view.findViewById(R.id.usuariolist_tipoUsuario));
 
+            if (FuncoesParse.isAdmin()) {
+                arrayOpcoes = new String[3];
+                arrayOpcoes[0] = "Informações de contato";
+                arrayOpcoes[1] = "Tornar admin do time";
+                arrayOpcoes[2] = "Remover usuário";
+                /*if (FuncoesParse.isInativo(user)) {
+                    arrayOpcoes[2] = "Ativar usuario";
+                } else {
+                    arrayOpcoes[2] = "Inativar usuario";
+                }*/
+            }
+            final TextView tvTipoUsuario = ((TextView) view.findViewById(R.id.usuariolist_tipoUsuario));
             if (FuncoesParse.isAdmin()
                     && tvTipoUsuario.getText().toString().trim().equals("Pendente")) {
-                arrayOpcoes = new String[3];
+                arrayOpcoes = new String[4];
                 arrayOpcoes[0] = "Informações de contato";
-                arrayOpcoes[1] = "Excluir convite";
-                arrayOpcoes[2] = "Enviar convite novamente";
+                arrayOpcoes[1] = "Tornar admin do time";
+                arrayOpcoes[2] = "Remover usuário";
+                arrayOpcoes[3] = "Enviar convite novamente";
             }
-
-            //Diponível somente para usuarios administradores do time.
-           /* if (FuncoesParse.isAdmin()) {
-                arrayOpcoes = new String[3];
-                arrayOpcoes[0] = "Informações de contato";
-                //arrayOpcoes[1] = "Tornar Admin do time";
-                if (FuncoesParse.isInativo(user)) {
-                    //arrayOpcoes[2] = "Ativar usuario";
-                } else {
-                    //arrayOpcoes[2] = "Inativar usuario";
-                }
-            }*/
 
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setIcon(R.drawable.questionmark_64);
@@ -382,28 +400,42 @@ public class TimeDetalheActivity extends ActionBarActivity implements AdapterVie
                             funcoes.exibirDetalheUsuario(user, context);
                             break;
                         case 1:
-                            time.getRelation("usuarios").remove(user);
-                            time.saveInBackground(new SaveCallback() {
-                                @Override
-                                public void done(ParseException e) {
-                                    if (e == null) {
-                                        FuncoesParse.excluirNotificacao(context, user, time.getObjectId().trim(), "Pergunta");
-                                        funcoes.mostrarToast(1);
-                                        buscarUsuarios();
-                                    } else {
-                                        funcoes.mostrarToast(2);
-                                    }
-                                }
-                            });
+                            notificacaoControl.enviarConvite(user, time, "conviteAdmin");
                             //timeusuarioControl.tornarAdmin(time.getId(), user.getId());
                             //atualizarLista();
                             break;
                         case 2:
-                            FuncoesParse.enviarNotificacao(context, user, "O time " + time.getString("nome").trim() +
-                                            " convidou você para fazer parte do time. Deseja aceitar?",
-                                    time.getObjectId().trim(), "Pergunta");
+                            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                            builder.setIcon(R.drawable.questionmark_64);
+                            builder.setTitle("Pergunta");
+                            builder.setMessage("Tem certeza que deseja remover o usuário " +
+                                    user.getString("nome").trim() + " do time?");
+                            builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                    time.getRelation("usuarios").remove(user);
+                                    time.saveEventually(new SaveCallback() {
+                                        @Override
+                                        public void done(ParseException e) {
+                                            if (e == null) {
+                                                funcoes.mostrarToast(1);
+                                                buscarUsuarios();
+                                            } else {
+                                                funcoes.mostrarToast(2);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                            builder.setNegativeButton("Nao", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            });
+                            builder.create().show();
                             break;
                         case 3:
+                            notificacaoControl.enviarConvite(user, time, "conviteTime");
                             // if (FuncoesParse.isInativo(user)) {
                             //timeusuarioControl.ativarUsuario(time.getId(), user.getId());
                             // } else {

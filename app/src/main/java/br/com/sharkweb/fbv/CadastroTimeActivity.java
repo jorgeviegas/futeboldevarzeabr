@@ -237,8 +237,17 @@ public class CadastroTimeActivity extends ActionBarActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         MenuItem m1 = menu.findItem(R.id.cadastro_time_excluir);
         //Somente usuarios administradores do time podem usar o menu inserir jogador
-        if (FuncoesParse.isAdmin()) {
-            m1.setVisible(true);
+        if (time != null && time.getObjectId() != null) {
+            if (Constantes.getTimeSelecionado() != null) {
+                if (FuncoesParse.isAdmin())
+                    m1.setVisible(true);
+                else
+                    m1.setVisible(false);
+            } else if (ParseUser.getCurrentUser().getInt("id_tipo") == 1) {
+                m1.setVisible(true);
+            } else {
+                m1.setVisible(false);
+            }
         } else {
             m1.setVisible(false);
         }

@@ -94,13 +94,13 @@ public class BuscaUsuarioActivity extends ActionBarActivity implements AdapterVi
         queryUsuario.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> list, ParseException e) {
-                progressBar.setVisibility(View.GONE);
                 if (e == null) {
                     adapterUsuario = new UsuarioListAdapter(context, list, 2, false, false);
                     usuarios.setAdapter(adapterUsuario);
                 } else {
                     funcoes.mostrarToast(4);
                 }
+                progressBar.setVisibility(View.GONE);
             }
         });
     }

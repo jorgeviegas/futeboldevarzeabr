@@ -98,6 +98,18 @@ public class Funcoes {
             case 6:
                 toast.setText("Cadastro excluído com sucesso!");
                 break;
+            case 7:
+                toast.setText("Convite enviado com sucesso!.");
+                break;
+            case 8:
+                toast.setText("Falha ao enviar convite. Por favor, tente novamente");
+                break;
+            case 9:
+                toast.setText("Notificação enviada com sucesso!.");
+                break;
+            case 10:
+                toast.setText("Falha ao enviar notificação. Por favor, tente novamente");
+                break;
         }
         toast.show();
     }

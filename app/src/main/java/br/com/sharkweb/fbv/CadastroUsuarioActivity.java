@@ -222,7 +222,7 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
             ParseUser user = new ParseUser();
             if (ParseUser.getCurrentUser() != null) {
                 ParseUser.getCurrentUser().setUsername(txtApelido.getText().toString().toLowerCase());
-                ParseUser.getCurrentUser().setEmail(txtEmail.getText().toString());
+                ParseUser.getCurrentUser().setEmail(txtEmail.getText().toString().toLowerCase());
                 ParseUser.getCurrentUser().put("celular", Mask.unmask(txtCelular.getText().toString()));
                 ParseUser.getCurrentUser().put("id_tipo", (spnTipoUsuario.getSelectedItemPosition() + 1));
                 ParseUser.getCurrentUser().put("nome", txtNome.getText().toString());
@@ -241,8 +241,8 @@ public class CadastroUsuarioActivity extends ActionBarActivity {
                 });
             } else {
                 user.setPassword(txtSenha.getText().toString());
-                user.setUsername(txtApelido.getText().toString());
-                user.setEmail(txtEmail.getText().toString());
+                user.setUsername(txtApelido.getText().toString().toLowerCase());
+                user.setEmail(txtEmail.getText().toString().toLowerCase());
                 if (posicao != null) {
                     user.put("posicao", posicao.getAbreviatura());
                 }

@@ -87,10 +87,10 @@ public class PosJogoActivity extends ActionBarActivity implements AdapterView.On
         linearBotoes.setVisibility(View.GONE);
 
         imgTime1 = (ImageView) findViewById(R.id.pos_jogo_imagemtime1);
-        imgTime1.setVisibility(View.GONE);
+        //imgTime1.setVisibility(View.GONE);
 
         imgTime2 = (ImageView) findViewById(R.id.pos_jogo_imagemtime2);
-        imgTime2.setVisibility(View.GONE);
+        //imgTime2.setVisibility(View.GONE);
 
         if (Constantes.getSessao() != null) {
             this.jogo = Constantes.getSessao().getObjeto();

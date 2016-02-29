@@ -105,9 +105,9 @@ public class LoginActivity extends ActionBarActivity {
     }
 
     public void loginSuccessful() {
-        Bundle parametros = new Bundle();
-        parametros.putBoolean("login", true);
-        mudarTela(NewMainActivity.class, parametros);
+        //Bundle parametros = new Bundle();
+        //parametros.putBoolean("login", true);
+        mudarTela(NewMainActivity.class);
         Toast toast = Toast.makeText(getApplicationContext(), "Login feito com sucesso!", Toast.LENGTH_LONG);
         toast.show();
     }

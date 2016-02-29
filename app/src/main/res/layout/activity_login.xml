@@ -81,7 +81,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cadastre-se no FBV"
+            android:text="Cadastre-se no FBA"
             android:gravity="center"
             android:id="@+id/login_cadastrar"
             android:layout_weight="0.26" />

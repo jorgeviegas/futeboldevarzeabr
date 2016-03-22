@@ -15,11 +15,14 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import br.com.sharkweb.fbv.DAO.FBVDAO;
+import br.com.sharkweb.fbv.converters.TimeParseConverter;
 import br.com.sharkweb.fbv.model.Time;
 
 public class TimeDAOParse {
 
     /*Dados da tabela*/
+
+    private final TimeParseConverter timeParseConverter = new TimeParseConverter();
     private static final String NOME_TABELA = "time";
     private static final String NOME_TABELA_VINCULO = "time_usuario";
 
@@ -76,20 +79,10 @@ public class TimeDAOParse {
         Time time = null;
         try {
             ParseObject obj = timeParsePesquisa.get(id.trim());
-            time = ParseObjectToTimeObject(obj);
+            time = timeParseConverter.convert(obj);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        return time;
-    }
-
-    private Time ParseObjectToTimeObject(ParseObject p) {
-        String objectId = p.getObjectId();
-        String nome = p.getString("nome").trim();
-        String cidade = p.getString("cidade").trim();
-        int id_uf = p.getInt("id_uf");
-
-        Time time = new Time(nome, cidade, id_uf, objectId);
         return time;
     }
 
@@ -130,7 +123,7 @@ public class TimeDAOParse {
             try {
                 results = timeParsePesquisa.find();
                 if (results.size() > 0)
-                    usuario.add(ParseObjectToTimeObject(results.get(0)));
+                    usuario.add(timeParseConverter.convert(results.get(0)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
